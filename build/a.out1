@@ -1,0 +1,11 @@
+**** module/scope: alu32
+     Flip-Flops   : 0
+     Logic Gates  : 0
+     LPM[14]: 1 unaccounted
+**** module/scope: alu32.op
+     Flip-Flops   : 0
+     Logic Gates  : 0
+**** TOTALS
+     Flip-Flops   : 0
+     Logic Gates  : 0
+     LPM[14]: 1 unaccounted
