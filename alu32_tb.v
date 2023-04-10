@@ -1,45 +1,45 @@
 module ALU32_tb();
   reg [31:0] in_1, in_2;
-  reg [2:0] Ctrl;
+  reg [2:0] ctrl;
   wire [31:0] out_1;
 
-  ALU32 ALU32(in_1, in_2, Ctrl, out_1);
+  ALU32 ALU32(in_1, in_2, ctrl, out_1);
 
   initial begin
-    $monitor("%b : %b %b => %b", Ctrl, in_1, in_2, out_1);
+    $monitor("%b : %b %b => %b", ctrl, in_1, in_2, out_1);
   end
 
   initial begin
     #1
-      Ctrl <= 3'b000; // Add signed
+      ctrl <= 3'b000; // Add signed
       in_1 <= 128;
       in_2 <= 2;
     #1
-      Ctrl <= 3'b001; // Sub signed
+      ctrl <= 3'b001; // Sub signed
       in_1 <= 128;
       in_2 <= 2;
     #1
-      Ctrl <= 3'b010; // And
+      ctrl <= 3'b010; // And
       in_1 <= 127;
       in_2 <= 2;
     #1
-      Ctrl <= 3'b011; // Or
+      ctrl <= 3'b011; // Or
       in_1 <= 128;
       in_2 <= 2;
     #1
-      Ctrl <= 3'b100; // Xor
+      ctrl <= 3'b100; // Xor
       in_1 <= 32'b0000_0000_0000_0000_0000_0000_0000_0110;
       in_2 <= 32'b0000_0000_0000_0000_0000_0000_0000_1010;
     #1
-      Ctrl <= 3'b101; // Sift right arith.
+      ctrl <= 3'b101; // Sift right arith.
       in_1 <= 32'b1000_0000_0000_0000_0000_0000_0000_1111;
       in_2 <= 32'b0000_0000_0000_0000_0000_0000_0000_0010;
     #1
-      Ctrl <= 3'b110; // Sift right logic
+      ctrl <= 3'b110; // Sift right logic
       in_1 <= 32'b1000_0000_0000_0000_0000_0000_0000_1111;
       in_2 <= 32'b0000_0000_0000_0000_0000_0000_0000_0010;
     #1
-      Ctrl <= 3'b111; // Sift left logic
+      ctrl <= 3'b111; // Sift left logic
       in_1 <= 32'b1000_0000_0000_0000_0000_0000_0000_1111;
       in_2 <= 32'b0000_0000_0000_0000_0000_0000_0000_0010;
   end
