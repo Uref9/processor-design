@@ -1,18 +1,20 @@
-module ALU32_tb();
+module ALU_tb();
   reg [31:0] in_1, in_2;
   reg [2:0] ctrl;
   wire [31:0] out_1;
+  wire o_zero, o_minus;
 
-  ALU ALU(in_1, in_2, ctrl, out_1);
+  ALU ALU(in_1, in_2, ctrl, out_1, o_zero, o_minus);
 
   initial begin
-    $monitor("%b : %b %b => %b", ctrl, in_1, in_2, out_1);
+    $monitor("%b : %b %b => %b [z:%b][m:%b]",
+              ctrl, in_1, in_2, out_1, o_zero, o_minus);
   end
 
   initial begin
     #1
       ctrl <= 3'b000; // Add signed
-      in_1 <= 128;
+      in_1 <= 2;
       in_2 <= 2;
     #1
       ctrl <= 3'b001; // Sub signed

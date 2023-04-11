@@ -1,6 +1,19 @@
-**** module/scope: instDecoder
+**** module/scope: ALU
+     Flip-Flops   : 0
+     Logic Gates  : 136
+     EQUALITY[32]: 1 units
+     MAGNITUDE[32]: 1 units
+     MUX[2]: 4 slices
+     LPM[8]: 2 unaccounted
+     LPM[14]: 1 unaccounted
+**** module/scope: ALU.op
      Flip-Flops   : 0
      Logic Gates  : 0
 **** TOTALS
      Flip-Flops   : 0
-     Logic Gates  : 0
+     Logic Gates  : 136
+     EQUALITY[32]: 1 units
+     MAGNITUDE[32]: 1 units
+     MUX[2]: 4 slices
+     LPM[8]: 2 unaccounted
+     LPM[14]: 1 unaccounted
