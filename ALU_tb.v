@@ -3,7 +3,7 @@ module ALU32_tb();
   reg [2:0] ctrl;
   wire [31:0] out_1;
 
-  ALU32 ALU32(in_1, in_2, ctrl, out_1);
+  ALU ALU(in_1, in_2, ctrl, out_1);
 
   initial begin
     $monitor("%b : %b %b => %b", ctrl, in_1, in_2, out_1);
