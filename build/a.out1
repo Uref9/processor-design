@@ -6,7 +6,7 @@
      MUX[2]: 6 slices
      LPM[8]: 3 unaccounted
      LPM[14]: 1 unaccounted
-**** module/scope: ALU.op
+**** module/scope: ALU.operation
      Flip-Flops   : 0
      Logic Gates  : 0
 **** TOTALS
