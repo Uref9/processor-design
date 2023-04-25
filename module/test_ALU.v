@@ -1,6 +1,6 @@
-`include "ALU.v"
+// `include "module/ALU.v"
 
-module ALU_tb();
+module test_ALU();
   reg [31:0] i_1, i_2;
   reg [2:0] i_ctrl;
   wire [31:0] o_1;

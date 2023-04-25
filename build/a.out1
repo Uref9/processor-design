@@ -1,19 +1,17 @@
-**** module/scope: ALU
+**** module/scope: controller
      Flip-Flops   : 0
-     Logic Gates  : 204
-     EQUALITY[32]: 1 units
-     MAGNITUDE[32]: 2 units
-     MUX[2]: 6 slices
-     LPM[8]: 3 unaccounted
-     LPM[14]: 1 unaccounted
-**** module/scope: ALU.operation
+     Logic Gates  : 2
+     LPM[14]: 3 unaccounted
+**** module/scope: controller.ALUDecoder
+     Flip-Flops   : 0
+     Logic Gates  : 0
+**** module/scope: controller.branchJudge
+     Flip-Flops   : 0
+     Logic Gates  : 0
+**** module/scope: controller.mainDecoder
      Flip-Flops   : 0
      Logic Gates  : 0
 **** TOTALS
      Flip-Flops   : 0
-     Logic Gates  : 204
-     EQUALITY[32]: 1 units
-     MAGNITUDE[32]: 2 units
-     MUX[2]: 6 slices
-     LPM[8]: 3 unaccounted
-     LPM[14]: 1 unaccounted
+     Logic Gates  : 2
+     LPM[14]: 3 unaccounted
