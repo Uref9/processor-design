@@ -1,11 +1,11 @@
 module immExtend(
-  input [31:0]  i_inst,
   input [2:0] i_immSrc,
+  input [31:0]  i_inst,
 
-  output [31:0] o_imm
+  output [31:0] o_immExt
 );
 
-  assign o_imm = setImm(i_inst, i_immSrc);
+  assign o_immExt = setImm(i_inst, i_immSrc);
 
   function [31:0] setImm;
     input [31:0] i_inst;
@@ -30,7 +30,7 @@ module immExtend(
         setImm = { {20{i_inst[31]}}, i_inst[31:20] };
       3'b111: // J type
         setImm = { {11{i_inst[31]}}, i_inst[31], i_inst[19:12],
-                    i_inst[20], i_inst[30:12], 1'b0 };
+                    i_inst[20], i_inst[30:21], 1'b0 };
       default: // ???
         setImm = {32'bx};
     endcase

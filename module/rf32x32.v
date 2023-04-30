@@ -2,6 +2,7 @@
 `define  ZERO           1'b0           // Rename to Zero
 `define  LOW            1'b0           // Rename to Zero
 `define  HIGH           1'b1           // Rename to High
+`include "module/DW_ram_2r_w_s_dff.v"
 
 module rf32x32(
 							// clock and reset

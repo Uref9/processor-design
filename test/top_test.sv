@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 1000000000
-`include "top.v"
+`define IN_TOTAL 10000 //00000
+// `include "module/top.v"
 
 module top_test;
    
@@ -67,11 +67,18 @@ module top_test;
       #(HALF_CYCLE);
    end
 
+   //mine
+   // integer cnt;
+
    //*** initialize ***//
    initial begin
       //*** read input data ***//
       $readmemh("./Dmem.dat", DATA_Dmem);
       $readmemh("./Imem.dat", DATA_Imem);
+      // mine
+      // for (cnt=0; cnt<10; cnt=cnt+1) begin
+      //    $display("DATA_Imem[%d]=%b", cnt, DATA_Imem[cnt]);
+      // end
 
       Max_Daddr = 0;
 
@@ -117,7 +124,8 @@ module top_test;
 
    //*** description for wave form ***//
    initial begin
-      //$monitor($stime," PC=%h INST=%h", IAD, IDT);
+      // $monitor($stime," PC=%h INST=%h", IAD, IDT);
+      $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
    //ここから2行はIcarus Verilog用(手元で動かすときに使ってください)
       $dumpfile("top_test.vcd");
       $dumpvars(0, u_top_1);
@@ -134,7 +142,11 @@ module top_test;
          CIL = CIL + 1;
          if(CIL == IMEM_LATENCY)
             begin
+               //mine
+               // $display("Iaddr=%h", Iaddr);
                IDT = {DATA_Imem[Iaddr], DATA_Imem[Iaddr+1], DATA_Imem[Iaddr+2], DATA_Imem[Iaddr+3]};
+               // $display("IDT=%h", IDT);
+
                ACKI_n = 1'b0;
                CIL = 0;
             end
@@ -262,13 +274,13 @@ module top_test;
          end
       $fclose(Dmem_data);
 
-      Reg_data = $fopen("./Reg_out.dat");
-      for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
-         begin
-            Reg_temp = u_top_1.id_stage.regfile.u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);
-            $fwrite(Reg_data, "%d:%h\n", i, Reg_temp);
-         end
-      $fclose(Reg_data);
+      // Reg_data = $fopen("./Reg_out.dat");
+      // for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
+      //    begin
+      //       Reg_temp = u_top_1.id_stage.regfile.u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);
+      //       $fwrite(Reg_data, "%d:%h\n", i, Reg_temp);
+      //    end
+      // $fclose(Reg_data);
       end
 
    endtask // dump_task1
