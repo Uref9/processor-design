@@ -33,13 +33,13 @@ module top(
   // reg [31:0] r_oDDT;
   always @(negedge clk, negedge rst) begin
     if (~rst)       r_readData <= 32'b0;
-    else if (MREQ)  r_readData <= DDT;
-    else            r_readData <= 32'bx;
+    else            r_readData <= DDT;
+    // else            r_readData <= 32'bx;
   end
   // always @(posedge clk)
   //   r_oDDT <= w_writeData;
   // assign DDT = WRITE? r_oDDT : 32'bz;
-  assign DDT = WRITE? w_writeData : 32'bz;
+  assign DDT = WRITE? w_writeData : r_readData;
 
   // reset some controll bit
   // reg r_regWrite;
