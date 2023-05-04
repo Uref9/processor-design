@@ -1,4 +1,4 @@
-`include "module/dffRst.v"
+`include "module/PCReg.v"
 `include "module/adder.v"
 `include "module/mux3.v"
 `include "module/rf32x32.v"
@@ -40,7 +40,7 @@ module datapath(
   assign w_rd = i_inst[11:7];
   assign w_rs1 = i_inst[19:15];
   assign w_rs2 = i_inst[24:20];
-  assign w_ALUOutJalr = o_ALUOut & ~{32'b1};
+  assign w_ALUOutJalr = o_ALUOut & ~{32'd1};
   // assign w_opcode = i_inst[6:0];
   // assign w_funct3 = i_inst[14:12];
   // assign w_zimm = i_inst[19:15];
@@ -50,7 +50,7 @@ module datapath(
   // assign w_csr = i_inst[31:20];
 
   // PC
-  dffRst pc_reg(
+  PCReg pc_reg(
     .i_clk(i_clk), .i_reset_x(i_reset_x), .i_d(w_PCNext),
     .o_q(o_PC)
   );

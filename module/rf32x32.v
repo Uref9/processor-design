@@ -48,7 +48,9 @@ module rf32x32(
 	// Instance of DW_ram_2r_w_s_lat
 	DW_ram_2r_w_s_dff #(data_width, depth, rst_mode)
 	u_DW_ram_2r_w_s_dff(
-				.clk(clk_inv), .rst_n(reset),
+				// .clk(clk_inv), // for multi cycle
+				.clk(clk),	// for single cycle 
+				.rst_n(reset),
 				.cs_n(`LOW), .wr_n(wr_n),
 				.rd1_addr(rd1_addr), .rd2_addr(rd2_addr),
 				.wr_addr(wr_addr),

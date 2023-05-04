@@ -12,10 +12,12 @@ module setPCSrc (
                               i_branch, i_zero, i_neg, i_negU,
                               i_funct3);
 
-  function judgeBranch;
-    input       i_branch;
-    input       i_zero, i_neg, i_negU;
-    input [2:0] i_funct3;
+  function judgeBranch(
+    input       i_branch,
+    input       i_zero, i_neg, i_negU,
+    input [2:0] i_funct3
+  );
+
     if (i_branch) begin
       case (i_funct3)
         3'b000: // beq 
@@ -38,4 +40,5 @@ module setPCSrc (
           judgeBranch = 1'b0;
     end
   endfunction
+
 endmodule

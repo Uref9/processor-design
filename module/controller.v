@@ -27,12 +27,7 @@ module controller(
 
   wire w_branch;
   wire w_jal, w_jalr;
-
   wire [1:0] w_ALUOp;
-
-  // assign w_opcode = i_inst[6:0];
-  // assign w_funct3 = i_inst[14:12];
-  // assign w_funct7 = i_inst[31:25];
 
   mainDecoder main_decoder(
     .i_opcode(w_opcode), .i_funct3(w_funct3),

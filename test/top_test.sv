@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 10000 //00000
+`define IN_TOTAL 100 //000000
 // `include "module/top.v"
 
 module top_test;
@@ -68,17 +68,16 @@ module top_test;
    end
 
    //mine
-   // integer cnt;
+   integer cnt;
 
    //*** initialize ***//
    initial begin
       //*** read input data ***//
       $readmemh("./Dmem.dat", DATA_Dmem);
       $readmemh("./Imem.dat", DATA_Imem);
-      // mine
-      // for (cnt=0; cnt<10; cnt=cnt+1) begin
-      //    $display("DATA_Imem[%d]=%b", cnt, DATA_Imem[cnt]);
-      // end
+      for (cnt = 0;cnt < 10 ;cnt = cnt+1 ) begin
+         $display("Dmem[%h]=%h", DMEM_START+cnt, DATA_Dmem[DMEM_START+cnt]);
+      end
 
       Max_Daddr = 0;
 
@@ -96,8 +95,11 @@ module top_test;
       #CYCLE rst = 1'b1;
    end
 
+   // mine
+   
    initial begin
       #HALF_CYCLE;
+      
       //*** data input loop ***//
       for (i = 0; i < `IN_TOTAL; i =i +1)
          begin
@@ -109,15 +111,19 @@ module top_test;
             load_task1;
             store_task1;
             
+            if (0 < i && i < 25) begin
+               $display("--- info registers ---");
+               info_registers_task;
+               $display("--- end i.r. ---");
+            end
+            
             // #(STB);
             #CYCLE;
             release DDT;
          end // for (i = 0; i < `IN_TOTAL; i =i +1)
 
       $display("\nReach IN_TOTAL.");
-
       dump_task1;
-
       $finish;
 
    end // initial begin
@@ -125,7 +131,8 @@ module top_test;
    //*** description for wave form ***//
    initial begin
       // $monitor($stime," PC=%h INST=%h", IAD, IDT);
-      $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
+      $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
+                        " : DAD=%h DDT=%h", DAD, DDT);
    //ここから2行はIcarus Verilog用(手元で動かすときに使ってください)
       $dumpfile("top_test.vcd");
       $dumpvars(0, u_top_1);
@@ -136,6 +143,19 @@ module top_test;
 
 
    //*** tasks ***//
+   task  info_registers_task();
+      integer i;
+      for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
+      begin
+         Reg_temp = u_top_1.datapath.register.u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);
+         if (((i+1) % 4) != 0) begin
+            $write("[x%2d]: %h ", i, Reg_temp);
+         end
+         else begin
+            $display("[x%2d]: %h ", i, Reg_temp);
+         end
+      end
+   endtask
 
    task fetch_task1;
       begin
@@ -282,7 +302,6 @@ module top_test;
       //    end
       // $fclose(Reg_data);
       end
-
    endtask // dump_task1
 
 endmodule // top_test

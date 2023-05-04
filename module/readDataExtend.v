@@ -8,10 +8,11 @@ module readDataExtend(
 
   assign o_readDataExt = extend(i_readDataSrc, i_memSize, i_readData);
 
-  function [31:0] extend;
-    input i_readDataSrc;
-    input [1:0] i_memSize;
-    input [31:0] i_readData;
+  function [31:0] extend(
+    input i_readDataSrc,
+    input [1:0] i_memSize,
+    input [31:0] i_readData
+  );
 
     case (i_readDataSrc)
       1'b0: extend = i_readData;  // loadu

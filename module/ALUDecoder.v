@@ -9,10 +9,11 @@ module ALUDecoder (
   assign o_ALUCtrl = ALUDecoder(i_ALUOp, i_funct3,
                                 i_opecodeb5, i_funct7b5);
 
-  function [3:0] ALUDecoder;
-    input [1:0] i_ALUOp;
-    input [2:0] i_funct3;
-    input       i_opecodeb5, i_funct7b5;
+  function [3:0] ALUDecoder(
+    input [1:0] i_ALUOp,
+    input [2:0] i_funct3,
+    input       i_opecodeb5, i_funct7b5
+  );
 
     case (i_ALUOp)
       2'b00:        ALUDecoder = 4'b0000; // load, store, jalr

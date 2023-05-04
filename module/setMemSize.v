@@ -6,8 +6,9 @@ module setMemSize (
 
   assign o_memSize = setMemSize(i_funct3);
 
-  function [1:0] setMemSize;
-    input [2:0] i_funct3;
+  function [1:0] setMemSize(
+    input [2:0] i_funct3
+  );
     
     case (i_funct3)
       3'b000:   setMemSize = 2'b10; // byte (10 or 11) 
