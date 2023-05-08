@@ -67,17 +67,11 @@ module top_test;
       #(HALF_CYCLE);
    end
 
-   //mine
-   integer cnt;
-
    //*** initialize ***//
    initial begin
       //*** read input data ***//
-      $readmemh("./Dmem.dat", DATA_Dmem);
-      $readmemh("./Imem.dat", DATA_Imem);
-      for (cnt = 0;cnt < 10 ;cnt = cnt+1 ) begin
-         $display("Dmem[%h]=%h", DMEM_START+cnt, DATA_Dmem[DMEM_START+cnt]);
-      end
+      $readmemh("./test/mem/Dmem.dat", DATA_Dmem);
+      $readmemh("./test/mem/Imem.dat", DATA_Imem);
 
       Max_Daddr = 0;
 
@@ -101,29 +95,28 @@ module top_test;
       #HALF_CYCLE;
       
       //*** data input loop ***//
-      for (i = 0; i < `IN_TOTAL; i =i +1)
-         begin
+      for (i = 0; i < `IN_TOTAL; i = i + 1) begin
+         Iaddr = u_top_1.IAD;            
+         fetch_task1;
 
-            Iaddr = u_top_1.IAD;            
-            fetch_task1;
-
-            Daddr = u_top_1.DAD;
-            load_task1;
-            store_task1;
-            
-            if (0 < i && i < 25) begin
-               $display("--- info registers ---");
-               info_registers_task;
-               $display("--- end i.r. ---");
-            end
-            
-            // #(STB);
-            #CYCLE;
-            release DDT;
-         end // for (i = 0; i < `IN_TOTAL; i =i +1)
+         Daddr = u_top_1.DAD;
+         load_task1;
+         store_task1;
+         
+         if (0 < i && i < 35) begin
+            // $display("--- info registers ---");
+            info_registers_task;
+            // $display("--- end i.r. ---");
+         end
+         
+         // #(STB);
+         #CYCLE;
+         release DDT;
+      end // for (i = 0; i < `IN_TOTAL; i =i +1)
 
       $display("\nReach IN_TOTAL.");
       dump_task1;
+      info_registers_task;
       $finish;
 
    end // initial begin
@@ -131,10 +124,13 @@ module top_test;
    //*** description for wave form ***//
    initial begin
       // $monitor($stime," PC=%h INST=%h", IAD, IDT);
-      $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
-                        " : DAD=%h DDT=%h", DAD, DDT);
+      $monitor($stime," PC=%h INST=%h DAD=%h Daddr=%h DDT=%h", IAD, IDT, DAD, Daddr, DDT);
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
+      //                   " : DAD=%h DDT=%h", Daddr, DDT);
    //ここから2行はIcarus Verilog用(手元で動かすときに使ってください)
-      $dumpfile("top_test.vcd");
+      // $dumpfile("top_test.vcd");
+      $dumpfile("./test/log/top_test.vcd");
       $dumpvars(0, u_top_1);
    //ここから2行はNC-Verilog用(woodblockで動かすときに使ってください)
       //$shm_open("waves.shm");
@@ -143,11 +139,12 @@ module top_test;
 
 
    //*** tasks ***//
-   task  info_registers_task();
+   task  info_registers_task;
       integer i;
       for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
       begin
-         Reg_temp = u_top_1.datapath.register.u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);
+         Reg_temp = u_top_1.datapath.register
+                     .u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);
          if (((i+1) % 4) != 0) begin
             $write("[x%2d]: %h ", i, Reg_temp);
          end
@@ -162,10 +159,8 @@ module top_test;
          CIL = CIL + 1;
          if(CIL == IMEM_LATENCY)
             begin
-               //mine
-               // $display("Iaddr=%h", Iaddr);
-               IDT = {DATA_Imem[Iaddr], DATA_Imem[Iaddr+1], DATA_Imem[Iaddr+2], DATA_Imem[Iaddr+3]};
-               // $display("IDT=%h", IDT);
+               IDT = {DATA_Imem[Iaddr], DATA_Imem[Iaddr+1], 
+                        DATA_Imem[Iaddr+2], DATA_Imem[Iaddr+3]};
 
                ACKI_n = 1'b0;
                CIL = 0;
@@ -281,20 +276,24 @@ module top_test;
 
    task dump_task1;
       begin
-      Imem_data = $fopen("./Imem_out.dat");
+      // Imem_data = $fopen("./Imem_out.dat");
+      Imem_data = $fopen("./test/log/Imem_out.dat");
       for (i = IMEM_START; i <= IMEM_START + IMEM_SIZE; i = i+4)  // output data memory to Dmem_data (Dmem_out.dat)
          begin
             $fwrite(Imem_data, "%h :%h %h %h %h\n", i, DATA_Imem[i], DATA_Imem[i+1], DATA_Imem[i+2], DATA_Imem[i+3]);
          end
       $fclose(Imem_data);
-      Dmem_data = $fopen("./Dmem_out.dat");
+
+      // Dmem_data = $fopen("./Dmem_out.dat");
+      Dmem_data = $fopen("./test/log/Dmem_out.dat");
       for (i = DMEM_START; i <= DMEM_START + DMEM_SIZE; i = i+4)  // output data memory to Dmem_data (Dmem_out.dat)
          begin
             $fwrite(Dmem_data, "%h :%h %h %h %h\n", i, DATA_Dmem[i], DATA_Dmem[i+1], DATA_Dmem[i+2], DATA_Dmem[i+3]);
          end
       $fclose(Dmem_data);
-
+      
       // Reg_data = $fopen("./Reg_out.dat");
+      // Reg_data = $fopen("./test/log/Reg_out.dat");
       // for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
       //    begin
       //       Reg_temp = u_top_1.id_stage.regfile.u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);

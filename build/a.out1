@@ -1,11 +1,10 @@
-**** module/scope: mainDecoder
-     Flip-Flops   : 0
+**** module/scope: PCReg
+     Flip-Flops   : 32
      Logic Gates  : 1
-     LPM[14]: 1 unaccounted
-**** module/scope: mainDecoder.mainDecoder
-     Flip-Flops   : 0
-     Logic Gates  : 0
+     LOG[13]: 1 unaccounted
+     LOG[14]: 1 unaccounted
 **** TOTALS
-     Flip-Flops   : 0
+     Flip-Flops   : 32
      Logic Gates  : 1
-     LPM[14]: 1 unaccounted
+     LOG[13]: 1 unaccounted
+     LOG[14]: 1 unaccounted

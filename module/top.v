@@ -26,34 +26,31 @@ module top(
   wire [3:0]  w_ALUCtrl;
   wire        w_zero, w_neg, w_negU;
 
-
-  // inout 
+  /*** inout ***/
   wire [31:0] w_writeData;
-  reg [31:0] r_readData;
-  // reg [31:0] r_oDDT;
-  always @(negedge clk, negedge rst) begin
-    if (~rst)       r_readData <= 32'b0;
-    else            r_readData <= DDT;
-    // else            r_readData <= 32'bx;
-  end
-  // always @(posedge clk)
-  //   r_oDDT <= w_writeData;
-  // assign DDT = WRITE? r_oDDT : 32'bz;
-  assign DDT = WRITE? w_writeData : r_readData;
-
-  // reset some controll bit
-  // reg r_regWrite;
-  // always @(negedge clk, negedge rst) begin
-  //   if (~rst) begin
-  //     r_regWrite <= 1'b0;
+  wire [31:0] w_readData;
+  // reg [31:0] r_readData;
+  // reg [31:0] r_writeData;
+  // reg ddt_enable;
+  // assign DDT = ddt_enable? r_writeData : 32'bz;
+  // always @(posedge clk) begin
+  //   if (MREQ && !WRITE) begin
+  //     r_readData <= DDT;
+  //   end else if (WRITE) begin
+  //     r_writeData <= w_writeData;
+  //     ddt_enable <= 1'b1;
   //   end else begin
-  //     r_regWrite <= w_regWrite;
+  //     ddt_enable <= 1'b0;
   //   end
   // end
 
+  assign w_readData = DDT;
+  assign DDT = WRITE? w_writeData : 32'bz;
+
   datapath datapath(
     .i_clk(clk), .i_reset_x(rst),
-    .i_inst(IDT), .i_readData(r_readData),
+    // .i_inst(IDT), .i_readData(r_readData),
+    .i_inst(IDT), .i_readData(w_readData),
 
     .i_memSize(w_memSize),
     .i_regWrite(w_regWrite),

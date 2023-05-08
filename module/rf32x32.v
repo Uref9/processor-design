@@ -41,9 +41,10 @@ module rf32x32(
 	wire        [data_width-1 : 0] ram_data2_out;
 
 
-	assign    clk_inv = ~clk;
+	// x0 is zero register.
 	assign  data1_out = (|rd1_addr) ? ram_data1_out : {data_width{`ZERO}};
 	assign  data2_out = (|rd2_addr) ? ram_data2_out : {data_width{`ZERO}};
+	// assign    clk_inv = ~clk;
 
 	// Instance of DW_ram_2r_w_s_lat
 	DW_ram_2r_w_s_dff #(data_width, depth, rst_mode)

@@ -7,7 +7,7 @@ module PCReg(
   parameter PC_ORIGIN = 32'h1_0000; // PC start position.
 
   always @(posedge i_clk, negedge i_reset_x) begin
-    if (~i_reset_x) o_q <= PC_ORIGIN;
+    if (!i_reset_x) o_q <= PC_ORIGIN;
     else            o_q <= i_d;
   end
 
