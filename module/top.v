@@ -25,6 +25,7 @@ module top(
   wire [1:0]  w_resultSrc;
   wire [3:0]  w_ALUCtrl;
   wire        w_zero, w_neg, w_negU;
+  wire w_PCStop_x;
 
   /*** inout ***/
   wire [31:0] w_writeData;
@@ -58,6 +59,7 @@ module top(
     .i_immSrc(w_immSrc), .i_immPlusSrc(w_immPlusSrc),
     .i_readDataSrc(w_readDataSrc), .i_resultSrc(w_resultSrc),
     .i_ALUCtrl(w_ALUCtrl),
+    .i_PCEnable_x(w_PCEnable_x),
 
     .o_PC(IAD), .o_ALUOut(DAD), .o_writeData(w_writeData),
 
@@ -65,7 +67,7 @@ module top(
   );
 
   controller controller(
-    .i_inst(IDT),
+    .i_clk(clk), .i_inst(IDT),
 
     .i_zero(w_zero), .i_neg(w_neg), .i_negU(w_negU),
 
@@ -76,7 +78,8 @@ module top(
     .o_PCSrc(w_PCSrc), .o_ALUSrc(w_ALUSrc), 
     .o_immSrc(w_immSrc), .o_immPlusSrc(w_immPlusSrc), 
     .o_readDataSrc(w_readDataSrc), .o_resultSrc(w_resultSrc), 
-    .o_ALUCtrl(w_ALUCtrl)
+    .o_ALUCtrl(w_ALUCtrl),
+    .o_PCEnable_x(w_PCEnable_x)
   );
 
 endmodule

@@ -7,7 +7,6 @@
 `include "module/ALU.v"
 `include "module/readDataExtend.v"
 `include "module/mux4.v"
-`include "module/"
 
 module datapath(
   input i_clk, i_reset_x,
@@ -22,6 +21,7 @@ module datapath(
   input i_readDataSrc,
   input [1:0] i_resultSrc,
   input [3:0] i_ALUCtrl,
+  input i_PCEnable_x,
 
   output [31:0] o_PC, o_ALUOut, o_writeData,
 
@@ -51,7 +51,8 @@ module datapath(
 
   // PC
   PCReg pc_reg(
-    .i_clk(i_clk), .i_reset_x(i_reset_x), .i_d(w_PCNext),
+    .i_clk(i_clk), .i_reset_x(i_reset_x), .i_enable_x(i_PCEnable_x),
+    .i_d(w_PCNext),
     .o_q(o_PC)
   );
   adder add4(

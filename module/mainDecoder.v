@@ -43,6 +43,6 @@ module mainDecoder (
       5'b11011:     mainDecoder = 14'bxx_x_111_11_1_0_0_0_1_0; // J type
       // 5'b11100:                                             // I (e~, csr~) type
       default:      mainDecoder = 14'bxx_x_xxx_xx_x_x_x_x_x_x; // I(fence+, e~, csr~) , ??? 
-    endcase;
+    endcase
   endfunction
 endmodule

@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 100 //000000
+`define IN_TOTAL 100000000000
 // `include "module/top.v"
 
 module top_test;
@@ -9,7 +9,7 @@ module top_test;
    parameter HALF_CYCLE  =  5;
    parameter STB         =  8;
    parameter SKEW        =  2;
-   parameter BIT_WIDTH   = 32;
+   parameter BIT_WIDTH    = 32;
    parameter BYTE_SIZE    =  8;
    parameter IMEM_LATENCY = 1;  // instruction memory latency
    parameter DMEM_LATENCY = 1;  // data memory latency
@@ -103,11 +103,11 @@ module top_test;
          load_task1;
          store_task1;
          
-         if (0 < i && i < 35) begin
-            // $display("--- info registers ---");
-            info_registers_task;
-            // $display("--- end i.r. ---");
-         end
+         // if (0 < i && i < 35) begin
+         //    // $display("--- info registers ---");
+         //    info_registers_task;
+         //    // $display("--- end i.r. ---");
+         // end
          
          // #(STB);
          #CYCLE;
@@ -115,7 +115,7 @@ module top_test;
       end // for (i = 0; i < `IN_TOTAL; i =i +1)
 
       $display("\nReach IN_TOTAL.");
-      dump_task1;
+      // dump_task1;
       info_registers_task;
       $finish;
 
@@ -124,15 +124,15 @@ module top_test;
    //*** description for wave form ***//
    initial begin
       // $monitor($stime," PC=%h INST=%h", IAD, IDT);
-      $monitor($stime," PC=%h INST=%h DAD=%h Daddr=%h DDT=%h", IAD, IDT, DAD, Daddr, DDT);
+      // $monitor($stime," PC=%h INST=%h DAD=%h Daddr=%h DDT=%h", IAD, IDT, DAD, Daddr, DDT);
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
       //                   " : DAD=%h DDT=%h", Daddr, DDT);
-   //ここから2行はIcarus Verilog用(手元で動かすときに使ってください)
+   // For Icarus verilog
       // $dumpfile("top_test.vcd");
-      $dumpfile("./test/log/top_test.vcd");
-      $dumpvars(0, u_top_1);
-   //ここから2行はNC-Verilog用(woodblockで動かすときに使ってください)
+      // $dumpfile("./test/log/top_test.vcd");
+      // $dumpvars(0, u_top_1);
+   // For NCverilog
       //$shm_open("waves.shm");
       //$shm_probe("AS");
    end
@@ -222,7 +222,11 @@ module top_test;
             if (Daddr == EXIT_ADDR)
                begin
                   $display("\nExited by program.");
-                  dump_task1;
+                  $display("TOTAL: %d [ns?]", i);
+
+                  // dump_task1;
+                  info_registers_task;
+
                   $finish;
                end
             else if (Daddr != STDOUT_ADDR)
@@ -292,6 +296,9 @@ module top_test;
          end
       $fclose(Dmem_data);
       
+      // mine
+      info_registers_task;
+
       // Reg_data = $fopen("./Reg_out.dat");
       // Reg_data = $fopen("./test/log/Reg_out.dat");
       // for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
