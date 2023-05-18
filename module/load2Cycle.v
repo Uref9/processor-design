@@ -2,7 +2,7 @@ module load2Cycle (
   input i_clk,
   input [6:0] i_opcode,
 
-  output reg o_PCEnable_x,
+  output reg o_PCEnable,
   output reg o_regWriteLoad = 1'b0
 );
   reg r_loadCount = 1'b0;
@@ -14,13 +14,13 @@ module load2Cycle (
       // Load count
         // r_prevLoad      <= 1'b1;
         r_loadCount     <= 1'b0;
-        o_PCEnable_x      <= 1'b1;
+        o_PCEnable      <= 1'b1;
         o_regWriteLoad  <= 1'b1;
       end else begin
       // Load !count
         // r_prevLoad     <= 1'b1;
         r_loadCount     <= 1'b1;
-        o_PCEnable_x      <= 1'b0;
+        o_PCEnable      <= 1'b0;
         o_regWriteLoad  <= 1'b0;
       end
     end else begin
@@ -28,13 +28,13 @@ module load2Cycle (
       // notLoad prev (!count)
         // r_prevLoad     <= 1'b0;
         r_loadCount     <= 1'b0;
-        o_PCEnable_x      <= 1'b1;
+        o_PCEnable      <= 1'b1;
         o_regWriteLoad  <= 1'b1;
       // end else begin
       // notLoad !prev (!count)
         // r_prevLoad  <= 1'b0;
         // r_loadCount <= 1'b0;
-        // o_PCEnable_x  <= 1'b1;
+        // o_PCEnable  <= 1'b1;
         // o_regWriteLoad <= 1'b1;
       // end
     end

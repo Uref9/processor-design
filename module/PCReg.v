@@ -1,5 +1,5 @@
 module PCReg(
-  input i_clk, i_reset_x, i_enable_x,
+  input i_clk, i_reset_x, i_enable,
   input [31:0] i_d,
   output reg [31:0] o_q
 );
@@ -8,7 +8,7 @@ module PCReg(
 
   always @(posedge i_clk, negedge i_reset_x) begin
     if (!i_reset_x)       o_q <= PC_ORIGIN;
-    else if (i_enable_x)  o_q <= i_d;
+    else if (i_enable)  o_q <= i_d;
     // else                o_q <= o_q;
   end
 

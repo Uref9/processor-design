@@ -5,23 +5,23 @@
 `include "module/load2Cycle.v"
 
 module controller(
-  input i_clk,
-  input [31:0] i_inst,
+  input         i_clk,
+  input [31:0]  i_inst,
 
-  input i_zero, i_neg, i_negU,
+  input         i_zero, i_neg, i_negU,
 
-  output o_memReq, o_memWrite,
-  output [1:0] o_memSize,
+  output        o_memReq, o_memWrite,
+  output [1:0]  o_memSize,
 
-  output o_regWrite,
-  output [1:0] o_PCSrc,
-  output o_ALUSrc,
-  output [2:0] o_immSrc,
-  output o_immPlusSrc,
-  output       o_readDataSrc,
-  output [1:0] o_resultSrc,
-  output [3:0] o_ALUCtrl,
-  output o_PCEnable_x
+  output        o_regWrite,
+  output [1:0]  o_PCSrc,
+  output        o_ALUSrc,
+  output [2:0]  o_immSrc,
+  output        o_immPlusSrc,
+  output        o_readDataSrc,
+  output [1:0]  o_resultSrc,
+  output [3:0]  o_ALUCtrl,
+  output        o_PCEnable
 );
 
   wire [6:0] w_opcode = i_inst[6:0];
@@ -70,7 +70,7 @@ module controller(
   );
   load2Cycle load_2cycle(
     .i_clk(i_clk), .i_opcode(w_opcode),
-    .o_PCEnable_x(o_PCEnable_x),
+    .o_PCEnable(o_PCEnable),
     .o_regWriteLoad(w_regWriteLoad)
   );
 

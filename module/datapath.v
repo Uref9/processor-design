@@ -1,4 +1,4 @@
-`include "module/PCReg.v"
+`include "module/dffREC.v"
 `include "module/adder.v"
 `include "module/mux3.v"
 `include "module/rf32x32.v"
@@ -9,37 +9,37 @@
 `include "module/mux4.v"
 
 module datapath(
-  input i_clk, i_reset_x,
-  input [31:0] i_inst, i_readData,
+  input         i_clk, i_reset_x,
+  input [31:0]  i_inst, i_readData,
 
-  input [1:0] i_memSize,
-  input i_regWrite,
-  input [1:0] i_PCSrc,
-  input i_ALUSrc,
-  input [2:0] i_immSrc,
-  input i_immPlusSrc,
-  input i_readDataSrc,
-  input [1:0] i_resultSrc,
-  input [3:0] i_ALUCtrl,
-  input i_PCEnable_x,
+  input [1:0]   i_memSize,
+  input         i_regWrite,
+  input [1:0]   i_PCSrc,
+  input         i_ALUSrc,
+  input [2:0]   i_immSrc,
+  input         i_immPlusSrc,
+  input         i_readDataSrc,
+  input [1:0]   i_resultSrc,
+  input [3:0]   i_ALUCtrl,
+  input         i_PCEnable,
 
   output [31:0] o_PC, o_ALUOut, o_writeData,
 
-  output o_zero, o_neg, o_negU
+  output        o_zero, o_neg, o_negU
 );
 
   wire [31:0] w_PCNext, w_PCPlus4, w_PCPlusImm;
   wire [31:0] w_immExt;
   wire [31:0] w_ALUOutJalr;
-  wire [4:0] w_rd, w_rs1, w_rs2;
+  wire [4:0]  w_rd, w_rs1, w_rs2;
   wire [31:0] w_result;
   wire [31:0] w_ALUIn1, w_ALUIn2;
   wire [31:0] w_readDataExt;
   wire [31:0] w_immPlus;
 
-  assign w_rd = i_inst[11:7];
-  assign w_rs1 = i_inst[19:15];
-  assign w_rs2 = i_inst[24:20];
+  assign w_rd =   i_inst[11:7];
+  assign w_rs1 =  i_inst[19:15];
+  assign w_rs2 =  i_inst[24:20];
   assign w_ALUOutJalr = o_ALUOut & ~{32'd1};
   // assign w_opcode = i_inst[6:0];
   // assign w_funct3 = i_inst[14:12];
@@ -50,13 +50,15 @@ module datapath(
   // assign w_csr = i_inst[31:20];
 
   // PC
-  PCReg pc_reg(
-    .i_clk(i_clk), .i_reset_x(i_reset_x), .i_enable_x(i_PCEnable_x),
+  dffREC #(32, 32'h1_0000) 
+  pc_reg (
+    .i_clock(i_clk), .i_reset_x(i_reset_x), 
+    .i_enable(i_PCEnable), .i_clear(1'b0),
     .i_d(w_PCNext),
     .o_q(o_PC)
   );
   adder add4(
-    .i_1(o_PC), .i_2({32'd4}),
+    .i_1(o_PC), .i_2(32'd4),
     .o_1(w_PCPlus4)
   );
   adder add_imm(
