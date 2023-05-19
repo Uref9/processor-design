@@ -9,7 +9,7 @@ module mainDecoder_test();
   wire o_ALUSrc;
   wire [2:0] o_immSrc;
   wire o_immPlusSrc;
-  wire o_readDataSrc;
+  wire o_isLoadSigned;
   wire [1:0] o_resultSrc;
 
   wire o_branch, o_jal, o_jalr;
@@ -31,7 +31,7 @@ module mainDecoder_test();
     .o_memReq, .o_memWrite,
     .o_regWrite,
     .o_ALUSrc, .o_immSrc,
-    .o_immPlusSrc, .o_readDataSrc,
+    .o_immPlusSrc, .o_isLoadSigned,
     .o_resultSrc,
 
     .o_branch,

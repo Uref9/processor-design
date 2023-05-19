@@ -7,14 +7,14 @@ module mainDecoder (
   output o_ALUSrc,
   output [2:0] o_immSrc,
   output o_immPlusSrc,
-  output o_readDataSrc,
+  output o_isLoadSigned,
   output [1:0] o_resultSrc,
 
   output o_branch, o_jal, o_jalr,
   output [1:0] o_ALUOp
 );
 
-  assign o_readDataSrc = i_funct3[2];
+  assign o_isLoadSigned = i_funct3[2];
   assign o_immPlusSrc = ~i_opcode[5];
   assign {o_ALUOp, o_ALUSrc, o_immSrc, o_resultSrc,
           o_regWrite, o_memReq, o_memWrite,
@@ -30,7 +30,7 @@ module mainDecoder (
   //                    AOp2_ASrc_imSrc3_resSrc2_rgW_mRq_mW_br_jal_jalr
       5'b00000:     mainDecoder = 14'b00_1_000_01_1_1_0_0_0_0; // I (load+) type
       // 5'b00011:                                             // I (fence+) type
-      5'b00100:                                             // I (R+i) type
+      5'b00100:                                                // I (R+i) type
         case (i_funct3[1:0])
           2'b01:    mainDecoder = 14'b10_1_010_00_1_0_0_0_0_0; // I (shift+i) type
           default:  mainDecoder = 14'b10_1_001_00_1_0_0_0_0_0; // I (R+i, other) type

@@ -1,5 +1,5 @@
-`include "module/controller.v"
-`include "module/datapath.v"
+`include "pipeline/controller.v"
+`include "pipeline/datapath.v"
 
 module top(
   input         clk, rst,
@@ -21,7 +21,7 @@ module top(
   wire [1:0]  w_PCSrc;
   wire [2:0]  w_immSrc;
   wire        w_immPlusSrc;
-  wire        w_readDataSrc;
+  wire        w_isLoadSigned;
   wire [1:0]  w_resultSrc;
   wire [3:0]  w_ALUCtrl;
   wire        w_zero, w_neg, w_negU;
@@ -57,7 +57,7 @@ module top(
     .i_regWrite(w_regWrite),
     .i_PCSrc(w_PCSrc), .i_ALUSrc(w_ALUSrc),
     .i_immSrc(w_immSrc), .i_immPlusSrc(w_immPlusSrc),
-    .i_readDataSrc(w_readDataSrc), .i_resultSrc(w_resultSrc),
+    .i_isLoadSigned(w_isLoadSigned), .i_resultSrc(w_resultSrc),
     .i_ALUCtrl(w_ALUCtrl),
     .i_PCEnable(w_PCEnable),
 
@@ -77,7 +77,7 @@ module top(
     .o_regWrite(w_regWrite), 
     .o_PCSrc(w_PCSrc), .o_ALUSrc(w_ALUSrc), 
     .o_immSrc(w_immSrc), .o_immPlusSrc(w_immPlusSrc), 
-    .o_readDataSrc(w_readDataSrc), .o_resultSrc(w_resultSrc), 
+    .o_isLoadSigned(w_isLoadSigned), .o_resultSrc(w_resultSrc), 
     .o_ALUCtrl(w_ALUCtrl),
     .o_PCEnable(w_PCEnable)
   );

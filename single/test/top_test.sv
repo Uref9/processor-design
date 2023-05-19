@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 `define IN_TOTAL 100000000000
-// `include "module/top.v"
+// `include "single/top.v"
 
 module top_test;
    
@@ -70,8 +70,8 @@ module top_test;
    //*** initialize ***//
    initial begin
       //*** read input data ***//
-      $readmemh("./test/mem/Dmem.dat", DATA_Dmem);
-      $readmemh("./test/mem/Imem.dat", DATA_Imem);
+      $readmemh("single/test/mem/Imem.dat", DATA_Imem);
+      $readmemh("single/test/mem/Dmem.dat", DATA_Dmem);
 
       Max_Daddr = 0;
 
@@ -222,7 +222,7 @@ module top_test;
             if (Daddr == EXIT_ADDR)
                begin
                   $display("\nExited by program.");
-                  $display("TOTAL: %d [ns?]", i);
+                  $display("TOTAL: %d [ns]", i*CYCLE);
 
                   // dump_task1;
                   info_registers_task;
@@ -281,7 +281,7 @@ module top_test;
    task dump_task1;
       begin
       // Imem_data = $fopen("./Imem_out.dat");
-      Imem_data = $fopen("./test/log/Imem_out.dat");
+      Imem_data = $fopen("single/test/log/Imem_out.dat");
       for (i = IMEM_START; i <= IMEM_START + IMEM_SIZE; i = i+4)  // output data memory to Dmem_data (Dmem_out.dat)
          begin
             $fwrite(Imem_data, "%h :%h %h %h %h\n", i, DATA_Imem[i], DATA_Imem[i+1], DATA_Imem[i+2], DATA_Imem[i+3]);
@@ -289,7 +289,7 @@ module top_test;
       $fclose(Imem_data);
 
       // Dmem_data = $fopen("./Dmem_out.dat");
-      Dmem_data = $fopen("./test/log/Dmem_out.dat");
+      Dmem_data = $fopen("single/test/log/Dmem_out.dat");
       for (i = DMEM_START; i <= DMEM_START + DMEM_SIZE; i = i+4)  // output data memory to Dmem_data (Dmem_out.dat)
          begin
             $fwrite(Dmem_data, "%h :%h %h %h %h\n", i, DATA_Dmem[i], DATA_Dmem[i+1], DATA_Dmem[i+2], DATA_Dmem[i+3]);

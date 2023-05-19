@@ -10,7 +10,7 @@ module datapath_test ();
   input i_ALUSrc;
   input [2:0] i_immSrc;
   input i_immPlusSrc;
-  input i_readDataSrc;
+  input i_isLoadSigned;
   input [1:0] i_resultSrc;
   input [3:0] i_ALUCtrl;
 
@@ -29,7 +29,7 @@ module datapath_test ();
     .i_regWrite,
     .i_PCSrc, .i_ALUSrc,
     .i_immSrc, .i_immPlusSrc,
-    .i_readDataSrc, .i_resultSrc,
+    .i_isLoadSigned, .i_resultSrc,
     .i_ALUCtrl,
 
     .o_PC, .o_ALUOut, .o_writeData,

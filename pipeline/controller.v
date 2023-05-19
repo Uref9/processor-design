@@ -18,7 +18,7 @@ module controller(
   output        o_ALUSrc,
   output [2:0]  o_immSrc,
   output        o_immPlusSrc,
-  output        o_readDataSrc,
+  output        o_isLoadSigned,
   output [1:0]  o_resultSrc,
   output [3:0]  o_ALUCtrl,
   output        o_PCEnable
@@ -43,7 +43,7 @@ module controller(
     .o_memReq(o_memReq), .o_memWrite(o_memWrite),
     .o_regWrite(w_regWrite),
     .o_ALUSrc(o_ALUSrc), .o_immSrc(o_immSrc),
-    .o_immPlusSrc(o_immPlusSrc), .o_readDataSrc(o_readDataSrc),
+    .o_immPlusSrc(o_immPlusSrc), .o_isLoadSigned(o_isLoadSigned),
     .o_resultSrc(o_resultSrc),
 
     .o_branch(w_branch),

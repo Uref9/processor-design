@@ -18,7 +18,7 @@ module datapath(
   input         i_ALUSrc,
   input [2:0]   i_immSrc,
   input         i_immPlusSrc,
-  input         i_readDataSrc,
+  input         i_isLoadSigned,
   input [1:0]   i_resultSrc,
   input [3:0]   i_ALUCtrl,
   input         i_PCEnable,
@@ -97,7 +97,7 @@ module datapath(
     .o_zero(o_zero), .o_neg(o_neg), .o_negU(o_negU)
   );
   readDataExtend read_data_extend(
-    .i_readDataSrc(i_readDataSrc), .i_memSize(i_memSize),
+    .i_isLoadSigned(i_isLoadSigned), .i_memSize(i_memSize),
     .i_readData(i_readData), 
     .o_readDataExt(w_readDataExt)
   );

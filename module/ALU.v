@@ -35,12 +35,12 @@ module ALU(
         4'b0111:  operation = i_1 << i_2;
         4'b1101: // slt
           if ($signed(i_1) < $signed(i_2))
-                  operation = {32'd1};
-          else    operation = {32'd0};
+                  operation = 32'd1;
+          else    operation = 32'd0;
         4'b1110: // sltu
           if (i_1 < i_2)
-                  operation = {32'd1};
-          else    operation = {32'd0};
+                  operation = 32'd1;
+          else    operation = 32'd0;
         default:  operation = {32{1'bx}}; // 32bit_x
       endcase
     end

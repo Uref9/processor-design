@@ -13,7 +13,7 @@ module controller_test ();
   wire o_ALUSrc;
   wire [2:0] o_immSrc;
   wire o_immPlusSrc;
-  wire       o_readDataSrc;
+  wire       o_isLoadSigned;
   wire [1:0] o_resultSrc;
   wire [3:0] o_ALUCtr;
 
@@ -34,7 +34,7 @@ module controller_test ();
     .o_regWrite, 
     .o_PCSrc, .o_ALUSrc, 
     .o_immSrc, .o_immPlusSrc, 
-    .o_readDataSrc, .o_resultSrc, 
+    .o_isLoadSigned, .o_resultSrc, 
     .o_ALUCtrl
   );
 
