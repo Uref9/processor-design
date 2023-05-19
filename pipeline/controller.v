@@ -5,7 +5,8 @@
 `include "module/load2Cycle.v"
 
 module controller(
-  input         i_clk,
+  // from test
+  input         clk, reset_x,
   input [31:0]  i_inst,
 
   input         i_zero, i_neg, i_negU,
