@@ -9,24 +9,35 @@
 `include "module/mux4.v"
 
 module datapath(
-  input         i_clk, i_reset_x,
-  input [31:0]  i_inst, i_readData,
+  // from test
+  input         clk, reset_x,
+  input [31:0]  Fi_inst,     // from imem
+  input [31:0]  Mi_readData, // from dmem
+  // from controller
+  input [2:0]   Di_immSrc,
+  input [3:0]   Ei_ALUCtrl,
+  input         Ei_ALUSrc,
+  input [1:0]   Ei_PCSrc,
+  input         Ei_immPlusSrc,
+  input [1:0]   Mi_memSize,
+  input         Mi_isLoadSigned,
+  input [1:0]   Wi_resultSrc,
+  input         Wi_regWrite,
+  // from hazard
+  
 
-  input [1:0]   i_memSize,
-  input         i_regWrite,
-  input [1:0]   i_PCSrc,
-  input         i_ALUSrc,
-  input [2:0]   i_immSrc,
-  input         i_immPlusSrc,
-  input         i_isLoadSigned,
-  input [1:0]   i_resultSrc,
-  input [3:0]   i_ALUCtrl,
-  input         i_PCEnable,
+  // to test imem
+  output [31:0] o_PC,
+  // to test dmem
+  output [31:0] Mo_ALUOut, Mo_writeData,
+  // to controller
+  output        Eo_zero, Eo_neg, Eo_negU
+  // to hazard
 
-  output [31:0] o_PC, o_ALUOut, o_writeData,
-
-  output        o_zero, o_neg, o_negU
 );
+
+  /* wire */
+
 
   wire [31:0] w_PCNext, w_PCPlus4, w_PCPlusImm;
   wire [31:0] w_immExt;
