@@ -22,7 +22,7 @@ module controller(
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
-  output [1:0]  Eo_PCSrc,
+  output [1:0]  Eo_PCSrc,   // and to hazard
   output        Mo_isLoadSigned,
   output [1:0]  Wo_resultSrc,
   output        Wo_regWrite, // and to hazard
@@ -32,45 +32,47 @@ module controller(
   output        Mo_regWrite
 );
 
-  // wire
-// ID stage wire
+// wire
+  // ID stage wire
   wire [6:0] Dw_opcode = Di_inst[6:0];
   wire [6:0] Dw_funct7 = Di_inst[31:25];
   wire [1:0] Dw_ALUOp;
-  // to EX
+    // to EX
   wire [3:0]  Dw_ALUCtrl;
   wire        Dw_ALUSrc;
   wire        Dw_immPlusSrc;
   wire [2:0] Dw_funct3 = Di_inst[14:12];
   wire Dw_branch;
   wire Dw_jal, Dw_jalr;
-  // to MEM
+    // to MEM
   wire        Dw_memWrite, Dw_memReq;
   wire [1:0]  Dw_memSize;
   wire        Dw_isLoadSigned;
-  // to WB
+    // to WB
   wire [1:0]  Dw_resultSrc;
   wire        Dw_regWrite;
-// EX stage wire
+
+  // EX stage wire
   wire [2:0] Ew_funct3;
   wire Ew_branch;
   wire Ew_jal, Ew_jalr;
-  // to MEM
+    // to MEM
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
   wire        Ew_isLoadSigned;
-  // to WB
+    // to WB
   wire [1:0]  Ew_resultSrc;
   wire        Ew_regWrite;
-// MEM stage wire
-  // to WB
+
+  // MEM stage wire
+    // to WB
   wire [1:0]  Mw_resultSrc;
   wire        Mo_regWrite;
-// WB stage wire
+  
+  // WB stage wire
 // end wire
 
-
-  // ID stage
+// ID stage
   mainDecoder main_decoder(
     .i_opcode(Dw_opcode), .i_funct3(Dw_funct3),
 
@@ -120,8 +122,9 @@ module controller(
       Ew_regWrite
     })
   );
+// end ID stage
 
-  // EX stage
+// EX stage
   setPCSrc set_pc_src(
     .i_branch(Ew_branch),
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
@@ -150,7 +153,9 @@ module controller(
       Mo_regWrite
     })
   );
-  // MEM stage
+// end EX stage
+
+// MEM stage
   // MEM/WB reg
   dffREC #(3)
   MEMWB_controll_register(
@@ -165,8 +170,9 @@ module controller(
       Wo_regWrite
     })
   );
+// end MEM stage
 
-  /* single */
+/* single */
   // assign o_regWDwte = w_regWrite && w_regWriteLoad;
   // load2Cycle load_2cycle(
   //   .i_clk(i_clk), .i_opcode(w_opcode),

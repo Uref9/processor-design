@@ -73,7 +73,7 @@ module datapath(
 
   // register
   rf32x32 register(
-    .clk(i_clk), .reset(i_reset_x),
+    .clk(~i_clk), .reset(i_reset_x),
     .wr_n(~i_regWrite),
     .rd1_addr(w_rs1), .rd2_addr(w_rs2), .wr_addr(w_rd),
     .data_in(w_result),

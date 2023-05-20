@@ -8,6 +8,9 @@
 `include "module/readDataExtend.v"
 `include "module/mux4.v"
 
+`define HIGH  1'b1
+`define LOW   1'b0
+
 module datapath(
   // from test
   input         clk, reset_x,
@@ -17,41 +20,220 @@ module datapath(
   input [2:0]   Di_immSrc,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
-  input [1:0]   Ei_PCSrc,
   input         Ei_immPlusSrc,
+  input [1:0]   Ei_PCSrc,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Wi_resultSrc,
   input         Wi_regWrite,
   // from hazard
-  
+  input [1:0]   Ei_forwardIn1Src, Ei_forwardIn2Src,
+  input         Fi_stall,
+  input         Di_stall, Di_flush,
+  input         Ei_flush,
 
   // to test imem
-  output [31:0] o_PC,
+  output [31:0] Fo_PC,
   // to test dmem
   output [31:0] Mo_ALUOut, Mo_writeData,
   // to controller
-  output        Eo_zero, Eo_neg, Eo_negU
+  output [31:0] Do_inst,
+  output        Eo_zero, Eo_neg, Eo_negU,
   // to hazard
-
+  output [4:0]  Do_rs1, Do_rs2,
+  output [4:0]  Eo_rs1, Eo_rs2,
+  output [4:0]  Eo_rd,
+  output [4:0]  Mo_rd,
+  output [4:0]  Wo_rd
 );
 
-  /* wire */
+/* wire */
+  // IF stage wire
+  wire [31:0] Fw_PCPlus4, Fw_PCNext, Fw_ALUOutJalr;
 
+  // ID stage wire
+  wire [4:0] Dw_rd =   Do_inst[11:7];   // to WB
+  wire [4:0] Do_rs1 =  Do_inst[19:15];  // to EX
+  wire [4:0] Do_rs2 =  Do_inst[24:20];  // to EX
+    // to EX
+  wire [31:0] Dw_RD1, Dw_RD2;
+  wire [31:0] Dw_immExt, Dw_PC;
+    // to WB
+  wire [31:0] Dw_PCPlus4;
 
-  wire [31:0] w_PCNext, w_PCPlus4, w_PCPlusImm;
-  wire [31:0] w_immExt;
-  wire [31:0] w_ALUOutJalr;
-  wire [4:0]  w_rd, w_rs1, w_rs2;
-  wire [31:0] w_result;
-  wire [31:0] w_ALUIn1, w_ALUIn2;
-  wire [31:0] w_readDataExt;
-  wire [31:0] w_immPlus;
+  // EX stage wire
+  wire [31:0] Ew_RD1, Ew_RD2;
+  wire [31:0] Ew_ALUIn1, Ew_ALUIn2;
+  wire [31:0] Ew_immExt;
+  wire [31:0] Ew_PC, Ew_PCPlusImm;
+    // to MEM
+  wire [31:0] Ew_ALUOut;
+  wire [31:0] Ew_writeData;
+  wire [31:0] Ew_immPlus;
+    // to WB
+  wire [31:0] Ew_PCPlus4;
+  wire [4:0] Eo_rd;
 
-  assign w_rd =   i_inst[11:7];
-  assign w_rs1 =  i_inst[19:15];
-  assign w_rs2 =  i_inst[24:20];
-  assign w_ALUOutJalr = o_ALUOut & ~{32'd1};
+  // MEM stage wire
+  wire [31:0] Mw_readData;
+    // to WB
+  wire [31:0] Mw_readDataExt;
+  wire [31:0] Mw_immPlus;
+  wire [31:0] Mw_PCPlus4;
+
+  // WB stage wire 
+  wire [31:0] Ww_ALUOut;
+  wire [31:0] Ww_readDataExt;
+  wire [31:0] Ww_immPlus;
+  wire [31:0] Ww_PCPlus4;
+  wire [31:0] Ww_result;
+/* end wire */
+
+// IF stage logic
+  dffREC #(32, 32'h1_0000)
+  pc_reg(
+    .i_clock(clk), .i_reset_x(reset_x),
+    .i_enable(~Fi_stall), .i_clear(`LOW),
+    .i_d(Fw_PCNext),
+    .o_q(Fo_PC)
+  );
+  adder add4(
+    .i_1(Fo_PC), .i_2(32'd4),
+    .o_1(Fw_PCPlus4)
+  );
+  assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
+  mux3 pc_next_mux(
+    .i_1(Fw_PCPlus4), .i_2(Ew_PCPlusImm), .i_3(Fw_ALUOutJalr),
+    .i_sel(Ei_PCSrc),
+    .o_1(Fw_PCNext)
+  );
+
+  // IF/ID reg
+  dffREC #(96)
+  IFID_datapath_register(
+    .i_clock(clk), .i_reset_x(reset_x),
+    .i_enable(~Di_stall), .i_clear(Di_flush),
+    .i_d({ Fi_inst, Fo_PC, Fw_PCPlus4 }),
+    .o_q({ Do_inst, Dw_PC, Dw_PCPlus4 })
+  );
+
+// ID stage logic
+  rf32x32 register(
+    .clk(clk), .reset(reset_x),
+    .wr_n(~Wi_regWrite),
+    .rd1_addr(Do_rs1), .rd2_addr(Do_rs2), 
+    .wr_addr(Wo_rd),
+    .data_in(Ww_result),
+
+    .data1_out(Dw_RD1), .data2_out(Dw_RD2)
+  );
+  immExtend imm_extend(
+    .i_immSrc(Di_immSrc), .i_inst(Do_inst), 
+    .o_immExt(Dw_immExt)
+  );
+
+  // ID/EX reg
+  dffREC #(175)
+  IDEX_datapath_register(
+    .i_clock(clk), .i_reset_x(reset_x),
+    .i_enable(`HIGH), .i_clear(Ei_flush),
+    .i_d({
+      Dw_RD1, Dw_RD2, Dw_immExt,
+      Dw_PC, Dw_PCPlus4,
+      Dw_rd, 
+      Do_rs1, Do_rs2
+    }),
+    .o_q({
+      Ew_RD1, Ew_RD2, Ew_immExt,
+      Ew_PC, Ew_PCPlus4,
+      Eo_rd, 
+      Eo_rs1, Eo_rs2
+    })
+  );
+
+// EX stage logic
+  mux4 forward_in1_mux(
+    .i_1(Ew_RD1), .i_2(Ww_result), 
+    .i_3(Mw_immPlus), .i_4(Mo_ALUOut),
+    .i_sel(Ei_forwardIn1Src), 
+    .o_1(Ew_ALUIn1)
+  );
+  mux4 forward_in2_mux(
+    .i_1(Ew_RD2), .i_2(Ww_result), 
+    .i_3(Mw_immPlus), .i_4(Mo_ALUOut),
+    .i_sel(Ei_forwardIn2Src), 
+    .o_1(Ew_writeData)
+  );
+  mux2 alu_in2_mux(
+    .i_1(Ew_writeData), .i_2(Ew_immExt), .i_sel(Ei_ALUSrc), 
+    .o_1(Ew_ALUIn2)
+  );
+  ALU alu(
+    .i_ctrl(Ei_ALUCtrl),
+    .i_1(Ew_ALUIn1), .i_2(Ew_ALUIn2),
+    .o_1(Ew_ALUOut),
+    .o_zero(Eo_zero), .o_neg(Eo_neg), .o_negU(Eo_negU)
+  );
+  adder add_imm(
+    .i_1(Ew_PC), .i_2(Ew_immExt),
+    .o_1(Ew_PCPlusImm)
+  );
+  mux2 imm_plus_mux(
+    .i_1(Ew_immExt), .i_2(Ew_PCPlusImm),
+    .i_sel(Ei_immPlusSrc),
+    .o_1(Ew_immPlus)
+  );
+
+  // EX/MEM reg
+  dffREC #(133)
+  EXMEM_datapath_register(
+    .i_clock(clk), .i_reset_x(reset_x),
+    .i_enable(`HIGH), .i_clear(`LOW),
+    .i_d({
+      Ew_ALUOut, Ew_writeData,
+      Ew_immPlus, Ew_PCPlus4,
+      Eo_rd
+    }),
+    .o_q({
+      Mo_ALUOut, Mo_writeData,
+      Mw_immPlus, Mw_PCPlus4,
+      Mo_rd
+    })
+  );
+
+// MEM stage logic
+  readDataExtend read_data_extend(
+    .i_isLoadSigned(Mi_isLoadSigned), .i_memSize(Mi_memSize),
+    .i_readData(Mw_readData), 
+    .o_readDataExt(Mw_readDataExt)
+  );
+
+  // MEM/WB reg
+  dffREC #(133)
+  MEMWB_datapath_register(
+    .i_clock(clk), .i_reset_x(reset_x),
+    .i_enable(`HIGH), .i_clear(`LOW),
+    .i_d({
+      Mo_ALUOut, Mw_readDataExt,
+      Mw_immPlus, Mw_PCPlus4,
+      Mo_rd
+    }),
+    .o_q({
+      Ww_ALUOut, Ww_readDataExt,
+      Ww_immPlus, Ww_PCPlus4,
+      Wo_rd
+    })
+  );
+
+// WB stage logic
+  mux4 result_mux(
+    .i_1(Ww_ALUOut), .i_2(Ww_readDataExt),
+    .i_3(Ww_immPlus), .i_4(Ww_PCPlus4),
+    .i_sel(Wi_resultSrc),
+    .o_1(Ww_result)
+  );
+
+/* single */
   // assign w_opcode = i_inst[6:0];
   // assign w_funct3 = i_inst[14:12];
   // assign w_zimm = i_inst[19:15];
@@ -59,69 +241,5 @@ module datapath(
   // assign w_pred = i_inst[27:24];
   // assign w_funct7 = i_inst[31:25];
   // assign w_csr = i_inst[31:20];
-
-  // PC
-  dffREC #(32, 32'h1_0000) 
-  pc_reg (
-    .i_clock(i_clk), .i_reset_x(i_reset_x), 
-    .i_enable(i_PCEnable), .i_clear(1'b0),
-    .i_d(w_PCNext),
-    .o_q(o_PC)
-  );
-  adder add4(
-    .i_1(o_PC), .i_2(32'd4),
-    .o_1(w_PCPlus4)
-  );
-  adder add_imm(
-    .i_1(o_PC), .i_2(w_immExt),
-    .o_1(w_PCPlusImm)
-  );
-  mux3 pc_next_mux(
-    .i_1(w_PCPlus4), .i_2(w_PCPlusImm), .i_3(w_ALUOutJalr),
-    .i_sel(i_PCSrc),
-    .o_1(w_PCNext)
-  );
-
-  // register
-  rf32x32 register(
-    .clk(i_clk), .reset(i_reset_x),
-    .wr_n(~i_regWrite),
-    .rd1_addr(w_rs1), .rd2_addr(w_rs2), .wr_addr(w_rd),
-    .data_in(w_result),
-
-    .data1_out(w_ALUIn1), .data2_out(o_writeData)
-  );
-  immExtend imm_extend(
-    .i_immSrc(i_immSrc), .i_inst(i_inst), 
-    .o_immExt(w_immExt)
-  );
-
-  // ALU
-  mux2 alu_in2_mux(
-    .i_1(o_writeData), .i_2(w_immExt), .i_sel(i_ALUSrc), 
-    .o_1(w_ALUIn2)
-  );
-  ALU alu(
-    .i_ctrl(i_ALUCtrl),
-    .i_1(w_ALUIn1), .i_2(w_ALUIn2),
-    .o_1(o_ALUOut),
-    .o_zero(o_zero), .o_neg(o_neg), .o_negU(o_negU)
-  );
-  readDataExtend read_data_extend(
-    .i_isLoadSigned(i_isLoadSigned), .i_memSize(i_memSize),
-    .i_readData(i_readData), 
-    .o_readDataExt(w_readDataExt)
-  );
-  mux2 imm_plus_mux(
-    .i_1(w_immExt), .i_2(w_PCPlusImm),
-    .i_sel(i_immPlusSrc),
-    .o_1(w_immPlus)
-  );
-  mux4 result_mux(
-    .i_1(o_ALUOut), .i_2(w_readDataExt),
-    .i_3(w_immPlus), .i_4(w_PCPlus4),
-    .i_sel(i_resultSrc),
-    .o_1(w_result)
-  );
 
 endmodule

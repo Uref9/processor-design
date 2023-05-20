@@ -44,13 +44,12 @@ module rf32x32(
 	// x0 is zero register.
 	assign  data1_out = (|rd1_addr) ? ram_data1_out : {data_width{`ZERO}};
 	assign  data2_out = (|rd2_addr) ? ram_data2_out : {data_width{`ZERO}};
-	// assign    clk_inv = ~clk;
+	assign    clk_inv = ~clk;
 
 	// Instance of DW_ram_2r_w_s_lat
 	DW_ram_2r_w_s_dff #(data_width, depth, rst_mode)
 	u_DW_ram_2r_w_s_dff(
-				// .clk(clk_inv), // for multi cycle
-				.clk(clk),	// for single cycle 
+				.clk(clk_inv), 
 				.rst_n(reset),
 				.cs_n(`LOW), .wr_n(wr_n),
 				.rd1_addr(rd1_addr), .rd2_addr(rd2_addr),
