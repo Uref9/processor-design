@@ -1,7 +1,7 @@
 #!/bin/bash
 
 name='top'
-type='pipline'
+type='pipeline'
 
 iverilog -o ${type}/test/log/${type}_${name}.v.out \
   ${type}/${name}.v \
