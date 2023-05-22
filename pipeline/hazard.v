@@ -1,4 +1,8 @@
+`define HIGH   1'b1
+`define LOW    1'b0
+
 module hazard (
+  input reset_x,
   // from datapath
   input [4:0] Di_rs1, Di_rs2,
   input [4:0] Ei_rs1, Ei_rs2,
@@ -15,12 +19,13 @@ module hazard (
   // to datapath
   output [1:0] Eo_forwardIn1Src, Eo_forwardIn2Src,
   // to both (datapath, controller)
-  output Fo_stall,
-  output Do_stall,
-  output Do_flush,
-  output Eo_flush
+  output reg Fo_stall,
+  output reg Do_stall,
+  output reg Do_flush,
+  output reg Eo_flush
 );
   wire w_lwStall;
+
 
   // forwarding
   assign Eo_forwardIn1Src = forwarding1(
@@ -40,11 +45,21 @@ module hazard (
   assign w_lwStall = (Ei_resultSrc == 2'b01) // isLoad?
                     & ((Di_rs1 == Ei_rd)
                       | (Di_rs2 == Ei_rd));
-  assign Fo_stall = w_lwStall;                    
-  assign Do_stall = w_lwStall;                    
-  assign Do_flush = (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
-  assign Eo_flush = (Ei_PCSrc != 2'b00) | w_lwStall;
 
+  always @(negedge reset_x) begin
+    if (!reset_x) begin
+      Fo_stall <= `LOW;
+      Do_stall <= `LOW;
+      Do_flush <= `LOW;
+      Eo_flush <= `LOW;
+    end
+    else if (reset_x) begin
+      Fo_stall = w_lwStall;                    
+      Do_stall = w_lwStall;                    
+      Do_flush = (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
+      Eo_flush = (Ei_PCSrc != 2'b00) | w_lwStall;
+    end
+  end
 
   function [3:0] forwarding1(
     input [4:0] Di_rs1, Ei_rs1,
