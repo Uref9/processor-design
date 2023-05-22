@@ -115,7 +115,7 @@ module top_test;
       end // for (i = 0; i < `IN_TOTAL; i =i +1)
 
       $display("\nReach IN_TOTAL.");
-      // dump_task1;
+      dump_task1;
       info_registers_task;
       $finish;
 
@@ -130,8 +130,8 @@ module top_test;
       //                   " : DAD=%h DDT=%h", Daddr, DDT);
    // For Icarus verilog
       // $dumpfile("top_test.vcd");
-      // $dumpfile("./test/log/top_test.vcd");
-      // $dumpvars(0, u_top_1);
+      $dumpfile("./single/test/log/top_test.vcd");
+      $dumpvars(0, u_top_1);
    // For NCverilog
       //$shm_open("waves.shm");
       //$shm_probe("AS");
@@ -281,7 +281,7 @@ module top_test;
    task dump_task1;
       begin
       // Imem_data = $fopen("./Imem_out.dat");
-      Imem_data = $fopen("single/test/log/Imem_out.dat");
+      Imem_data = $fopen("./single/test/log/Imem_out.dat");
       for (i = IMEM_START; i <= IMEM_START + IMEM_SIZE; i = i+4)  // output data memory to Dmem_data (Dmem_out.dat)
          begin
             $fwrite(Imem_data, "%h :%h %h %h %h\n", i, DATA_Imem[i], DATA_Imem[i+1], DATA_Imem[i+2], DATA_Imem[i+3]);
@@ -289,7 +289,7 @@ module top_test;
       $fclose(Imem_data);
 
       // Dmem_data = $fopen("./Dmem_out.dat");
-      Dmem_data = $fopen("single/test/log/Dmem_out.dat");
+      Dmem_data = $fopen("./single/test/log/Dmem_out.dat");
       for (i = DMEM_START; i <= DMEM_START + DMEM_SIZE; i = i+4)  // output data memory to Dmem_data (Dmem_out.dat)
          begin
             $fwrite(Dmem_data, "%h :%h %h %h %h\n", i, DATA_Dmem[i], DATA_Dmem[i+1], DATA_Dmem[i+2], DATA_Dmem[i+3]);
