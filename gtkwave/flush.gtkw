@@ -1,11 +1,11 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Tue May 23 02:10:12 2023
+[*] Tue May 23 02:12:10 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
 [dumpfile_mtime] "Tue May 23 02:09:36 2023"
 [dumpfile_size] 39217
-[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/pipe.gtkw"
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/flush.gtkw"
 [timestart] 0
 [size] 2048 1099
 [pos] -1 -1
@@ -46,7 +46,8 @@ top_test.u_top_1.datapath.Ei_PCSrc[1:0]
 top_test.u_top_1.hazard.Fo_stall
 top_test.u_top_1.hazard.Do_stall
 top_test.u_top_1.hazard.Ei_PCSrc[1:0]
-@29
 top_test.u_top_1.hazard.r_rstcnt[1:0]
+@29
+top_test.u_top_1.hazard.w_lwStall
 [pattern_trace] 1
 [pattern_trace] 0

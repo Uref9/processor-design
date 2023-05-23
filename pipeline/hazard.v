@@ -46,6 +46,11 @@ module hazard (
                     & ((Di_rs1 == Ei_rd)
                       | (Di_rs2 == Ei_rd));
 
+  // assign  Fo_stall = w_lwStall;                    
+  // assign  Do_stall = w_lwStall;                    
+  // assign  Do_flush = (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
+  // assign  Eo_flush = (Ei_PCSrc != 2'b00) | w_lwStall;
+
   reg [1:0] r_rstcnt = 2'b00;
   always @(posedge clk, negedge reset_x) begin
     if (!reset_x) begin
@@ -61,7 +66,7 @@ module hazard (
         Do_stall <= w_lwStall;                    
         Do_flush <= (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
         Eo_flush <= (Ei_PCSrc != 2'b00) | w_lwStall;
-        r_rstcnt <= 2'b00;
+      // r_rstcnt <= 2'b00;
       end
       else
         r_rstcnt <= r_rstcnt + 2'b01;

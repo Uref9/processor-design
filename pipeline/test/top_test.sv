@@ -106,7 +106,7 @@ module top_test;
          load_task1;
          store_task1;
          
-         if (0 < i && i < 50) begin
+         if (0 < i && i < 20) begin
             // $display("--- info registers ---");
             info_registers_task;
             // $display("--- end i.r. ---");
