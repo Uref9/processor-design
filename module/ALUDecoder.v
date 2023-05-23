@@ -37,9 +37,9 @@ module ALUDecoder (
             end
           3'b110:   ALUDecoder = 4'b0010; //  or+i
           3'b111:   ALUDecoder = 4'b0011; //  and+i
-          default:  ALUDecoder = 4'bxxxx; //  ???
+          default:  ALUDecoder = 4'b0000; //  ???
         endcase 
-      default:      ALUDecoder = 4'bxxxx; //  ???
+      default:      ALUDecoder = 4'b0000; //  ???
     endcase
   endfunction
 endmodule
