@@ -32,8 +32,8 @@ module mainDecoder (
       // 7'b0001111:                                             // I (fence+) type
       7'b0010011:                                                // I (R+i) type
         case (i_funct3[1:0])
-          2'b01:    mainDecoder = 14'b10_1_010_00_1_0_0_0_0_0; // I (shift+i) type
-          default:  mainDecoder = 14'b10_1_001_00_1_0_0_0_0_0; // I (R+i, other) type
+          2'b01:      mainDecoder = 14'b10_1_010_00_1_0_0_0_0_0; // I (shift+i) type
+          default:    mainDecoder = 14'b10_1_001_00_1_0_0_0_0_0; // I (R+i, other) type
         endcase
       7'b0100011:     mainDecoder = 14'b00_1_011_00_0_1_1_0_0_0; // S type
       7'b0110011:     mainDecoder = 14'b10_0_000_00_1_0_0_0_0_0; // R type
@@ -41,8 +41,10 @@ module mainDecoder (
       7'b1100011:     mainDecoder = 14'b01_0_101_00_0_0_0_1_0_0; // B type
       7'b1100111:     mainDecoder = 14'b00_0_110_11_1_0_0_0_0_1; // I (jalr) type
       7'b1101111:     mainDecoder = 14'b00_0_111_11_1_0_0_0_1_0; // J type
-      // 7'b1110011:                                             // I (e~, csr~) type
-      default:      mainDecoder = 14'b00_0_000_00_0_0_0_0_0_0; // I(fence+, e~, csr~) , ??? 
+      // 7'b1110011:  
+                                                 // I (e~, csr~) type
+      7'b0000000:     mainDecoder = 14'b00_0_000_00_0_0_0_0_0_0; // reset etc. 
+      default:        mainDecoder = 14'bxx_x_xxx_xx_x_x_x_x_x_x; // I(fence+, e~, csr~) , ??? 
     endcase
   endfunction
 endmodule

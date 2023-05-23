@@ -1,13 +1,13 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Tue May 23 07:16:19 2023
+[*] Tue May 23 11:01:17 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
-[dumpfile_mtime] "Tue May 23 07:04:40 2023"
-[dumpfile_size] 182266
+[dumpfile_mtime] "Tue May 23 10:41:30 2023"
+[dumpfile_size] 347543
 [savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/forward.gtkw"
 [timestart] 34710
-[size] 1920 1027
+[size] 1440 847
 [pos] -1 -1
 *-13.914623 95000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top_test.
@@ -16,7 +16,7 @@
 [treeopen] top_test.u_top_1.datapath.
 [treeopen] top_test.u_top_1.hazard.
 [sst_width] 261
-[signals_width] 564
+[signals_width] 297
 [sst_expanded] 1
 [sst_vpaned_height] 521
 @28
