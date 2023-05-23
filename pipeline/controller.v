@@ -74,6 +74,7 @@ module controller(
 
 // ID stage
   mainDecoder main_decoder(
+    .clk(clk), .reset_x(reset_x),
     .i_opcode(Dw_opcode), .i_funct3(Dw_funct3),
 
     .o_memReq(Dw_memReq), .o_memWrite(Dw_memWrite),

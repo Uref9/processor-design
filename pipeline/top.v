@@ -117,7 +117,7 @@ module top(
 
   hazard hazard(
     // from test
-    .reset_x(rst),
+    .clk(clk), .reset_x(rst),
     // from datapath
     .Di_rs1(Dw_rs1), .Di_rs2(Dw_rs2),
     .Ei_rs1(Ew_rs1), .Ei_rs2(Ew_rs2),

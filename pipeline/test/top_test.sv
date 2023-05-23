@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 100000000000
+`define IN_TOTAL 100 //000000000
 `define HIGH   1'b1
 `define LOW    1'b0
 
@@ -86,12 +86,6 @@ module top_test;
       CDLL = 0;
       CDSL = 0;
 
-      /*** reset ***/
-      // u_top_1.hazard.Fo_stall = `LOW;
-      // u_top_1.hazard.Do_stall = `LOW;
-      // u_top_1.hazard.Do_flush = `LOW;
-      // u_top_1.hazard.Eo_flush = `LOW;
-
       //*** reset ***//
       rst = 1'b1;
       #1 rst = 1'b0;
@@ -112,11 +106,11 @@ module top_test;
          load_task1;
          store_task1;
          
-         // if (0 < i && i < 35) begin
-         //    // $display("--- info registers ---");
-         //    info_registers_task;
-         //    // $display("--- end i.r. ---");
-         // end
+         if (0 < i && i < 50) begin
+            // $display("--- info registers ---");
+            info_registers_task;
+            // $display("--- end i.r. ---");
+         end
          
          // #(STB);
          #CYCLE;
@@ -125,7 +119,7 @@ module top_test;
 
       $display("\nReach IN_TOTAL.");
       dump_task1;
-      info_registers_task;
+      // info_registers_task;
       $finish;
 
    end // initial begin

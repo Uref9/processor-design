@@ -1,0 +1,50 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Tue May 23 01:17:28 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Tue May 23 01:16:29 2023"
+[dumpfile_size] 39217
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/pipe.gtkw"
+[timestart] 0
+[size] 2048 1099
+[pos] -1 -1
+*-13.914623 27710 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.controller.
+[treeopen] top_test.u_top_1.datapath.
+[treeopen] top_test.u_top_1.hazard.
+[sst_width] 261
+[signals_width] 252
+[sst_expanded] 1
+[sst_vpaned_height] 521
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+@28
+top_test.u_top_1.Mw_regWrite
+@22
+top_test.u_top_1.datapath.register.data_in[31:0]
+top_test.u_top_1.datapath.register.wr_addr[4:0]
+top_test.u_top_1.datapath.Ww_result[31:0]
+@28
+top_test.u_top_1.datapath.Wi_resultSrc[1:0]
+top_test.u_top_1.controller.Dw_regWrite
+top_test.u_top_1.controller.Ew_regWrite
+top_test.u_top_1.controller.Mo_regWrite
+top_test.u_top_1.controller.Wo_regWrite
+top_test.u_top_1.hazard.Do_flush
+top_test.u_top_1.hazard.Eo_flush
+@22
+top_test.u_top_1.datapath.Fw_PCNext[31:0]
+@28
+top_test.u_top_1.datapath.Ei_PCSrc[1:0]
+top_test.u_top_1.hazard.Fo_stall
+@29
+top_test.u_top_1.hazard.Do_stall
+[pattern_trace] 1
+[pattern_trace] 0

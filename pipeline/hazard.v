@@ -2,7 +2,7 @@
 `define LOW    1'b0
 
 module hazard (
-  input reset_x,
+  input clk, reset_x,
   // from datapath
   input [4:0] Di_rs1, Di_rs2,
   input [4:0] Ei_rs1, Ei_rs2,
@@ -46,19 +46,25 @@ module hazard (
                     & ((Di_rs1 == Ei_rd)
                       | (Di_rs2 == Ei_rd));
 
-  always @(negedge reset_x) begin
+  reg [1:0] r_rstcnt = 2'b00;
+  always @(posedge clk, negedge reset_x) begin
     if (!reset_x) begin
       Fo_stall <= `LOW;
       Do_stall <= `LOW;
       Do_flush <= `LOW;
       Eo_flush <= `LOW;
+      r_rstcnt <= 2'b00;
     end
-    else if (reset_x) begin
-      Fo_stall = w_lwStall;                    
-      Do_stall = w_lwStall;                    
-      Do_flush = (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
-      Eo_flush = (Ei_PCSrc != 2'b00) | w_lwStall;
-    end
+    else if (reset_x)
+      if (r_rstcnt == 2'b10) begin
+        Fo_stall <= w_lwStall;                    
+        Do_stall <= w_lwStall;                    
+        Do_flush <= (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
+        Eo_flush <= (Ei_PCSrc != 2'b00) | w_lwStall;
+        r_rstcnt <= 2'b00;
+      end
+      else
+        r_rstcnt <= r_rstcnt + 2'b01;
   end
 
   function [3:0] forwarding1(
