@@ -2,7 +2,7 @@
 `define LOW    1'b0
 
 module hazard (
-  input clk, reset_x,
+  // input clk, reset_x,
   // from datapath
   input [4:0] Di_rs1, Di_rs2,
   input [4:0] Ei_rs1, Ei_rs2,
@@ -27,7 +27,6 @@ module hazard (
   wire w_lwStall;
 
 
-  // forwarding
   assign Eo_forwardIn1Src = forwarding(
                               Ei_rs1,
                               Ei_rd, Mi_rd, Wi_rd,
@@ -41,6 +40,60 @@ module hazard (
                               Mi_regWrite, Wi_regWrite
                             ); 
 
+  assign w_lwStall = (Ei_resultSrc == 2'b01) // isLoad?
+                    & ((Di_rs1 == Ei_rd)
+                      | (Di_rs2 == Ei_rd));
+
+  assign  Fo_stall = w_lwStall;                    
+  assign  Do_stall = w_lwStall;                    
+  assign  Do_flush = (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
+  assign  Eo_flush = (Ei_PCSrc != 2'b00) | w_lwStall;
+
+
+  function [3:0] forwarding(
+    input [4:0] Ei_rs,
+    input [4:0] Ei_rd, Mi_rd, Wi_rd,
+    // from controller
+    input [1:0] Ei_resultSrc, Mi_resultSrc,
+    input Mi_regWrite, Wi_regWrite
+  );
+    if (Ei_rs != 5'b0)
+      if (Ei_rs == Mi_rd)
+        if (Mi_regWrite)
+          if (Mi_resultSrc == 2'b00)
+                        forwarding = 2'b11;  // Mo_ALUOut
+          else if (Mi_resultSrc == 2'b10)       
+                        forwarding = 2'b10;  // Mw_immPlus
+          else          forwarding = 2'b00;  // Ew_RD1
+        else            forwarding = 2'b00;  // Ew_RD1
+          
+      else if ((Ei_rs == Wi_rd) & Wi_regWrite) 
+                        forwarding = 2'b01;  // Ww_result
+      else              forwarding = 2'b00;  // Ew_RD1
+    else                forwarding = 2'b00;  // Ew_RD1
+  endfunction
+
+  // function [3:0] forwarding2(
+  //   input [4:0] Ei_rs2,
+  //   input [4:0] Ei_rd, Mi_rd, Wi_rd,
+  //   // from controller
+  //   input [1:0] Ei_resultSrc, Mi_resultSrc,
+  //   input Mi_regWrite, Wi_regWrite
+  // );
+
+  //   if (Ei_rs2 != 5'b0)
+  //     if (Ei_rs2 == Mi_rd)
+  //       if (Mi_regWrite)
+  //         if (Mi_resultSrc == 2'b00)
+  //                       forwarding2 = 2'b11; // Mo_ALUOut
+  //         else if (Mi_resultSrc == 2'b10)       
+  //                       forwarding2 = 2'b10; // Mw_immPlus
+  //     else if ((Ei_rs2 == Wi_rd) & Wi_regWrite) 
+  //                       forwarding2 = 2'b01; // Ww_result
+  //   else                forwarding2 = 2'b00;
+  // endfunction
+
+  /* forwarding */
   // reg [1:0] r_fwdcnt = 2'b00;
   // always @(
   //   reset_x, Di_rs1, Di_rs2, Ei_rs1, Ei_rs2,
@@ -74,16 +127,7 @@ module hazard (
   // end
 
 
-  // stall and flush
-  assign w_lwStall = (Ei_resultSrc == 2'b01) // isLoad?
-                    & ((Di_rs1 == Ei_rd)
-                      | (Di_rs2 == Ei_rd));
-
-  assign  Fo_stall = w_lwStall;                    
-  assign  Do_stall = w_lwStall;                    
-  assign  Do_flush = (Ei_PCSrc != 2'b00); // NextPC != PC+4                 
-  assign  Eo_flush = (Ei_PCSrc != 2'b00) | w_lwStall;
-
+  /* stall and flush */
   // reg [1:0] r_stflcnt = 2'b00;
   // always @(reset_x, w_lwStall, Ei_PCSrc) begin
   // // always @(*) begin
@@ -105,44 +149,4 @@ module hazard (
   //     else
   //       r_stflcnt <= r_stflcnt + 2'b01;
   // end
-
-  function [3:0] forwarding(
-    input [4:0] Ei_rs,
-    input [4:0] Ei_rd, Mi_rd, Wi_rd,
-    // from controller
-    input [1:0] Ei_resultSrc, Mi_resultSrc,
-    input Mi_regWrite, Wi_regWrite
-  );
-    if (Ei_rs != 5'b0)
-      if (Ei_rs == Mi_rd)
-        if (Mi_regWrite)
-          if (Mi_resultSrc == 2'b00)
-                        forwarding = 2'b11;  // Mo_ALUOut
-          else if (Mi_resultSrc == 2'b10)       
-                        forwarding = 2'b10;  // Mw_immPlus
-      else if ((Ei_rs == Wi_rd) & Wi_regWrite) 
-                        forwarding = 2'b01;  // Ww_result
-    else                forwarding = 2'b00;  // Ew_RD1
-  endfunction
-
-  // function [3:0] forwarding2(
-  //   input [4:0] Ei_rs2,
-  //   input [4:0] Ei_rd, Mi_rd, Wi_rd,
-  //   // from controller
-  //   input [1:0] Ei_resultSrc, Mi_resultSrc,
-  //   input Mi_regWrite, Wi_regWrite
-  // );
-
-  //   if (Ei_rs2 != 5'b0)
-  //     if (Ei_rs2 == Mi_rd)
-  //       if (Mi_regWrite)
-  //         if (Mi_resultSrc == 2'b00)
-  //                       forwarding2 = 2'b11; // Mo_ALUOut
-  //         else if (Mi_resultSrc == 2'b10)       
-  //                       forwarding2 = 2'b10; // Mw_immPlus
-  //     else if ((Ei_rs2 == Wi_rd) & Wi_regWrite) 
-  //                       forwarding2 = 2'b01; // Ww_result
-  //   else                forwarding2 = 2'b00;
-  // endfunction
-
 endmodule

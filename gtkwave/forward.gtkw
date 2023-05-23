@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Tue May 23 07:16:19 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Tue May 23 07:04:40 2023"
+[dumpfile_size] 182266
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/forward.gtkw"
+[timestart] 34710
+[size] 1920 1027
+[pos] -1 -1
+*-13.914623 95000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.controller.
+[treeopen] top_test.u_top_1.datapath.
+[treeopen] top_test.u_top_1.hazard.
+[sst_width] 261
+[signals_width] 564
+[sst_expanded] 1
+[sst_vpaned_height] 521
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+@28
+top_test.u_top_1.Ww_regWrite
+@22
+top_test.u_top_1.datapath.Ww_result[31:0]
+@28
+top_test.u_top_1.Ww_resultSrc[1:0]
+@22
+top_test.u_top_1.datapath.alu.i_1[31:0]
+top_test.u_top_1.datapath.alu.i_2[31:0]
+top_test.u_top_1.datapath.Ew_ALUOut[31:0]
+top_test.u_top_1.datapath.Mo_ALUOut[31:0]
+top_test.u_top_1.datapath.Ww_ALUOut[31:0]
+top_test.u_top_1.datapath.Ew_ALUIn1[31:0]
+@23
+top_test.u_top_1.datapath.Ew_ALUIn2[31:0]
+@28
+top_test.u_top_1.hazard.Eo_forwardIn1Src[1:0]
+top_test.u_top_1.hazard.Eo_forwardIn2Src[1:0]
+[pattern_trace] 1
+[pattern_trace] 0
