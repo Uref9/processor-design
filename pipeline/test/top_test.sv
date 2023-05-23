@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 100 //000000000
+`define IN_TOTAL 1000 //00000000
 `define HIGH   1'b1
 `define LOW    1'b0
 
@@ -106,11 +106,11 @@ module top_test;
          load_task1;
          store_task1;
          
-         if (0 < i && i < 40) begin
-            // $display("--- info registers ---");
-            info_registers_task;
-            // $display("--- end i.r. ---");
-         end
+         // if (0 < i && i < 40) begin
+         //    // $display("--- info registers ---");
+         //    info_registers_task;
+         //    // $display("--- end i.r. ---");
+         // end
          
          // #(STB);
          #CYCLE;
@@ -127,7 +127,7 @@ module top_test;
    //*** description for wave form ***//
    initial begin
       // $monitor($stime," PC=%h INST=%h DAD=%h Daddr=%h DDT=%h", IAD, IDT, DAD, Daddr, DDT);
-      $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
       //                   " : DAD=%h DDT=%h", Daddr, DDT);
    // For Icarus verilog
@@ -225,7 +225,7 @@ module top_test;
                   $display("\nExited by program.");
                   $display("TOTAL: %d [ns]", i*CYCLE);
 
-                  // dump_task1;
+                  dump_task1;
                   info_registers_task;
 
                   $finish;
