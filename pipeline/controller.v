@@ -61,12 +61,10 @@ module controller(
   wire [1:0]  Ew_memSize;
   wire        Ew_isLoadSigned;
     // to WB
-  wire [1:0]  Ew_resultSrc;
   wire        Ew_regWrite;
 
   // MEM stage wire
     // to WB
-  wire [1:0]  Mw_resultSrc;
   wire        Mo_regWrite;
   
   // WB stage wire
@@ -74,6 +72,7 @@ module controller(
 
 // ID stage
   mainDecoder main_decoder(
+    // .clk(clk), .reset_x(reset_x),
     .i_opcode(Dw_opcode), .i_funct3(Dw_funct3),
 
     .o_memReq(Dw_memReq), .o_memWrite(Dw_memWrite),
@@ -118,7 +117,7 @@ module controller(
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
 
-      Ew_resultSrc,
+      Eo_resultSrc,
       Ew_regWrite
     })
   );
@@ -142,14 +141,14 @@ module controller(
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
       
-      Ew_resultSrc,
+      Eo_resultSrc,
       Ew_regWrite
     }),
     .o_q({
       Mo_memWrite, Mo_memReq, Mo_memSize,
       Mo_isLoadSigned,
 
-      Mw_resultSrc,
+      Mo_resultSrc,
       Mo_regWrite
     })
   );
@@ -162,7 +161,7 @@ module controller(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(1'b0),
     .i_d({
-      Mw_resultSrc,
+      Mo_resultSrc,
       Mo_regWrite
     }),
     .o_q({

@@ -4,5 +4,6 @@ build/
 *.vcd
 *.dat
 *.out*
+*.out1
 */test/log/
 */test/mem/

@@ -1,0 +1,45 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Tue May 23 11:37:04 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Tue May 23 11:36:47 2023"
+[dumpfile_size] 389300
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/loadstall.gtkw"
+[timestart] 240250
+[size] 1440 847
+[pos] -1 -1
+*-13.914623 267500 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.controller.
+[treeopen] top_test.u_top_1.datapath.
+[treeopen] top_test.u_top_1.hazard.
+[sst_width] 261
+[signals_width] 297
+[sst_expanded] 1
+[sst_vpaned_height] 521
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+top_test.u_top_1.DAD[31:0]
+top_test.u_top_1.DDT[31:0]
+@28
+top_test.u_top_1.Dw_stall
+top_test.u_top_1.Fw_stall
+@22
+top_test.u_top_1.datapath.register.data_in[31:0]
+@28
+top_test.u_top_1.datapath.register.wr_n
+@22
+top_test.u_top_1.datapath.Mi_readData[31:0]
+@23
+top_test.u_top_1.datapath.Mw_readData[31:0]
+@22
+top_test.u_top_1.datapath.Mw_readDataExt[31:0]
+top_test.u_top_1.datapath.Ww_readDataExt[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

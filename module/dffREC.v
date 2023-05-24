@@ -13,6 +13,4 @@ module dffREC #(
       if (i_clear)        o_q <= INITIAL_VALUE;
       else                o_q <= i_d;
   end
-
-  
 endmodule

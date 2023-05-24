@@ -1,4 +1,4 @@
-`include "module/dffREC.v"
+// `include "module/dffREC.v"
 `include "module/adder.v"
 `include "module/mux3.v"
 `include "module/rf32x32.v"
@@ -75,9 +75,8 @@ module datapath(
   wire [4:0] Eo_rd;
 
   // MEM stage wire
-  wire [31:0] Mw_readData;
     // to WB
-  wire [31:0] Mw_readDataExt;
+  wire [31:0] Mi_readDataExt;
   wire [31:0] Mw_immPlus;
   wire [31:0] Mw_PCPlus4;
 
@@ -204,8 +203,8 @@ module datapath(
 // MEM stage logic
   readDataExtend read_data_extend(
     .i_isLoadSigned(Mi_isLoadSigned), .i_memSize(Mi_memSize),
-    .i_readData(Mw_readData), 
-    .o_readDataExt(Mw_readDataExt)
+    .i_readData(Mi_readData), 
+    .o_readDataExt(Mi_readDataExt)
   );
 
   // MEM/WB reg
@@ -214,7 +213,7 @@ module datapath(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(`LOW),
     .i_d({
-      Mo_ALUOut, Mw_readDataExt,
+      Mo_ALUOut, Mi_readDataExt,
       Mw_immPlus, Mw_PCPlus4,
       Mo_rd
     }),

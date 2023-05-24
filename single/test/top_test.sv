@@ -129,9 +129,8 @@ module top_test;
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
       //                   " : DAD=%h DDT=%h", Daddr, DDT);
    // For Icarus verilog
-      // $dumpfile("top_test.vcd");
-      $dumpfile("./single/test/log/top_test.vcd");
-      $dumpvars(0, u_top_1);
+      // $dumpfile("./single/test/log/top_test.vcd");
+      // $dumpvars(0, u_top_1);
    // For NCverilog
       //$shm_open("waves.shm");
       //$shm_probe("AS");
