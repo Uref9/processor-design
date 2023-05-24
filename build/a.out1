@@ -1,11 +1,11 @@
-**** module/scope: hazard
+**** module/scope: mainDecoder
      Flip-Flops   : 0
-     Logic Gates  : 0
+     Logic Gates  : 1
      LPM[14]: 1 unaccounted
-**** module/scope: hazard.forwarding
+**** module/scope: mainDecoder.mainDecoder
      Flip-Flops   : 0
      Logic Gates  : 0
 **** TOTALS
      Flip-Flops   : 0
-     Logic Gates  : 0
+     Logic Gates  : 1
      LPM[14]: 1 unaccounted
