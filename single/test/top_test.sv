@@ -115,7 +115,7 @@ module top_test;
       end // for (i = 0; i < `IN_TOTAL; i =i +1)
 
       $display("\nReach IN_TOTAL.");
-      dump_task1;
+      // dump_task1;
       info_registers_task;
       $finish;
 
@@ -129,8 +129,8 @@ module top_test;
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
       //                   " : DAD=%h DDT=%h", Daddr, DDT);
    // For Icarus verilog
-      $dumpfile("./single/test/log/top_test.vcd");
-      $dumpvars(0, u_top_1);
+      // $dumpfile("./single/test/log/top_test.vcd");
+      // $dumpvars(0, u_top_1);
    // For NCverilog
       //$shm_open("waves.shm");
       //$shm_probe("AS");
@@ -223,7 +223,7 @@ module top_test;
                   $display("\nExited by program.");
                   $display("TOTAL: %d [ns]", i*CYCLE);
 
-                  dump_task1;
+                  // dump_task1;
                   info_registers_task;
 
                   $finish;
