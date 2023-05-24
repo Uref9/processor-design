@@ -30,7 +30,7 @@ module mainDecoder (
   //                    AOp2_ASrc_imSrc3_resSrc2_rgW_mRq_mW_br_jal_jalr
       7'b0000011:     mainDecoder = 14'b00_1_000_01_1_1_0_0_0_0; // I (load+) type
       // 7'b0001111:                                             // I (fence+) type
-      7'b00100:                                                // I (R+i) type
+      7'b0010011:                                                // I (R+i) type
         case (i_funct3[1:0])
           2'b01:    mainDecoder = 14'b10_1_010_00_1_0_0_0_0_0; // I (shift+i) type
           default:  mainDecoder = 14'b10_1_001_00_1_0_0_0_0_0; // I (R+i, other) type
@@ -42,7 +42,7 @@ module mainDecoder (
       7'b1100111:     mainDecoder = 14'b00_x_110_11_1_0_0_0_0_1; // I (jalr) type
       7'b1101111:     mainDecoder = 14'bxx_x_111_11_1_0_0_0_1_0; // J type
       // 7'b1110011:                                             // I (e~, csr~) type
-      7'b0000011:     mainDecoder = 14'b00_0_000_00_0_0_0_0_0_0; // reset etc.
+      7'b0000000:     mainDecoder = 14'b00_0_000_00_0_0_0_0_0_0; // reset etc.
       default:      mainDecoder = 14'bxx_x_xxx_xx_x_x_x_x_x_x; // I(fence+, e~, csr~) , ??? 
     endcase
   endfunction
