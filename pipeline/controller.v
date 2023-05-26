@@ -20,6 +20,7 @@ module controller(
   // to datapath
   output [2:0]  Do_immSrc,
   output        Do_jal,
+  output        Do_ecall,
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
@@ -35,8 +36,9 @@ module controller(
 
 // wire
   // ID stage wire
-  wire [6:0] Dw_opcode = Di_inst[6:0];
-  wire [6:0] Dw_funct7 = Di_inst[31:25];
+  wire [6:0]  Dw_opcode   = Di_inst[6:0];
+  wire [6:0]  Dw_funct7   = Di_inst[31:25];
+  wire [11:0] Dw_funct12  = Di_inst[31:20];
   wire [1:0] Dw_ALUOp;
     // to EX
   wire [3:0]  Dw_ALUCtrl;
@@ -79,6 +81,7 @@ module controller(
     .o_ALUSrc(Dw_ALUSrc), .o_immSrc(Do_immSrc),
     .o_immPlusSrc(Dw_immPlusSrc), .o_isLoadSigned(Dw_isLoadSigned),
     .o_resultSrc(Dw_resultSrc),
+    .o_ecall(Do_ecall),
 
     .o_branch(Dw_branch),
     .o_jal(Do_jal), .o_jalr(Dw_jalr),

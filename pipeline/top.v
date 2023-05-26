@@ -30,6 +30,7 @@ module top(
     // to datapath
   wire [2:0]  Dw_immSrc;
   wire        Dw_jal;
+  wire        Dw_ecall;
   wire [3:0]  Ew_ALUCtrl;
   wire        Ew_ALUSrc;
   wire        Ew_immPlusSrc;
@@ -61,7 +62,7 @@ module top(
     .clk(clk), .reset_x(rst),
     .Fi_inst(IDT), .Mi_readData(Mw_readData),
     // from controller
-    .Di_immSrc(Dw_immSrc), .Di_jal(Dw_jal),
+    .Di_immSrc(Dw_immSrc), .Di_jal(Dw_jal), .Di_ecall(Di_ecall),
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_prePCSrc(Ew_prePCSrc), 
     .Mi_memSize(SIZE), .Mi_isLoadSigned(Mw_isLoadSigned), 
@@ -102,7 +103,7 @@ module top(
     .Mo_memReq(MREQ), .Mo_memWrite(WRITE),
     .Mo_memSize(SIZE),
     // to datapath
-    .Do_immSrc(Dw_immSrc), .Do_jal(Dw_jal),
+    .Do_immSrc(Dw_immSrc), .Do_jal(Dw_jal), .Do_ecall(Dw_ecall),
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), .Eo_prePCSrc(Ew_prePCSrc), 
     .Mo_isLoadSigned(Mw_isLoadSigned), 

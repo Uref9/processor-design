@@ -19,6 +19,7 @@ module datapath(
   // from controller
   input [2:0]   Di_immSrc,
   input         Di_jal,
+  input         Di_ecall,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
@@ -62,6 +63,7 @@ module datapath(
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
   wire [31:0] Dw_immExt, Dw_PCPlusImm;
+  wire [31:0] Dw_epc;
     // to WB
   wire [31:0] Dw_PCPlus4;
 
@@ -115,6 +117,13 @@ module datapath(
     .i_sel(Di_jal),
     .o_1(Fw_PCNext)
   );
+
+  //   .i_sel(Ei_PCSrc),
+  //   .o_1(Fw_prePCNext)
+  // );
+  // mux2 pc_next_mux(
+  //   .i_1(Fw_prePCNext), .i_2(Dw_epc),
+  //   .i_sel(Di_ecall),
 
   // IF/ID reg
   dffREC #(96)
