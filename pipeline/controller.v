@@ -1,6 +1,6 @@
 `include "module/mainDecoder.v"
 `include "module/ALUDecoder.v"
-`include "module/setPCSrc.v"
+`include "module/setPrePCSrc.v"
 `include "module/setMemSize.v"
 `include "module/dffREC.v"
 // `include "module/load2Cycle.v"
@@ -19,10 +19,11 @@ module controller(
   output [1:0]  Mo_memSize,
   // to datapath
   output [2:0]  Do_immSrc,
+  output        Do_jal,
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
-  output [1:0]  Eo_PCSrc,   // and to hazard
+  output [1:0]  Eo_prePCSrc,   // and to hazard
   output        Mo_isLoadSigned,
   output [1:0]  Wo_resultSrc,
   output        Wo_regWrite, // and to hazard
@@ -41,9 +42,8 @@ module controller(
   wire [3:0]  Dw_ALUCtrl;
   wire        Dw_ALUSrc;
   wire        Dw_immPlusSrc;
-  wire [2:0] Dw_funct3 = Di_inst[14:12];
-  wire Dw_branch;
-  wire Dw_jal, Dw_jalr;
+  wire [2:0]  Dw_funct3 = Di_inst[14:12];
+  wire        Dw_branch, Dw_jalr;
     // to MEM
   wire        Dw_memWrite, Dw_memReq;
   wire [1:0]  Dw_memSize;
@@ -54,8 +54,7 @@ module controller(
 
   // EX stage wire
   wire [2:0] Ew_funct3;
-  wire Ew_branch;
-  wire Ew_jal, Ew_jalr;
+  wire        Ew_branch, Ew_jalr;
     // to MEM
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
@@ -82,7 +81,7 @@ module controller(
     .o_resultSrc(Dw_resultSrc),
 
     .o_branch(Dw_branch),
-    .o_jal(Dw_jal), .o_jalr(Dw_jalr),
+    .o_jal(Do_jal), .o_jalr(Dw_jalr),
     .o_ALUOp(Dw_ALUOp)
   );
   ALUDecoder alu_decoder(
@@ -96,13 +95,13 @@ module controller(
     .o_memSize(Dw_memSize)
   );
   // ID/EX reg
-  dffREC #(20)
+  dffREC #(19)
   IDEX_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(Ei_flush),
     .i_d({
       Dw_ALUCtrl, Dw_ALUSrc, Dw_immPlusSrc,
-      Dw_funct3, Dw_branch, Dw_jal, Dw_jalr,
+      Dw_funct3, Dw_branch, Dw_jalr,
 
       Dw_memWrite, Dw_memReq, Dw_memSize,
       Dw_isLoadSigned,
@@ -112,7 +111,7 @@ module controller(
     }),
     .o_q({
       Eo_ALUCtrl, Eo_ALUSrc, Eo_immPlusSrc,
-      Ew_funct3, Ew_branch, Ew_jal, Ew_jalr,
+      Ew_funct3, Ew_branch, Ew_jalr,
 
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
@@ -124,13 +123,13 @@ module controller(
 // end ID stage
 
 // EX stage
-  setPCSrc set_pc_src(
+  setPrePCSrc set_pc_src(
     .i_branch(Ew_branch),
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_funct3(Ew_funct3),
-    .i_jal(Ew_jal), .i_jalr(Ew_jalr),
+    .i_jalr(Ew_jalr),
 
-    .o_PCSrc(Eo_PCSrc)
+    .o_prePCSrc(Eo_prePCSrc)
   );
   // EX/MEM reg
   dffREC #(8)

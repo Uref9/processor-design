@@ -1,16 +1,16 @@
-module setPCSrc (
+module setPrePCSrc (
   input       i_branch,
   input       i_zero, i_neg, i_negU,
   input [2:0] i_funct3,
-  input       i_jal, i_jalr,
+  input       i_jalr,
 
-  output [1:0] o_PCSrc
+  output [1:0] o_prePCSrc
 );
 
-  assign o_PCSrc[1] = i_jalr;
-  assign o_PCSrc[0] = i_jal | judgeBranch(
-                              i_branch, i_zero, i_neg, i_negU,
-                              i_funct3);
+  assign o_prePCSrc[1] = i_jalr;
+  assign o_prePCSrc[0] = judgeBranch(
+                            i_branch, i_zero, i_neg, i_negU,
+                            i_funct3);
 
   function judgeBranch(
     input       i_branch,
