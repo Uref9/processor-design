@@ -1,4 +1,4 @@
-module csr (
+module exception (
   // from test
   input clk, reset,
   // from datapath
