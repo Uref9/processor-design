@@ -1,39 +1,34 @@
 module exception (
   // from test
-  input clk, reset,
+  input clk, reset_x,
   // from datapath
   input [31:0] Di_PC,
-  // from controller
-  input Di_ecall,
 
   // to datapath
-  output reg [31:0] Do_epc
+  output reg [31:0] Do_mtvec
 );
 
-  /* csrReg part */
-  reg [31:0] mepc, mcause, mtvec;
-  reg mstatusb3, mstatusb7; // MIE, MPIE
+  /* CSRs part */
+  reg [31:0] r_mepc, r_mcause, r_mtvec;
+  reg r_mstatusb3MIE, r_mstatusb7MPIE; // MIE, MPIE
 
-  always @(posedge clk, negedge reset) begin
-    if (!reset) begin
-      mepc <= 32'b0;
-      mcause <= 32'b0;
-      mtvec <= 32'b0;
-      mstatusb3 <= 1'b1;
-      mstatusb7 <= 1'b1;
+  always @(posedge clk, negedge reset_x) begin
+    if (!reset_x) begin
+      r_mepc <= 32'b0;
+      r_mcause <= 32'b0;
+      r_mtvec <= 32'b0;
+      r_mstatusb3MIE <= 1'b1;
+      r_mstatusb7MPIE <= 1'b1;
     end
     else begin
-      case (Di_ecall)
-        1'b1: begin
-          mepc <= Di_PC; 
-          mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
-          mstatusb3 <= 1'b0;
-          Do_epc <= mtvec;
-        end
-      endcase
-      
+      // ecall
+      r_mepc <= Di_PC; 
+      r_mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
+      r_mstatusb3MIE <= 1'b0;
+      Do_mtvec <= r_mtvec;
     end
   end
+  /* end of CSRs */
 
 
 endmodule

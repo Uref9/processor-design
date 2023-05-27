@@ -7,6 +7,7 @@
 `include "module/ALU.v"
 `include "module/readDataExtend.v"
 `include "module/mux4.v"
+`include "module/exception.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -146,6 +147,13 @@ module datapath(
   adder add_imm(
     .i_1(Dw_PC), .i_2(Dw_immExt),
     .o_1(Dw_PCPlusImm)
+  );
+
+    // exception logic
+  exception exception(
+    .clk(clk), .reset_x(reset_x),
+    .Di_PC(Dw_PC),
+    .Do_mtvec(Dw_mtvec)
   );
 
   // ID/EX reg
