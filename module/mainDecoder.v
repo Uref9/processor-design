@@ -9,17 +9,18 @@ module mainDecoder (
   output o_immPlusSrc,
   output o_isLoadSigned,
   output [1:0] o_resultSrc,
-  output o_ecall,
 
   output o_branch, o_jal, o_jalr,
-  output [1:0] o_ALUOp
+  output [1:0] o_ALUOp,
+  output o_excption
 );
 
   assign o_isLoadSigned = i_funct3[2];
   assign o_immPlusSrc = ~i_opcode[5];
   assign {o_ALUOp, o_ALUSrc, o_immSrc, o_resultSrc,
           o_regWrite, o_memReq, o_memWrite,
-          o_branch, o_jal, o_jalr, o_ecall}
+          o_branch, o_jal, o_jalr, o_excption}
+
           = mainDecoder(i_opcode, i_funct3);
   
   function [14:0] mainDecoder(
@@ -28,7 +29,7 @@ module mainDecoder (
   );
   
     casex (i_opcode)
-  //                    AOp2_ASrc_imSrc3_resSrc2_rgW_mRq_mW_br_jal_jalr_ecall
+  //                    AOp2_ASrc_imSrc3_resSrc2_rgW_mRq_mW_br_jal_jalr_exception
       8'b0000011:     mainDecoder = 15'b00_1_000_01_1_1_0_0_0_0_0;  // I (load+) type
       // 8'b0001111:                                             // I (fence+) type
       8'b0010011:                                                   // I (R+i) type
@@ -42,13 +43,10 @@ module mainDecoder (
       8'b1100011:     mainDecoder = 15'b01_0_101_00_0_0_0_1_0_0_0;  // B type
       8'b1100111:     mainDecoder = 15'b00_0_110_11_1_0_0_0_0_1_0;  // I (jalr) type
       8'b1101111:     mainDecoder = 15'b00_0_111_11_1_0_0_0_1_0_0;  // J type
-      8'b1110011:                                                   // I (e~, csr~) type
-        case (i_funct3)
-          3'b000:     mainDecoder = 15'b00_0_000_00_0_0_0_0_0_0_1;  // I (ecall, ebreak)
-          default:    mainDecoder = 15'b00_0_000_00_0_0_0_0_0_0_0;  // I (csr+)
-        endcase
+      8'b1110011:     mainDecoder = 15'b00_0_000_00_0_0_0_0_0_0_1;  // I (e~, csr~), R (mret) type
+
       8'b0000000:     mainDecoder = 15'b00_0_000_00_0_0_0_0_0_0_0;  // reset etc. 
-      default:        mainDecoder = 15'bxx_x_xxx_xx_x_x_x_x_x_x_x;  // I(fence+, e~, csr~) , ??? 
+      default:        mainDecoder = 15'bxx_x_xxx_xx_x_x_x_x_x_x_x;  // I (fence+), ??? 
     endcase
   endfunction
 endmodule

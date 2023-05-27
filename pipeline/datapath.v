@@ -7,7 +7,7 @@
 `include "module/ALU.v"
 `include "module/readDataExtend.v"
 `include "module/mux4.v"
-`include "module/exception.v"
+`include "module/exceptionHandler.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -20,6 +20,7 @@ module datapath(
   // from controller
   input [2:0]   Di_immSrc,
   input         Di_jal,
+  input         Di_mret,
   input         Di_ecall,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
@@ -61,6 +62,7 @@ module datapath(
   assign      Do_rs1  = Do_inst[19:15];  // to EX
   assign      Do_rs2  = Do_inst[24:20];  // to EX
   wire [31:0] Dw_PC; 
+  wire [31:0] Dw_mepc; 
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
   wire [31:0] Dw_immExt, Dw_PCPlusImm;
@@ -115,9 +117,10 @@ module datapath(
     .i_sel(Ei_prePCSrc),
     .o_1(Fw_prePCNext)
   );
-  mux2 pc_next_mux(
+  mux3 pc_next_mux(
     .i_1(Fw_prePCNext), .i_2(Dw_PCPlusImm),
-    .i_sel(Di_jal),
+    .i_3(Dw_mepc),
+    .i_sel({ Di_mret, Di_jal }),
     .o_1(Fw_PCNext)
   );
 
@@ -149,12 +152,12 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
 
-    // exception logic
-  exception exception(
+    // exception handle logic
+  exceptionHandler exception_handler(
     .clk(clk), .reset_x(reset_x),
     .Di_PC(Dw_PC),
-    .Di_ecall(Di_ecall),
-    .Do_mtvec(Dw_mtvec)
+    .Di_ecall(Di_ecall), .Di_mret(Di_mret),
+    .Do_mepc(Dw_mepc), .Do_mtvec(Dw_mtvec)
   );
 
   // ID/EX reg

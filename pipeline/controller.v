@@ -1,5 +1,6 @@
 `include "module/mainDecoder.v"
 `include "module/ALUDecoder.v"
+`include "module/exceptionDecoder.v"
 `include "module/setPrePCSrc.v"
 `include "module/setMemSize.v"
 `include "module/dffREC.v"
@@ -19,8 +20,9 @@ module controller(
   output [1:0]  Mo_memSize,
   // to datapath
   output [2:0]  Do_immSrc,
-  output        Do_jal,
-  output        Do_ecall,
+  output        Do_jal,   // to hazard
+  output        Do_mret,  // to hazard, exception
+  output        Do_ecall, // to exception
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
@@ -40,12 +42,13 @@ module controller(
   wire [6:0]  Dw_opcode   = Di_inst[6:0];
   wire [6:0]  Dw_funct7   = Di_inst[31:25];
   wire [11:0] Dw_funct12  = Di_inst[31:20];
-  wire [1:0] Dw_ALUOp;
+  wire [1:0]  Dw_ALUOp;
+  wire        Dw_exception;
     // to EX
   wire [3:0]  Dw_ALUCtrl;
   wire        Dw_ALUSrc;
-  wire        Dw_immPlusSrc;
   wire [2:0]  Dw_funct3 = Di_inst[14:12];
+  wire        Dw_immPlusSrc;
   wire        Dw_branch, Dw_jalr;
     // to MEM
   wire        Dw_memWrite, Dw_memReq;
@@ -82,17 +85,23 @@ module controller(
     .o_ALUSrc(Dw_ALUSrc), .o_immSrc(Do_immSrc),
     .o_immPlusSrc(Dw_immPlusSrc), .o_isLoadSigned(Dw_isLoadSigned),
     .o_resultSrc(Dw_resultSrc),
-    .o_ecall(Do_ecall),
 
     .o_branch(Dw_branch),
     .o_jal(Do_jal), .o_jalr(Dw_jalr),
-    .o_ALUOp(Dw_ALUOp)
+    .o_ALUOp(Dw_ALUOp),
+    .o_excption(Dw_exception)
   );
   ALUDecoder alu_decoder(
     .i_ALUOp(Dw_ALUOp), .i_funct3(Dw_funct3),
     .i_opecodeb5(Dw_opcode[5]), .i_funct7b5(Dw_funct7[5]),
 
     .o_ALUCtrl(Dw_ALUCtrl)
+  );
+  exceptionDecoder exc_decoder(
+    .i_exception(Dw_exception),
+    .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
+    
+    .o_ecall(Do_ecall), .o_mret(Do_mret)
   );
   setMemSize set_mem_size(
     .i_funct3(Dw_funct3),
