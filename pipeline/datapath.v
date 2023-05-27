@@ -7,6 +7,7 @@
 `include "module/ALU.v"
 `include "module/readDataExtend.v"
 `include "module/mux4.v"
+`include "module/exceptionHandler.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -19,6 +20,8 @@ module datapath(
   // from controller
   input [2:0]   Di_immSrc,
   input         Di_jal,
+  input         Di_mret,
+  input         Di_ecall,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
@@ -59,9 +62,11 @@ module datapath(
   assign      Do_rs1  = Do_inst[19:15];  // to EX
   assign      Do_rs2  = Do_inst[24:20];  // to EX
   wire [31:0] Dw_PC; 
+  wire [31:0] Dw_mepc; 
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
   wire [31:0] Dw_immExt, Dw_PCPlusImm;
+  wire [31:0] Dw_mtvec;
     // to WB
   wire [31:0] Dw_PCPlus4;
 
@@ -70,6 +75,7 @@ module datapath(
   wire [31:0] Ew_ALUIn1, Ew_ALUIn2;
   wire [31:0] Ew_immExt;
   wire [31:0] Ew_PCPlusImm;
+  wire [31:0] Ew_mtvec;
     // to MEM
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
@@ -105,14 +111,16 @@ module datapath(
     .o_1(Fw_PCPlus4)
   );
   assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
-  mux3 pre_pc_next_mux(
-    .i_1(Fw_PCPlus4), .i_2(Ew_PCPlusImm), .i_3(Fw_ALUOutJalr),
+  mux4 pre_pc_next_mux(
+    .i_1(Fw_PCPlus4), .i_2(Ew_PCPlusImm), 
+    .i_3(Ew_mtvec), .i_4(Fw_ALUOutJalr),
     .i_sel(Ei_prePCSrc),
     .o_1(Fw_prePCNext)
   );
-  mux2 pc_next_mux(
+  mux3 pc_next_mux(
     .i_1(Fw_prePCNext), .i_2(Dw_PCPlusImm),
-    .i_sel(Di_jal),
+    .i_3(Dw_mepc),
+    .i_sel({ Di_mret, Di_jal }),
     .o_1(Fw_PCNext)
   );
 
@@ -144,19 +152,27 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
 
+    // exception handle logic
+  exceptionHandler exception_handler(
+    .clk(clk), .reset_x(reset_x),
+    .Di_PC(Dw_PC),
+    .Di_ecall(Di_ecall), .Di_mret(Di_mret),
+    .Do_mepc(Dw_mepc), .Do_mtvec(Dw_mtvec)
+  );
+
   // ID/EX reg
-  dffREC #(175)
+  dffREC #(207)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
     .i_d({
-      Dw_RD1, Dw_RD2, Dw_immExt,
+      Dw_RD1, Dw_RD2, Dw_immExt, Dw_mtvec,
       Dw_PCPlusImm, Dw_PCPlus4,
       Dw_rd, 
       Do_rs1, Do_rs2
     }),
     .o_q({
-      Ew_RD1, Ew_RD2, Ew_immExt,
+      Ew_RD1, Ew_RD2, Ew_immExt, Ew_mtvec,
       Ew_PCPlusImm, Ew_PCPlus4,
       Eo_rd, 
       Eo_rs1, Eo_rs2

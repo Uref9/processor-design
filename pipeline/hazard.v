@@ -10,7 +10,7 @@ module hazard (
   input [4:0] Mi_rd,
   input [4:0] Wi_rd,
   // from controller
-  input       Di_jal,
+  input       Di_jal, Di_mret,
   input [1:0] Ei_prePCSrc,
   input [1:0] Ei_resultSrc,
   input [1:0] Mi_resultSrc,
@@ -26,9 +26,9 @@ module hazard (
   output Eo_flush
 );
   wire w_lwStall;
-  wire w_takeBranchOrJalr;
+  wire w_takeBranchOrJalrOrEcall;
 
-
+  // forwarding
   assign Eo_forwardIn1Src = forwarding(
                               Ei_rs1,
                               Ei_rd, Mi_rd, Wi_rd,
@@ -42,16 +42,17 @@ module hazard (
                               Mi_regWrite, Wi_regWrite
                             ); 
 
+  // stall, flush
   assign w_lwStall = (Ei_resultSrc == 2'b01) // isLoad?
                     & ((Di_rs1 == Ei_rd)
                       | (Di_rs2 == Ei_rd));
 
-  assign w_takeBranchOrJalr = (Ei_prePCSrc != 2'b00);  // (takeBranch or jalr)
+  assign w_takeBranchOrJalrOrEcall = (Ei_prePCSrc != 2'b00);  // (takeBranch or jalr or ecall)
 
   assign  Fo_stall = w_lwStall;                    
   assign  Do_stall = w_lwStall;                    
-  assign  Do_flush = w_takeBranchOrJalr | Di_jal;
-  assign  Eo_flush = w_takeBranchOrJalr | w_lwStall;
+  assign  Do_flush = w_takeBranchOrJalrOrEcall | Di_jal | Di_mret;
+  assign  Eo_flush = w_takeBranchOrJalrOrEcall | w_lwStall;
 
 
   function [3:0] forwarding(

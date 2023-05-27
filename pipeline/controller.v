@@ -1,5 +1,6 @@
 `include "module/mainDecoder.v"
 `include "module/ALUDecoder.v"
+`include "module/exceptionDecoder.v"
 `include "module/setPrePCSrc.v"
 `include "module/setMemSize.v"
 `include "module/dffREC.v"
@@ -19,11 +20,14 @@ module controller(
   output [1:0]  Mo_memSize,
   // to datapath
   output [2:0]  Do_immSrc,
-  output        Do_jal,
+  output        Do_jal,   // to hazard
+  output        Do_mret,  // to hazard, exception
+  output        Do_ecall, // to exception
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
-  output [1:0]  Eo_prePCSrc,   // and to hazard
+  output        Eo_ecall,
+  output [1:0]  Eo_prePCSrc,    // and to hazard
   output        Mo_isLoadSigned,
   output [1:0]  Wo_resultSrc,
   output        Wo_regWrite, // and to hazard
@@ -35,14 +39,16 @@ module controller(
 
 // wire
   // ID stage wire
-  wire [6:0] Dw_opcode = Di_inst[6:0];
-  wire [6:0] Dw_funct7 = Di_inst[31:25];
-  wire [1:0] Dw_ALUOp;
+  wire [6:0]  Dw_opcode   = Di_inst[6:0];
+  wire [6:0]  Dw_funct7   = Di_inst[31:25];
+  wire [11:0] Dw_funct12  = Di_inst[31:20];
+  wire [1:0]  Dw_ALUOp;
+  wire        Dw_exception;
     // to EX
   wire [3:0]  Dw_ALUCtrl;
   wire        Dw_ALUSrc;
-  wire        Dw_immPlusSrc;
   wire [2:0]  Dw_funct3 = Di_inst[14:12];
+  wire        Dw_immPlusSrc;
   wire        Dw_branch, Dw_jalr;
     // to MEM
   wire        Dw_memWrite, Dw_memReq;
@@ -82,7 +88,8 @@ module controller(
 
     .o_branch(Dw_branch),
     .o_jal(Do_jal), .o_jalr(Dw_jalr),
-    .o_ALUOp(Dw_ALUOp)
+    .o_ALUOp(Dw_ALUOp),
+    .o_excption(Dw_exception)
   );
   ALUDecoder alu_decoder(
     .i_ALUOp(Dw_ALUOp), .i_funct3(Dw_funct3),
@@ -90,17 +97,24 @@ module controller(
 
     .o_ALUCtrl(Dw_ALUCtrl)
   );
+  exceptionDecoder exc_decoder(
+    .i_exception(Dw_exception),
+    .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
+    
+    .o_ecall(Do_ecall), .o_mret(Do_mret)
+  );
   setMemSize set_mem_size(
     .i_funct3(Dw_funct3),
     .o_memSize(Dw_memSize)
   );
   // ID/EX reg
-  dffREC #(19)
+  dffREC #(20)
   IDEX_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(Ei_flush),
     .i_d({
-      Dw_ALUCtrl, Dw_ALUSrc, Dw_immPlusSrc,
+      Dw_ALUCtrl, Dw_ALUSrc, 
+      Dw_immPlusSrc, Do_ecall,
       Dw_funct3, Dw_branch, Dw_jalr,
 
       Dw_memWrite, Dw_memReq, Dw_memSize,
@@ -110,8 +124,9 @@ module controller(
       Dw_regWrite
     }),
     .o_q({
-      Eo_ALUCtrl, Eo_ALUSrc, Eo_immPlusSrc,
-      Ew_funct3, Ew_branch, Ew_jalr,
+      Eo_ALUCtrl, Eo_ALUSrc, 
+      Eo_immPlusSrc, Eo_ecall,
+      Ew_funct3, Ew_branch, Ew_jalr, 
 
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
@@ -124,10 +139,9 @@ module controller(
 
 // EX stage
   setPrePCSrc set_pre_pc_src(
-    .i_branch(Ew_branch),
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
-    .i_funct3(Ew_funct3),
-    .i_jalr(Ew_jalr),
+    .i_branch(Ew_branch),
+    .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), .i_ecall(Eo_ecall),
 
     .o_prePCSrc(Eo_prePCSrc)
   );

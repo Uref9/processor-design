@@ -1,11 +1,23 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 100000000000
+`define IN_TOTAL 10000000000000
 `define HIGH   1'b1
 `define LOW    1'b0
 
 // `include "pipeline/top.v"
 
 module top_test;
+   //*** description for wave form ***//
+   initial begin
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
+      //                   " : DAD=%h DDT=%h", Daddr, DDT);
+   // For Icarus verilog
+      // $dumpfile("./pipeline/test/log/top_test.vcd");
+      // $dumpvars(0, u_top_1);
+   // For NCverilog
+      //$shm_open("waves.shm");
+      //$shm_probe("AS");
+   end
    
    //*** parameter declarations ***//
    parameter CYCLE       = 10;
@@ -91,8 +103,6 @@ module top_test;
       #1 rst = 1'b0;
       #CYCLE rst = 1'b1;
    end
-
-   // mine
    
    initial begin
       #HALF_CYCLE;
@@ -106,11 +116,8 @@ module top_test;
          load_task1;
          store_task1;
          
-         // if (0 < i && i < 40) begin
-         //    // $display("--- info registers ---");
-         //    info_registers_task;
-         //    // $display("--- end i.r. ---");
-         // end
+         // if (0 < i && i < 40) info_registers_task;
+         // if (0 < i && i < 20) info_CSRs_task;
          
          // #(STB);
          #CYCLE;
@@ -124,34 +131,32 @@ module top_test;
 
    end // initial begin
 
-   //*** description for wave form ***//
-   initial begin
-      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
-      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
-      //                   " : DAD=%h DDT=%h", Daddr, DDT);
-   // For Icarus verilog
-      // $dumpfile("./pipeline/test/log/top_test.vcd");
-      // $dumpvars(0, u_top_1);
-   // For NCverilog
-      //$shm_open("waves.shm");
-      //$shm_probe("AS");
-   end
 
 
    //*** tasks ***//
    task  info_registers_task;
-      integer i;
-      for (i =0; i < 32; i = i+1)  // output register to Reg_data (Reg_out.dat)
-      begin
+      integer j;
+      for (j =0; j < 32; j = j+1) begin
          Reg_temp = u_top_1.datapath.register
-                     .u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * i);
-         if (((i+1) % 4) != 0) begin
-            $write("[x%2d]: %h ", i, Reg_temp);
+                     .u_DW_ram_2r_w_s_dff.mem >> (BIT_WIDTH * j);
+         if (((j+1) % 4) != 0) begin
+            $write("[x%2d]: %h ", j, Reg_temp);
          end
          else begin
-            $display("[x%2d]: %h ", i, Reg_temp);
+            $display("[x%2d]: %h ", j, Reg_temp);
          end
       end
+   endtask
+
+   task info_CSRs_task;
+      $write(
+         "mepc: %h, ", u_top_1.datapath.exception_handler.r_mepc,
+         "mcause: %b:%0d, ",   u_top_1.datapath.exception_handler.r_mcause[31],
+                              u_top_1.datapath.exception_handler.r_mcause[30:0],
+         "mtvec: %h\n", u_top_1.datapath.exception_handler.r_mtvec,
+         "mstatus[3](MIE): %b, ", u_top_1.datapath.exception_handler.r_mstatusb3MIE,
+         "mstatus[7](MPIE): %b\n", u_top_1.datapath.exception_handler.r_mstatusb7MPIE,
+      );
    endtask
 
    task fetch_task1;
