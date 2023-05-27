@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Sat May 27 03:33:02 2023
+[*] Sat May 27 05:59:51 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
-[dumpfile_mtime] "Sat May 27 03:32:41 2023"
-[dumpfile_size] 314143
+[dumpfile_mtime] "Sat May 27 05:58:13 2023"
+[dumpfile_size] 63317
 [savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/ecall.gtkw"
-[timestart] 51520
+[timestart] 103080
 [size] 1440 847
 [pos] -1 -1
-*-13.914623 78850 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.914623 148120 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top_test.
 [treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.controller.
 [sst_width] 193
 [signals_width] 304
 [sst_expanded] 1
@@ -28,7 +29,12 @@ top_test.u_top_1.DAD[31:0]
 top_test.u_top_1.DDT[31:0]
 @28
 top_test.u_top_1.hazard.Do_stall
-@29
 top_test.u_top_1.hazard.Fo_stall
+top_test.u_top_1.controller.Do_ecall
+top_test.u_top_1.controller.Eo_ecall
+@23
+top_test.u_top_1.datapath.Dw_mtvec[31:0]
+@22
+top_test.u_top_1.datapath.Ew_mtvec[31:0]
 [pattern_trace] 1
 [pattern_trace] 0

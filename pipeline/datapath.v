@@ -153,6 +153,7 @@ module datapath(
   exception exception(
     .clk(clk), .reset_x(reset_x),
     .Di_PC(Dw_PC),
+    .Di_ecall(Di_ecall),
     .Do_mtvec(Dw_mtvec)
   );
 

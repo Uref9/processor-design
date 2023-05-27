@@ -3,10 +3,15 @@ module exception (
   input clk, reset_x,
   // from datapath
   input [31:0] Di_PC,
+  // from controller
+  input Di_ecall,
 
   // to datapath
-  output reg [31:0] Do_mtvec
+  output [31:0] Do_mtvec
 );
+
+  assign Do_mtvec = r_mtvec;
+
 
   /* CSRs part */
   reg [31:0] r_mepc, r_mcause, r_mtvec;
@@ -20,12 +25,10 @@ module exception (
       r_mstatusb3MIE <= 1'b1;
       r_mstatusb7MPIE <= 1'b1;
     end
-    else begin
-      // ecall
-      r_mepc <= Di_PC; 
-      r_mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
-      r_mstatusb3MIE <= 1'b0;
-      Do_mtvec <= r_mtvec;
+    else if (Di_ecall) begin
+        r_mepc <= Di_PC; 
+        r_mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
+        r_mstatusb3MIE <= 1'b0;
     end
   end
   /* end of CSRs */
