@@ -1,0 +1,46 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Sat May 27 02:26:27 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Sat May 27 02:19:52 2023"
+[dumpfile_size] 563181
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/ecall.gtkw"
+[timestart] 155380
+[size] 1440 847
+[pos] -1 -1
+*-13.914623 175910 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.datapath.
+[sst_width] 244
+[signals_width] 304
+[sst_expanded] 1
+[sst_vpaned_height] 136
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+top_test.u_top_1.MREQ
+top_test.u_top_1.WRITE
+top_test.u_top_1.ACKI_n
+top_test.u_top_1.ACKD_n
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+top_test.u_top_1.DAD[31:0]
+top_test.u_top_1.DDT[31:0]
+top_test.u_top_1.datapath.Fw_PCPlus4[31:0]
+top_test.u_top_1.datapath.Ew_PCPlusImm[31:0]
+top_test.u_top_1.datapath.Ew_mtvec[31:0]
+top_test.u_top_1.datapath.Fw_ALUOutJalr[31:0]
+@28
+top_test.u_top_1.datapath.Ei_prePCSrc[1:0]
+@22
+top_test.u_top_1.datapath.Fw_prePCNext[31:0]
+top_test.u_top_1.datapath.Dw_PCPlusImm[31:0]
+@28
+top_test.u_top_1.datapath.Di_jal
+@23
+top_test.u_top_1.datapath.Fw_PCNext[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

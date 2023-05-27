@@ -103,9 +103,10 @@ module top(
     .Mo_memReq(MREQ), .Mo_memWrite(WRITE),
     .Mo_memSize(SIZE),
     // to datapath
-    .Do_immSrc(Dw_immSrc), .Do_jal(Dw_jal), .Do_ecall(Dw_ecall),
+    .Do_immSrc(Dw_immSrc), .Do_jal(Dw_jal),
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
-    .Eo_immPlusSrc(Ew_immPlusSrc), .Eo_prePCSrc(Ew_prePCSrc), 
+    .Eo_immPlusSrc(Ew_immPlusSrc), 
+    .Eo_prePCSrc(Ew_prePCSrc),
     .Mo_isLoadSigned(Mw_isLoadSigned), 
     .Wo_resultSrc(Ww_resultSrc),
     .Wo_regWrite(Ww_regWrite),

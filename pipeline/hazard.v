@@ -26,7 +26,7 @@ module hazard (
   output Eo_flush
 );
   wire w_lwStall;
-  wire w_takeBranchOrJalr;
+  wire w_takeBranchOrJalrOrEcall;
 
 
   assign Eo_forwardIn1Src = forwarding(
@@ -46,12 +46,12 @@ module hazard (
                     & ((Di_rs1 == Ei_rd)
                       | (Di_rs2 == Ei_rd));
 
-  assign w_takeBranchOrJalr = (Ei_prePCSrc != 2'b00);  // (takeBranch or jalr)
+  assign w_takeBranchOrJalrOrEcall = (Ei_prePCSrc != 2'b00);  // (takeBranch or jalr or ecall)
 
   assign  Fo_stall = w_lwStall;                    
   assign  Do_stall = w_lwStall;                    
-  assign  Do_flush = w_takeBranchOrJalr | Di_jal;
-  assign  Eo_flush = w_takeBranchOrJalr | w_lwStall;
+  assign  Do_flush = w_takeBranchOrJalrOrEcall | Di_jal;
+  assign  Eo_flush = w_takeBranchOrJalrOrEcall | w_lwStall;
 
 
   function [3:0] forwarding(
