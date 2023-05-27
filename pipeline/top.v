@@ -61,7 +61,7 @@ module top(
     .clk(clk), .reset_x(rst),
     .Fi_inst(IDT), .Mi_readData(Mw_readData),
     // from controller
-    .Di_immSrc(Dw_immSrc), 
+    .Di_immSrc(Dw_immSrc), .Di_jal(Dw_jal),
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_prePCSrc(Ew_prePCSrc), 
     .Mi_memSize(SIZE), .Mi_isLoadSigned(Mw_isLoadSigned), 
@@ -124,7 +124,7 @@ module top(
     .Ei_rs1(Ew_rs1), .Ei_rs2(Ew_rs2),
     .Ei_rd(Ew_rd), .Mi_rd(Mw_rd), .Wi_rd(Ww_rd),
     // from controller
-    .Di_jal(Dw_jalr),
+    .Di_jal(Dw_jal),
     .Ei_prePCSrc(Ew_prePCSrc),
     .Ei_resultSrc(Ew_resultSrc), .Mi_resultSrc(Mw_resultSrc),
     .Mi_regWrite(Mw_regWrite), .Wi_regWrite(Ww_regWrite),

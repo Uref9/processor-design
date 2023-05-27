@@ -18,6 +18,7 @@ module datapath(
   input [31:0]  Mi_readData, // from dmem
   // from controller
   input [2:0]   Di_immSrc,
+  input         Di_jal,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
@@ -111,7 +112,7 @@ module datapath(
   );
   mux2 pc_next_mux(
     .i_1(Fw_prePCNext), .i_2(Dw_PCPlusImm),
-    .i_sel(Ei_jal),
+    .i_sel(Di_jal),
     .o_1(Fw_PCNext)
   );
 

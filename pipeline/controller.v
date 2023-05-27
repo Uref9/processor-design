@@ -123,7 +123,7 @@ module controller(
 // end ID stage
 
 // EX stage
-  setPrePCSrc set_pc_src(
+  setPrePCSrc set_pre_pc_src(
     .i_branch(Ew_branch),
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_funct3(Ew_funct3),
