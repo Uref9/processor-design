@@ -31,6 +31,7 @@ module exceptionHandler (
       r_mepc <= Di_PC + 32'd4;  // Delete after impl. csrr+
       r_mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
       r_mstatusb3MIE <= 1'b0;
+      r_mstatusb7MPIE <= r_mstatusb3MIE;
     end
     else if (Di_mret) begin
       r_mstatusb3MIE <= r_mstatusb7MPIE;
