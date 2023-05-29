@@ -1,5 +1,5 @@
 # Proccesor Design
-- RISC-V (32I)
+- RISC-V (RV32I)
 - Verilog, SystemVerilog(test)
 
 # Version
@@ -7,10 +7,12 @@
 -
 - v0.1  temporary completion
 ## pipeline
+- 
+- v0.3 Correspond to ecall and mret Inst.
 - v0.2 Reduce jal penalty 2 to 1Cycle
-      (Change judging stage, IE to IDstage)
+      - (Change judging stage, IE to IDstage)
 - v0.1 temporary completion
-      (forwarding, stall, flush)
+      - (forwarding, stall, flush)
 
 # How to use
 `./sttest.sh` for single-top_test
