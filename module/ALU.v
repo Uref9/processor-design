@@ -47,7 +47,7 @@ module ALU(
   endfunction
 
   assign o_1 = operation(i_ctrl, i_1, i_2);
-  assign o_zero = (o_1 === 0)? 1 : 0;
+  assign o_zero = (o_1 == 0)? 1 : 0;
   assign o_neg = ($signed(o_1) < 0)? 1 : 0;
   assign o_negU = (i_1 < i_2)? 1 : 0;
 
