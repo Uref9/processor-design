@@ -15,27 +15,34 @@ module exceptionHandler (
 
 
   /* CSRs part */
-  reg [31:0] r_mepc, r_mcause, r_mtvec;
-  reg r_mstatusb3MIE, r_mstatusb7MPIE; // MIE, MPIE
+  reg [31:0] r_mstatus, r_mepc, r_mcause, r_mtvec;
+  // reg r_mstatusb3MIE, r_mstatusb7MPIE;  // MIE, MPIE
+  // reg [1:0] r_mstatusb12to11MPP; // MPP
 
   always @(posedge clk, negedge reset_x) begin
     if (!reset_x) begin
       r_mepc <= 32'b0;
       r_mcause <= 32'b0;
       r_mtvec <= 32'b0;
-      r_mstatusb3MIE <= 1'b1;
-      r_mstatusb7MPIE <= 1'b1;
+      r_mstatus <= 32'b0000_0000_0000_0000_0001_1000_1000_1000;
+      // r_mstatusb3MIE <= 1'b1;
+      // r_mstatusb7MPIE <= 1'b1;
+      // r_mstatusb12to11MPP <= 2'b11;
     end
     else if (Di_ecall) begin
       // r_mepc <= Di_PC; 
       r_mepc <= Di_PC + 32'd4;  // Delete after impl. csrr+
       r_mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
-      r_mstatusb3MIE <= 1'b0;
-      r_mstatusb7MPIE <= r_mstatusb3MIE;
+      r_mstatus[3] <= 1'b0;
+      r_mstatus[7] <= r_mstatus[3];
+      // r_mstatusb3MIE <= 1'b0;
+      // r_mstatusb7MPIE <= r_mstatusb3MIE;
     end
     else if (Di_mret) begin
-      r_mstatusb3MIE <= r_mstatusb7MPIE;
-      r_mstatusb7MPIE <= r_mstatusb3MIE;
+      r_mstatus[3] <= r_mstatus[7];
+      r_mstatus[7] <= r_mstatus[3];
+      // r_mstatusb3MIE <= r_mstatusb7MPIE;
+      // r_mstatusb7MPIE <= r_mstatusb3MIE;
     end
   end
   /* end of CSRs */
