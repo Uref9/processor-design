@@ -1,0 +1,46 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Tue May 30 03:17:36 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Tue May 30 03:17:22 2023"
+[dumpfile_size] 109270
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/resultM.gtkw"
+[timestart] 0
+[size] 2048 1099
+[pos] -1 -1
+*-13.914623 21460 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.controller.
+[treeopen] top_test.u_top_1.datapath.
+[treeopen] top_test.u_top_1.hazard.
+[sst_width] 193
+[signals_width] 304
+[sst_expanded] 1
+[sst_vpaned_height] 345
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+top_test.u_top_1.MREQ
+top_test.u_top_1.WRITE
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+top_test.u_top_1.DAD[31:0]
+top_test.u_top_1.DDT[31:0]
+@28
+top_test.u_top_1.datapath.Mi_resultMSrc[1:0]
+@22
+top_test.u_top_1.datapath.Mw_resultM[31:0]
+@28
+top_test.u_top_1.datapath.Wi_resultWSrc
+top_test.u_top_1.controller.Dw_resultWSrc
+top_test.u_top_1.controller.Eo_resultWSrc
+top_test.u_top_1.controller.Mw_resultWSrc
+@29
+top_test.u_top_1.controller.Wo_resultWSrc
+@22
+top_test.u_top_1.datapath.Ww_resultW[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
