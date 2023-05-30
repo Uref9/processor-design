@@ -29,11 +29,11 @@ module controller(
   output        Eo_ecall,
   output [1:0]  Eo_prePCSrc,    // and to hazard
   output        Mo_isLoadSigned,
-  output [1:0]  Wo_resultSrc,
-  output        Wo_regWrite, // and to hazard
+  output [1:0]  Mo_resultMSrc,
+  output        Wo_resultWSrc,
+  output        Wo_regWrite,   // and to hazard
   // to hazard
-  output [1:0]  Eo_resultSrc,
-  output [1:0]  Mo_resultSrc,
+  output        Eo_resultWSrc,
   output        Mo_regWrite
 );
 
@@ -54,8 +54,9 @@ module controller(
   wire        Dw_memWrite, Dw_memReq;
   wire [1:0]  Dw_memSize;
   wire        Dw_isLoadSigned;
+  wire [1:0]  Dw_resultMSrc;
     // to WB
-  wire [1:0]  Dw_resultSrc;
+  wire        Dw_resultWSrc;
   wire        Dw_regWrite;
 
   // EX stage wire
@@ -65,11 +66,15 @@ module controller(
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
   wire        Ew_isLoadSigned;
+  wire [1:0]  Ew_resultMSrc;
     // to WB
+  // wire        Ew_resultWSrc;
   wire        Ew_regWrite;
 
   // MEM stage wire
+  wire        Mo_resultWSrc;
     // to WB
+  wire        Mw_regWrite;
   wire        Mo_regWrite;
   
   // WB stage wire
@@ -84,7 +89,7 @@ module controller(
     .o_regWrite(Dw_regWrite),
     .o_ALUSrc(Dw_ALUSrc), .o_immSrc(Do_immSrc),
     .o_immPlusSrc(Dw_immPlusSrc), .o_isLoadSigned(Dw_isLoadSigned),
-    .o_resultSrc(Dw_resultSrc),
+    .o_resultMSrc(Dw_resultMSrc), .o_resultWSrc(Dw_resultWSrc),
 
     .o_branch(Dw_branch),
     .o_jal(Do_jal), .o_jalr(Dw_jalr),
@@ -146,40 +151,38 @@ module controller(
     .o_prePCSrc(Eo_prePCSrc)
   );
   // EX/MEM reg
-  dffREC #(8)
+  dffREC #(9)
   EXMEM_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(1'b0),
     .i_d({
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
+      Ew_resultMSrc,
       
-      Eo_resultSrc,
-      Ew_regWrite
+      Eo_resultWSrc, Ew_regWrite
     }),
     .o_q({
       Mo_memWrite, Mo_memReq, Mo_memSize,
       Mo_isLoadSigned,
+      Mo_resultMSrc,
 
-      Mo_resultSrc,
-      Mo_regWrite
+      Mw_resultWSrc, Mo_regWrite
     })
   );
 // end EX stage
 
 // MEM stage
   // MEM/WB reg
-  dffREC #(3)
+  dffREC #(2)
   MEMWB_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(1'b0),
     .i_d({
-      Mo_resultSrc,
-      Mo_regWrite
+      Mo_resultSrc, Mo_regWrite
     }),
     .o_q({
-      Wo_resultSrc,
-      Wo_regWrite
+      Wo_resultSrc, Wo_regWrite
     })
   );
 // end MEM stage
