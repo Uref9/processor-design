@@ -71,20 +71,5 @@ module hazard (
         forwarding = 2'b00;  // Ew_RD1
     else
         forwarding = 2'b00;  // Ew_RD1
-
-    // if (Ei_rs != 5'b0)
-    //   if (Ei_rs == Mi_rd)
-    //     if (Mi_regWrite)
-    //       if (Mi_resultSrc == 2'b00)
-    //                     forwarding = 2'b11;  // Mo_ALUOut
-    //       else if (Mi_resultSrc == 2'b10)       
-    //                     forwarding = 2'b10;  // Mw_immPlus
-    //       else          forwarding = 2'b00;  // Ew_RD1
-    //     else            forwarding = 2'b00;  // Ew_RD1
-          
-    //   else if ((Ei_rs == Wi_rd) & Wi_regWrite) 
-    //                     forwarding = 2'b01;  // Ww_result
-    //   else              forwarding = 2'b00;  // Ew_RD1
-    // else                forwarding = 2'b00;  // Ew_RD1
   endfunction
 endmodule

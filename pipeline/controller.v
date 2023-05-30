@@ -4,7 +4,7 @@
 `include "module/setPrePCSrc.v"
 `include "module/setMemSize.v"
 `include "module/dffREC.v"
-// `include "module/load2Cycle.v"
+
 
 module controller(
   // from test
@@ -72,10 +72,8 @@ module controller(
   wire        Ew_regWrite;
 
   // MEM stage wire
-  wire        Mo_resultWSrc;
     // to WB
-  wire        Mw_regWrite;
-  wire        Mo_regWrite;
+  wire        Mw_resultWSrc;
   
   // WB stage wire
 // end wire
@@ -113,7 +111,7 @@ module controller(
     .o_memSize(Dw_memSize)
   );
   // ID/EX reg
-  dffREC #(20)
+  dffREC #(21)
   IDEX_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(Ei_flush),
@@ -124,9 +122,9 @@ module controller(
 
       Dw_memWrite, Dw_memReq, Dw_memSize,
       Dw_isLoadSigned,
+      Dw_resultMSrc,
       
-      Dw_resultSrc,
-      Dw_regWrite
+      Dw_resultWSrc, Dw_regWrite
     }),
     .o_q({
       Eo_ALUCtrl, Eo_ALUSrc, 
@@ -135,9 +133,9 @@ module controller(
 
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
+      Ew_resultMSrc,
 
-      Eo_resultSrc,
-      Ew_regWrite
+      Eo_resultWSrc, Ew_regWrite
     })
   );
 // end ID stage
@@ -179,20 +177,12 @@ module controller(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(1'b0),
     .i_d({
-      Mo_resultSrc, Mo_regWrite
+      Mw_resultWSrc, Mo_regWrite
     }),
     .o_q({
-      Wo_resultSrc, Wo_regWrite
+      Wo_resultWSrc, Wo_regWrite
     })
   );
 // end MEM stage
-
-/* single */
-  // assign o_regWDwte = w_regWrite && w_regWriteLoad;
-  // load2Cycle load_2cycle(
-  //   .i_clk(i_clk), .i_opcode(w_opcode),
-  //   .o_PCEnable(o_PCEnable),
-  //   .o_regWriteLoad(w_regWriteLoad)
-  // );
 
 endmodule
