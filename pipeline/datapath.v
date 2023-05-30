@@ -1,12 +1,12 @@
+`include "module/mux2.v"
+`include "module/mux3.v"
+`include "module/mux4.v"
 // `include "module/dffREC.v"
 `include "module/adder.v"
-`include "module/mux3.v"
+`include "module/ALU.v"
 `include "module/rf32x32.v"
 `include "module/immExtend.v"
-`include "module/mux2.v"
-`include "module/ALU.v"
 `include "module/readDataExtend.v"
-`include "module/mux4.v"
 `include "module/exceptionHandler.v"
 
 `define HIGH  1'b1
@@ -29,7 +29,8 @@ module datapath(
   input         Ei_jal,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
-  input [1:0]   Wi_resultSrc,
+  input [1:0]   Mi_resultMSrc,
+  input         Wi_resultWSrc,
   input         Wi_regWrite,
   // from hazard
   input [1:0]   Ei_forwardIn1Src, Ei_forwardIn2Src,
@@ -88,14 +89,12 @@ module datapath(
     // to WB
   wire [31:0] Mi_readDataExt;
   wire [31:0] Mw_immPlus;
-  wire [31:0] Mw_PCPlus4;
+  wire [31:0] Mw_PCPlus4, Mw_resultM;
 
   // WB stage wire 
-  wire [31:0] Ww_ALUOut;
+  wire [31:0] Ww_resultM;
   wire [31:0] Ww_readDataExt;
-  wire [31:0] Ww_immPlus;
-  wire [31:0] Ww_PCPlus4;
-  wire [31:0] Ww_result;
+  wire [31:0] Ww_resultW;
 /* end wire */
 
 // IF stage logic
@@ -139,7 +138,7 @@ module datapath(
     .wr_n(~Wi_regWrite),
     .rd1_addr(Do_rs1), .rd2_addr(Do_rs2), 
     .wr_addr(Wo_rd),
-    .data_in(Ww_result),
+    .data_in(Ww_resultW),
 
     .data1_out(Dw_RD1), .data2_out(Dw_RD2)
   );
@@ -181,14 +180,14 @@ module datapath(
 
 // EX stage logic
   mux4 forward_in1_mux(
-    .i_1(Ew_RD1), .i_2(Ww_result), 
-    .i_3(Mw_immPlus), .i_4(Mo_ALUOut),
+    .i_1(Ew_RD1), .i_2(Mw_resultM),
+    .i_3(Ww_resultW), 
     .i_sel(Ei_forwardIn1Src), 
     .o_1(Ew_ALUIn1)
   );
   mux4 forward_in2_mux(
-    .i_1(Ew_RD2), .i_2(Ww_result), 
-    .i_3(Mw_immPlus), .i_4(Mo_ALUOut),
+    .i_1(Ew_RD2), .i_2(Mw_resultM),
+    .i_3(Ww_resultW), 
     .i_sel(Ei_forwardIn2Src), 
     .o_1(Ew_writeData)
   );
@@ -231,30 +230,33 @@ module datapath(
     .i_readData(Mi_readData), 
     .o_readDataExt(Mi_readDataExt)
   );
+  mux3 result_m_mux(
+    .i_1(Mo_ALUOut), .i_2(Mw_immPlus),
+    .i_3(Mw_PCPlus4),
+    .i_sel(Mi_resultMSrc),
+    .o_1(Mw_resultM)
+  );
 
   // MEM/WB reg
-  dffREC #(133)
+  dffREC #(69)
   MEMWB_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(`LOW),
     .i_d({
-      Mo_ALUOut, Mi_readDataExt,
-      Mw_immPlus, Mw_PCPlus4,
+      Mw_resultM, Mi_readDataExt,
       Mo_rd
     }),
     .o_q({
-      Ww_ALUOut, Ww_readDataExt,
-      Ww_immPlus, Ww_PCPlus4,
+      Ww_resultM, Ww_readDataExt,
       Wo_rd
     })
   );
 
 // WB stage logic
-  mux4 result_mux(
-    .i_1(Ww_ALUOut), .i_2(Ww_readDataExt),
-    .i_3(Ww_immPlus), .i_4(Ww_PCPlus4),
-    .i_sel(Wi_resultSrc),
-    .o_1(Ww_result)
+  mux2 result_w_mux(
+    .i_1(Ww_resultM), .i_2(Ww_readDataExt),
+    .i_sel(Wi_resultWSrc),
+    .o_1(Ww_resultW)
   );
 
 /* single */

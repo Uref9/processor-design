@@ -1,7 +1,7 @@
 #!/bin/bash
 
 name='top'
-type='single'
+type=$1
 
 iverilog -o ${type}/test/log/${type}_${name}.v.out \
   ${type}/${name}.v \
