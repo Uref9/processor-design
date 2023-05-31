@@ -12,8 +12,8 @@ module CSRs (
   input wcsr_n,
 
   // output
-  output [31:0] data_out,
-  output [31:0] mstatus_out
+  output [31:0] data_out
+  // output [31:0] mstatus_out
 
 
 );

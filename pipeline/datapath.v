@@ -9,6 +9,7 @@
 `include "module/readDataExtend.v"
 `include "module/exceptionHandler.v"
 `include "module/CSRs.v"
+`include "module/csrLU.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -27,7 +28,8 @@ module datapath(
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
   input [1:0]   Ei_prePCSrc,
-  input         Ei_jal,
+  input         Ei_csrWrite, Ei_csrSrc,
+  input [1:0]   Ei_csrLUCtrl,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Mi_resultMSrc,
@@ -62,25 +64,31 @@ module datapath(
   // ID stage wire
   // decode
   wire [4:0]  Dw_rd   = Do_inst[11:7];   // to WB
+  wire        Dw_zimm = Do_inst[19:15];
   assign      Do_rs1  = Do_inst[19:15];  // to EX
   assign      Do_rs2  = Do_inst[24:20];  // to EX
-  wire [11:0] Dw_csr  = Do_inst[31:20];
+  wire [11:0] Dw_csr  = Do_inst[31:20];  // to EX
+
 
   wire [31:0] Dw_PC; 
   wire [31:0] Dw_CSRsData; // to EX
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
   wire [31:0] Dw_immExt, Dw_PCPlusImm;
+  wire [31:0] Dw_zimmExt;
 
     // to WB
   wire [31:0] Dw_PCPlus4;
 
   // EX stage wire
   wire [31:0] Ew_RD1, Ew_RD2;
-  wire [31:0] Ew_ALUIn1, Ew_ALUIn2;
-  wire [31:0] Ew_immExt;
-  wire [31:0] Ew_PCPlusImm;
+  wire [31:0] Ew_RD1Fwd, Ew_ALUIn2;
+  wire [31:0] Ew_immExt, Ew_PCPlusImm;
+  wire [31:0] Ew_zimmExt;
   wire [31:0] Ew_CSRsData;
+  wire [11:0] Ew_csr;
+  wire [31:0] Ew_csrLUIn2;
+  wire [31:0] Ew_csrLUOut;
     // to MEM
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
@@ -90,6 +98,8 @@ module datapath(
   wire [4:0] Eo_rd;
 
   // MEM stage wire
+  wire [31:0] Mw_CSRsData;
+
     // to WB
   wire [31:0] Mi_readDataExt;
   wire [31:0] Mw_immPlus;
@@ -164,40 +174,41 @@ module datapath(
     .clk(clk), .reset_x(reset_x),
     //
     .csr_addr(Dw_csrFixed), 
-    .wr1_addr(), .data1_in(),
+    .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
       // special
       .Di_PC(Dw_PC),
       .ecall(Di_ecall), .mret(Di_mret),
     // 
-    .wcsr_n(),
+    .wcsr_n(Ei_csrWrite),
 
     //
-    .data_out(Dw_CSRsData),
-    .mstatus_out()
+    .data_out(Dw_CSRsData)
+    // .mstatus_out()
   );
-  // exceptionHandler exception_handler(
-  //   .clk(clk), .reset_x(reset_x),
-  //   .Di_PC(Dw_PC),
-  //   .Di_ecall(Di_ecall), .Di_mret(Di_mret),
-  //   .Do_mepc(Dw_mepc), .Do_mtvec(Dw_mtvec)
-  // );
-
+  assign Dw_zimmExt = {17'b0, Dw_zimm};
+  
   // ID/EX reg
-  dffREC #(207)
+  dffREC #(251)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
     .i_d({
-      Dw_RD1, Dw_RD2, Dw_immExt, Dw_CSRsData,
-      Dw_PCPlusImm, Dw_PCPlus4,
-      Dw_rd, 
-      Do_rs1, Do_rs2
+      Dw_RD1, Dw_RD2,
+      Dw_immExt, Dw_zimmExt,
+      Dw_PCPlusImm, Dw_csr,
+      Do_rs1, Do_rs2,
+
+      Dw_CSRsData, Dw_PCPlus4,
+      Dw_rd
     }),
     .o_q({
-      Ew_RD1, Ew_RD2, Ew_immExt, Ew_CSRsData,
-      Ew_PCPlusImm, Ew_PCPlus4,
-      Eo_rd, 
-      Eo_rs1, Eo_rs2
+      Ew_RD1, Ew_RD2,
+      Ew_immExt, Ew_zimmExt,
+      Ew_PCPlusImm, Ew_csr,
+      Eo_rs1, Eo_rs2,
+
+      Ew_CSRsData, Ew_PCPlus4,
+      Eo_rd
     })
   );
 
@@ -206,7 +217,7 @@ module datapath(
     .i_1(Ew_RD1), .i_2(Mw_resultM),
     .i_3(Ww_resultW), 
     .i_sel(Ei_forwardIn1Src), 
-    .o_1(Ew_ALUIn1)
+    .o_1(Ew_RD1Fwd)
   );
   mux4 forward_in2_mux(
     .i_1(Ew_RD2), .i_2(Mw_resultM),
@@ -220,7 +231,7 @@ module datapath(
   );
   ALU alu(
     .i_ctrl(Ei_ALUCtrl),
-    .i_1(Ew_ALUIn1), .i_2(Ew_ALUIn2),
+    .i_1(Ew_RD1Fwd), .i_2(Ew_ALUIn2),
     .o_1(Ew_ALUOut),
     .o_zero(Eo_zero), .o_neg(Eo_neg), .o_negU(Eo_negU)
   );
@@ -229,20 +240,32 @@ module datapath(
     .i_sel(Ei_immPlusSrc),
     .o_1(Ew_immPlus)
   );
+  mux2 csr_lu_in2_mux(
+    .i_1(Ew_RD1Fwd), .i_2(Ew_zimmExt),
+    .i_sel(Ei_csrSrc),
+    .o_1(Ew_csrLUIn2)
+  );
+  csrLU csr_lu(
+    .i_ctrl(Ei_csrLUCtrl),
+    .i_1(Ew_CSRsData), .i_2(Ew_csrLUIn2),
+    .o_1(Ew_csrLUOut)
+  );
 
   // EX/MEM reg
-  dffREC #(133)
+  dffREC #(165)
   EXMEM_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(`LOW),
     .i_d({
       Ew_ALUOut, Ew_writeData,
-      Ew_immPlus, Ew_PCPlus4,
+      Ew_immPlus, Ew_CSRsData, Ew_PCPlus4,
+
       Eo_rd
     }),
     .o_q({
       Mo_ALUOut, Mo_writeData,
-      Mw_immPlus, Mw_PCPlus4,
+      Mw_immPlus, Mw_CSRsData, Mw_PCPlus4,
+
       Mo_rd
     })
   );
@@ -253,9 +276,9 @@ module datapath(
     .i_readData(Mi_readData), 
     .o_readDataExt(Mi_readDataExt)
   );
-  mux3 result_m_mux(
+  mux4 result_m_mux(
     .i_1(Mo_ALUOut), .i_2(Mw_immPlus),
-    .i_3(Mw_PCPlus4),
+    .i_3(Mw_PCPlus4), .i_4(Mw_CSRsData),
     .i_sel(Mi_resultMSrc),
     .o_1(Mw_resultM)
   );
@@ -285,7 +308,6 @@ module datapath(
 /* single */
   // assign w_opcode = i_inst[6:0];
   // assign w_funct3 = i_inst[14:12];
-  // assign w_zimm = i_inst[19:15];
   // assign w_succ = i_inst[23:20];
   // assign w_pred = i_inst[27:24];
   // assign w_funct7 = i_inst[31:25];
