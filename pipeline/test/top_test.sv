@@ -14,10 +14,10 @@ module top_test;
       //$shm_open("waves.shm");
       //$shm_probe("AS");
    
-      $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
    // For Icarus verilog
-      $dumpfile("./pipeline/test/log/top_test.vcd");
-      $dumpvars(0, u_top_1);
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
+      // $dumpfile("./pipeline/test/log/top_test.vcd");
+      // $dumpvars(0, u_top_1);
 
    end
    
@@ -118,8 +118,8 @@ module top_test;
          load_task1;
          store_task1;
          
-         if (0 < i && i < 40) info_registers_task;
-         if (0 < i && i < 40) info_CSRs_task;
+         // if (0 < i && i < 40) info_registers_task;
+         // if (0 < i && i < 40) info_CSRs_task;
          
          // #(STB);
          #CYCLE;
@@ -239,7 +239,7 @@ module top_test;
                   $display("\nExited by program.");
                   $display("TOTAL: %d [ns]", i*CYCLE);
 
-                  dump_task1;
+                  // dump_task1;
                   info_registers_task;
 
                   $finish;

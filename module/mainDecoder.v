@@ -16,7 +16,7 @@ module mainDecoder (
   output o_excption
 );
 
-  assign o_isLoadSigned = i_funct3[2];
+  assign o_isLoadSigned = ~i_funct3[2];
   assign o_immPlusSrc = ~i_opcode[5];
   assign {o_ALUOp, o_ALUSrc, o_immSrc, 
           o_resultMSrc, o_resultWSrc,
