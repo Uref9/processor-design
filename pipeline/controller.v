@@ -26,8 +26,9 @@ module controller(
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
-  output        Eo_ecall,
   output [1:0]  Eo_prePCSrc,    // and to hazard
+  output        Eo_csrWrite, Eo_csrSrc,
+  output [1:0]  Eo_csrLUCtrl,
   output        Mo_isLoadSigned,
   output [1:0]  Mo_resultMSrc,
   output        Wo_resultWSrc,
@@ -50,6 +51,8 @@ module controller(
   wire [2:0]  Dw_funct3 = Di_inst[14:12];
   wire        Dw_immPlusSrc;
   wire        Dw_branch, Dw_jalr;
+  wire        Dw_csrWrite, Dw_csrSrc;
+  wire [1:0]  Dw_csrLUCtrl;
     // to MEM
   wire        Dw_memWrite, Dw_memReq;
   wire [1:0]  Dw_memSize;
@@ -62,6 +65,7 @@ module controller(
   // EX stage wire
   wire [2:0] Ew_funct3;
   wire        Ew_branch, Ew_jalr;
+  wire        Ew_ecall;
     // to MEM
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
@@ -104,14 +108,16 @@ module controller(
     .i_exception(Dw_exception),
     .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
     
-    .o_ecall(Do_ecall), .o_mret(Do_mret)
+    .o_ecall(Do_ecall), .o_mret(Do_mret),
+    .o_csrWrite(Dw_csrWrite), .o_csrSrc(Dw_csrSrc),
+    .o_csrLUCtrl(Dw_csrLUCtrl)
   );
   setMemSize set_mem_size(
     .i_funct3(Dw_funct3),
     .o_memSize(Dw_memSize)
   );
   // ID/EX reg
-  dffREC #(21)
+  dffREC #(25)
   IDEX_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(Ei_flush),
@@ -119,6 +125,7 @@ module controller(
       Dw_ALUCtrl, Dw_ALUSrc, 
       Dw_immPlusSrc, Do_ecall,
       Dw_funct3, Dw_branch, Dw_jalr,
+      Dw_csrWrite, Dw_csrSrc, Dw_csrLUCtrl,
 
       Dw_memWrite, Dw_memReq, Dw_memSize,
       Dw_isLoadSigned,
@@ -128,8 +135,9 @@ module controller(
     }),
     .o_q({
       Eo_ALUCtrl, Eo_ALUSrc, 
-      Eo_immPlusSrc, Eo_ecall,
+      Eo_immPlusSrc, Ew_ecall,
       Ew_funct3, Ew_branch, Ew_jalr, 
+      Eo_csrWrite, Eo_csrSrc, Eo_csrLUCtrl,
 
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
@@ -144,7 +152,7 @@ module controller(
   setPrePCSrc set_pre_pc_src(
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_branch(Ew_branch),
-    .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), .i_ecall(Eo_ecall),
+    .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), .i_ecall(Ew_ecall),
 
     .o_prePCSrc(Eo_prePCSrc)
   );

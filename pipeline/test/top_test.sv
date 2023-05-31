@@ -152,12 +152,12 @@ module top_test;
 
    task info_CSRs_task;
       $write(
-         "mepc: %h, ", u_top_1.datapath.exception_handler.r_mepc,
-         "mcause: %b:%0d, ",   u_top_1.datapath.exception_handler.r_mcause[31],
-                              u_top_1.datapath.exception_handler.r_mcause[30:0],
-         "mtvec: %h\n", u_top_1.datapath.exception_handler.r_mtvec,
-         "mstatus[3](MIE): %b, ", u_top_1.datapath.exception_handler.r_mstatus[3],
-         "mstatus[7](MPIE): %b\n", u_top_1.datapath.exception_handler.r_mstatus[7],
+         "mepc: %h, ", u_top_1.datapath.csregister.mepc,
+         "mcause: %b:%0d, ",   u_top_1.datapath.csregister.mcause[31],
+                              u_top_1.datapath.csregister.mcause[30:0],
+         "mtvec: %h\n", u_top_1.datapath.csregister.mtvec,
+         "mstatus[3](MIE): %b, ", u_top_1.datapath.csregister.mstatus[3],
+         "mstatus[7](MPIE): %b\n", u_top_1.datapath.csregister.mstatus[7],
       );
    endtask
 

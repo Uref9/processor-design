@@ -36,6 +36,8 @@ module top(
   wire        Ew_ALUSrc;
   wire        Ew_immPlusSrc;
   wire [1:0]  Ew_prePCSrc; // and to hazard
+  wire        Ew_csrWrite, Ew_csrSrc;
+  wire [1:0]  Ew_csrLUCtrl;
   wire        Mw_isLoadSigned;
   wire [1:0]  Mw_resultMSrc;
   wire        Ww_resultWSrc;
@@ -111,6 +113,8 @@ module top(
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), 
     .Eo_prePCSrc(Ew_prePCSrc),
+    .Eo_csrWrite(Ew_csrWrite), .Eo_csrSrc(Ew_csrSrc),
+    .Eo_csrLUCtrl(Ew_csrLUCtrl),
     .Mo_isLoadSigned(Mw_isLoadSigned), 
     .Mo_resultMSrc(Mw_resultMSrc),
     .Wo_resultWSrc(Ww_resultWSrc),
