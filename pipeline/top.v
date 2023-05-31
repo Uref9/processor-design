@@ -69,6 +69,8 @@ module top(
     .Di_mret(Dw_mret), .Di_ecall(Dw_ecall), 
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_prePCSrc(Ew_prePCSrc), 
+    .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
+    .Ei_csrLUCtrl(Ew_csrLUCtrl),
     .Mi_memSize(SIZE), .Mi_isLoadSigned(Mw_isLoadSigned), 
     .Mi_resultMSrc(Mw_resultMSrc),
     .Wi_resultWSrc(Ww_resultWSrc),

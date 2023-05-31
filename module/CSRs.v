@@ -56,7 +56,7 @@ module CSRs (
       mstatus[3] <= mstatus[7];
       mstatus[7] <= mstatus[3];
     end
-    else if (wcsr_n) begin
+    else if (!wcsr_n) begin
       case (wr1_addr)
         12'h300: mstatus <= data1_in;
 

@@ -64,7 +64,7 @@ module datapath(
   // ID stage wire
   // decode
   wire [4:0]  Dw_rd   = Do_inst[11:7];   // to WB
-  wire        Dw_zimm = Do_inst[19:15];
+  wire [4:0]  Dw_zimm = Do_inst[19:15];
   assign      Do_rs1  = Do_inst[19:15];  // to EX
   assign      Do_rs2  = Do_inst[24:20];  // to EX
   wire [11:0] Dw_csr  = Do_inst[31:20];  // to EX
@@ -179,7 +179,7 @@ module datapath(
       .Di_PC(Dw_PC),
       .ecall(Di_ecall), .mret(Di_mret),
     // 
-    .wcsr_n(Ei_csrWrite),
+    .wcsr_n(!Ei_csrWrite),
 
     //
     .data_out(Dw_CSRsData)

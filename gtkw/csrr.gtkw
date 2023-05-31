@@ -1,0 +1,54 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Wed May 31 06:52:23 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Wed May 31 06:52:15 2023"
+[dumpfile_size] 232641
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/csrr.gtkw"
+[timestart] 257830
+[size] 1440 847
+[pos] -1 -1
+*-13.914623 296280 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.datapath.
+[sst_width] 193
+[signals_width] 304
+[sst_expanded] 1
+[sst_vpaned_height] 253
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+top_test.u_top_1.DAD[31:0]
+top_test.u_top_1.DDT[31:0]
+top_test.u_top_1.datapath.Dw_csr[11:0]
+top_test.u_top_1.datapath.Dw_csrFixed[11:0]
+top_test.u_top_1.datapath.Dw_CSRsData[31:0]
+top_test.u_top_1.datapath.Ew_CSRsData[31:0]
+top_test.u_top_1.datapath.Ew_csrLUOut[31:0]
+top_test.u_top_1.datapath.Mw_resultM[31:0]
+top_test.u_top_1.datapath.Ww_resultW[31:0]
+@28
+top_test.u_top_1.datapath.Wi_regWrite
+top_test.u_top_1.controller.Dw_regWrite
+top_test.u_top_1.controller.Ew_regWrite
+top_test.u_top_1.controller.Mo_regWrite
+top_test.u_top_1.controller.Wo_regWrite
+@22
+top_test.u_top_1.datapath.csregister.wr1_addr[11:0]
+@28
+top_test.u_top_1.datapath.csregister.wcsr_n
+@22
+top_test.u_top_1.datapath.csregister.data1_in[31:0]
+@28
+top_test.u_top_1.datapath.Dw_zimm
+@22
+top_test.u_top_1.datapath.Dw_zimmExt[31:0]
+@23
+top_test.u_top_1.datapath.Ew_zimmExt[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
