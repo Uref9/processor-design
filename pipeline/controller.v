@@ -1,9 +1,9 @@
+// `include "module/dffREC.v"
 `include "module/mainDecoder.v"
 `include "module/ALUDecoder.v"
 `include "module/exceptionDecoder.v"
 `include "module/setPrePCSrc.v"
 `include "module/setMemSize.v"
-`include "module/dffREC.v"
 
 
 module controller(

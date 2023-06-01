@@ -1,5 +1,5 @@
-`include "pipeline/controller.v"
 `include "pipeline/datapath.v"
+`include "pipeline/controller.v"
 `include "pipeline/hazard.v"
 
 module top(
