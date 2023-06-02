@@ -7,6 +7,7 @@
 -
 - v0.1  temporary completion
 ## pipeline
+- v0.5-pre Correspond to csrrw, etc. (not completely confirm)
 - v0.4 Correspond to Forwarding MEM to EX in jal, jalr
 - v0.3 Correspond to ecall(only direct-mode) and mret Inst.
 - v0.2 Reduce jal penalty 2 to 1Cycle
@@ -15,7 +16,7 @@
       - (forwarding, stall, flush)
 
 # How to use
-`./sttest.sh` for single-top_test
+`./shell/toptest.sh [single | pipeline]` to top_test for single or pipeline
 
 # Naming convention
 
