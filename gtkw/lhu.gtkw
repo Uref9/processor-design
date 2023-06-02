@@ -1,0 +1,37 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Wed May 31 07:17:24 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Wed May 31 06:52:15 2023"
+[dumpfile_size] 232641
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/lhu.gtkw"
+[timestart] 206240
+[size] 1440 847
+[pos] -1 -1
+*-13.914623 256890 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.datapath.
+[sst_width] 193
+[signals_width] 304
+[sst_expanded] 1
+[sst_vpaned_height] 253
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+top_test.u_top_1.DAD[31:0]
+top_test.u_top_1.DDT[31:0]
+top_test.u_top_1.datapath.Mi_readData[31:0]
+top_test.u_top_1.datapath.Mi_readDataExt[31:0]
+@28
+top_test.u_top_1.SIZE[1:0]
+top_test.u_top_1.controller.Mo_memSize[1:0]
+top_test.u_top_1.controller.Ew_memSize[1:0]
+@29
+top_test.u_top_1.controller.Dw_memSize[1:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -14,8 +14,8 @@ module top_test;
       //$shm_open("waves.shm");
       //$shm_probe("AS");
    
-      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
    // For Icarus verilog
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
       // $dumpfile("./pipeline/test/log/top_test.vcd");
       // $dumpvars(0, u_top_1);
 
@@ -119,7 +119,7 @@ module top_test;
          store_task1;
          
          // if (0 < i && i < 40) info_registers_task;
-         // if (0 < i && i < 20) info_CSRs_task;
+         // if (0 < i && i < 40) info_CSRs_task;
          
          // #(STB);
          #CYCLE;
@@ -152,12 +152,20 @@ module top_test;
 
    task info_CSRs_task;
       $write(
-         "mepc: %h, ", u_top_1.datapath.exception_handler.r_mepc,
-         "mcause: %b:%0d, ",   u_top_1.datapath.exception_handler.r_mcause[31],
-                              u_top_1.datapath.exception_handler.r_mcause[30:0],
-         "mtvec: %h\n", u_top_1.datapath.exception_handler.r_mtvec,
-         "mstatus[3](MIE): %b, ", u_top_1.datapath.exception_handler.r_mstatusb3MIE,
-         "mstatus[7](MPIE): %b\n", u_top_1.datapath.exception_handler.r_mstatusb7MPIE,
+         "----- CSRs -----\n",
+         "mstatus: %h, ", u_top_1.datapath.csregister.mstatus,
+         "(MIE: %b, ", u_top_1.datapath.csregister.mstatus[3],
+         "MPIE: %b)\n", u_top_1.datapath.csregister.mstatus[7],
+         "mie: %h, ", u_top_1.datapath.csregister.mie,
+         "mtvec: %h\n", u_top_1.datapath.csregister.mtvec,
+         "mscratch: %h, ", u_top_1.datapath.csregister.mscratch,
+         "mepc: %h, ", u_top_1.datapath.csregister.mepc,
+         "mcause: %h, ", u_top_1.datapath.csregister.mcause,
+         // "mcause: %b:%0d, ",   u_top_1.datapath.csregister.mcause[31],
+         //                      u_top_1.datapath.csregister.mcause[30:0],
+         "mtval: %h, ", u_top_1.datapath.csregister.mtval,
+         "mip: %h\n", u_top_1.datapath.csregister.mip,
+         "-----------------\n",
       );
    endtask
 

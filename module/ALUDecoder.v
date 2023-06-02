@@ -16,7 +16,7 @@ module ALUDecoder (
   );
 
     case (i_ALUOp)
-      2'b00:        ALUDecoder = 4'b0000; // load, store, jalr
+      2'b00:        ALUDecoder = 4'b0000; // load, store, jalr, etc.
       2'b01:        ALUDecoder = 4'b0001; // B type
       2'b10: 
         case (i_funct3)
