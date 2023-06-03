@@ -1,7 +1,7 @@
 `include "module/mainDecoder.v"
 `include "module/ALUDecoder.v"
 `include "module/exceptionDecoder.v"
-`include "module/setPrePCSrc.v"
+`include "module/setPCSrc.v"
 `include "module/setMemSize.v"
 `include "module/dffREC.v"
 
@@ -26,7 +26,7 @@ module controller(
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
-  output [1:0]  Eo_prePCSrc,    // and to hazard
+  output [1:0]  Eo_PCSrc,    // and to hazard
   output        Eo_csrWrite, Eo_csrSrc,
   output [1:0]  Eo_csrLUCtrl,
   output        Mo_isLoadSigned,
@@ -154,7 +154,7 @@ module controller(
     .i_branch(Ew_branch),
     .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), .i_ecall(Ew_ecall),
 
-    .o_prePCSrc(Eo_prePCSrc)
+    .o_PCSrc(Eo_PCSrc)
   );
   // EX/MEM reg
   dffREC #(9)
