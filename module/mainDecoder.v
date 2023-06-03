@@ -58,7 +58,7 @@ module mainDecoder (
           3'b000:     mainDecoder = 18'b00_0_000_11_0_0_0_0_0_0_0_0_01;  // I (e~), mret, sret, wfi, sfence.vma, ???
           default:    mainDecoder = 18'b00_0_000_11_0_1_0_0_0_0_0_1_00;  // I (csrr~)
         endcase
-      default:        mainDecoder = 18'bxx_x_xxx_xx_x_x_x_x_x_x_x_x_10;  // (Illegal Inst.) 
+      default:        mainDecoder = 18'b00_0_000_00_0_0_0_0_0_0_0_0_10;  // (Illegal Inst.) 
     endcase
   endfunction
 endmodule
