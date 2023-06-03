@@ -27,7 +27,7 @@ module datapath(
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
-  input [1:0]   Ei_prePCSrc,
+  input [1:0]   Ei_PCSrc,
   input         Ei_csrWrite, Ei_csrSrc,
   input [1:0]   Ei_csrLUCtrl,
   input [1:0]   Mi_memSize,
@@ -124,16 +124,16 @@ module datapath(
     .o_1(Fw_PCPlus4)
   );
   assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
-  mux4 pre_pc_next_mux(
-    .i_1(Fw_PCPlus4), .i_2(Ew_PCPlusImm), 
-    .i_3(Ew_CSRsData), .i_4(Fw_ALUOutJalr),
-    .i_sel(Ei_prePCSrc),
-    .o_1(Fw_prePCNext)
-  );
-  mux3 pc_next_mux(
-    .i_1(Fw_prePCNext), .i_2(Dw_PCPlusImm),
+  mux3 pre_pc_next_mux(
+    .i_1(Fw_PCPlus4), .i_2(Dw_PCPlusImm),
     .i_3(Dw_CSRsData),
     .i_sel({ Di_mret, Di_jal }),
+    .o_1(Fw_prePCNext)
+  );
+  mux4 pc_next_mux(
+    .i_1(Fw_prePCNext), .i_2(Ew_PCPlusImm), 
+    .i_3(Ew_CSRsData), .i_4(Fw_ALUOutJalr),
+    .i_sel(Ei_PCSrc),
     .o_1(Fw_PCNext)
   );
 

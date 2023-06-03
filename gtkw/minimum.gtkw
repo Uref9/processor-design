@@ -1,12 +1,12 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Mon May  8 08:47:21 2023
+[*] Sat Jun  3 00:42:10 2023
 [*]
-[dumpfile] "/Users/yuu/Devl/cpc_dev/prc_design_dev/test/log/top_test.vcd"
-[dumpfile_mtime] "Mon May  8 08:46:41 2023"
-[dumpfile_size] 254536
-[savefile] "/Users/yuu/Devl/cpc_dev/prc_design_dev/minimum.gtkw"
-[timestart] 0
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Sat Jun  3 00:33:42 2023"
+[dumpfile_size] 969796
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/minimum.gtkw"
+[timestart] 326610
 [size] 1440 847
 [pos] -1 -1
 *-13.914623 17440 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -19,11 +19,6 @@
 @28
 top_test.u_top_1.clk
 top_test.u_top_1.rst
-top_test.u_top_1.MREQ
-top_test.u_top_1.WRITE
-top_test.u_top_1.ACKI_n
-@29
-top_test.u_top_1.ACKD_n
 @22
 top_test.u_top_1.IAD[31:0]
 top_test.u_top_1.IDT[31:0]
