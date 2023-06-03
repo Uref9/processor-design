@@ -46,8 +46,8 @@ module CSRs (
       mip <= 32'b0;
     end
     else if (ecall) begin
-      mepc <= Di_PC; 
-      // mepc <= Di_PC + 32'd4;  // Delete after impl. csrr+
+      // mepc <= Di_PC; 
+      mepc <= Di_PC + 32'd4;  // when not impl. csrr+
       mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
       mstatus[3] <= 1'b0;
       mstatus[7] <= mstatus[3];

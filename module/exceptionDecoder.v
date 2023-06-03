@@ -9,10 +9,7 @@ module exceptionDecoder (
   output o_ecall, o_mret
 );
 
-  assign {
-    o_ecall, o_mret,
-    o_csrWrite, o_csrSrc, o_csrLUCtrl
-  } 
+  assign { o_ecall, o_mret } 
   = exceptionDecoder( i_exception, i_funct3, i_funct12 );
 
   function [1:0] exceptionDecoder(
