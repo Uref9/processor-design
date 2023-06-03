@@ -171,7 +171,8 @@ module datapath(
 
   // exception handling
   wire [11:0] Dw_csrFixed = 
-    Di_exception ? 12'h305 : Dw_csr; // mtvec(305) or csr to CSRsAddr
+    Di_exception ? 12'h305 : (Di_mret ? 12'h341
+                                      : Dw_csr); // mtvec(305) or csr to CSRsAddr
 
   CSRs csregister(
     //

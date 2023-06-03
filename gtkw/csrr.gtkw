@@ -1,18 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Sat Jun  3 00:42:45 2023
+[*] Sat Jun  3 08:06:29 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
-[dumpfile_mtime] "Sat Jun  3 00:33:42 2023"
-[dumpfile_size] 969796
+[dumpfile_mtime] "Sat Jun  3 07:56:58 2023"
+[dumpfile_size] 1663171
 [savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/csrr.gtkw"
-[timestart] 824970
+[timestart] 819750
 [size] 1440 847
 [pos] -1 -1
-*-13.914623 856240 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.914623 837040 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top_test.
 [treeopen] top_test.u_top_1.
-[sst_width] 193
+[treeopen] top_test.u_top_1.controller.
+[treeopen] top_test.u_top_1.datapath.
+[sst_width] 286
 [signals_width] 304
 [sst_expanded] 1
 [sst_vpaned_height] 253
@@ -24,5 +26,9 @@ top_test.u_top_1.IAD[31:0]
 top_test.u_top_1.IDT[31:0]
 top_test.u_top_1.DAD[31:0]
 top_test.u_top_1.DDT[31:0]
+top_test.u_top_1.datapath.csregister.mcause[31:0]
+top_test.u_top_1.datapath.csregister.mcause_in[3:0]
+@29
+top_test.u_top_1.controller.exc_decoder.o_causeNum
 [pattern_trace] 1
 [pattern_trace] 0

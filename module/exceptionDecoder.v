@@ -6,7 +6,8 @@ module exceptionDecoder (
   input [2:0] i_funct3,
   input [11:0] i_funct12,
 
-  output o_causeNum, o_exception, o_mret
+  output [3:0] o_causeNum,
+  output o_exception, o_mret
 );
 
   assign { o_causeNum, o_exception, o_mret } 
