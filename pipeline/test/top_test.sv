@@ -239,7 +239,7 @@ module top_test;
                   $display("\nExited by program.");
                   $display("TOTAL: %d [ns]", i*CYCLE);
 
-                  dump_task1;
+                  // dump_task1;
                   info_registers_task;
 
                   $finish;
