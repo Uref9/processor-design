@@ -5,8 +5,9 @@ module CSRs (
   input [11:0] csr_addr,
   input [11:0] wr1_addr,
   input [31:0] data1_in,
+  input [31:0] mepc_in, mcause_in,
+  // input         mstatus_update,
     // special
-    input [31:0] Di_PC,
     input        ecall, mret,
   // from controller
   input wcsr_n,
@@ -14,8 +15,6 @@ module CSRs (
   // output
   output [31:0] data_out
   // output [31:0] mstatus_out
-
-
 );
   // [11:10] [9:8] [7:4] 
   // 00 11 XXXX 0x300-0x3ff
@@ -29,9 +28,10 @@ module CSRs (
               mcause,     // 342
               mtval,      // 343
               mip;        // 344
+
   // read
   assign data_out = readCSRs(csr_addr);
-  assign mstatus_out = mstatus;
+  // assign mstatus_out = mstatus;
 
   // write
   always @(negedge clk, negedge reset_x) begin
@@ -46,9 +46,9 @@ module CSRs (
       mip <= 32'b0;
     end
     else if (ecall) begin
-      // mepc <= Di_PC; 
-      mepc <= Di_PC + 32'd4;  // when not impl. csrr+
-      mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
+      mepc <= mepc_in; 
+      // mepc <= mepc_in + 32'd4;  // when not impl. csrr+
+      mcause <= mcause_in;  // 11
       mstatus[3] <= 1'b0;
       mstatus[7] <= mstatus[3];
     end

@@ -169,19 +169,20 @@ module datapath(
   wire [11:0] Dw_csrFixed = Di_ecall ? 12'h305 
                                       : (Di_mret ? 12'h341 
                                                   : Dw_csr);
+  wire [31:0] Dw_mcause = Di_ecall? 32'd11 : 32'd0;
   CSRs csregister(
     //
     .clk(clk), .reset_x(reset_x),
     //
     .csr_addr(Dw_csrFixed), 
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
+    .mepc_in(Dw_PC), .mcause_in(Dw_mcause),
+    // .mstatus_update()
       // special
-      .Di_PC(Dw_PC),
       .ecall(Di_ecall), .mret(Di_mret),
     // 
     .wcsr_n(!Ei_csrWrite),
 
-    //
     .data_out(Dw_CSRsData)
     // .mstatus_out()
   );
