@@ -92,6 +92,8 @@ module controller(
     .o_ALUSrc(Dw_ALUSrc), .o_immSrc(Do_immSrc),
     .o_immPlusSrc(Dw_immPlusSrc), .o_isLoadSigned(Dw_isLoadSigned),
     .o_resultMSrc(Dw_resultMSrc), .o_resultWSrc(Dw_resultWSrc),
+    .o_csrWrite(Dw_csrWrite), .o_csrSrc(Dw_csrSrc),
+    .o_csrLUCtrl(Dw_csrLUCtrl),
 
     .o_branch(Dw_branch),
     .o_jal(Do_jal), .o_jalr(Dw_jalr),
@@ -108,9 +110,7 @@ module controller(
     .i_exception(Dw_exception),
     .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
     
-    .o_ecall(Do_ecall), .o_mret(Do_mret),
-    .o_csrWrite(Dw_csrWrite), .o_csrSrc(Dw_csrSrc),
-    .o_csrLUCtrl(Dw_csrLUCtrl)
+    .o_ecall(Do_ecall), .o_mret(Do_mret)
   );
   setMemSize set_mem_size(
     .i_funct3(Dw_funct3),

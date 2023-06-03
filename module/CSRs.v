@@ -39,7 +39,7 @@ module CSRs (
       mstatus <= 32'b0000_0000_0000_0000_0001_1000_1000_1000;
       mie <= 32'b0;
       mtvec <= 32'b0;
-      mscratch <= 32'h802_0000;
+      mscratch <= 32'h802_0000; // ?
       mepc <= 32'b0;
       mcause <= 32'b0;
       mtval <= 32'b0;
