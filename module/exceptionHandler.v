@@ -1,16 +1,22 @@
 // module exceptionHandler (
 //   // from datapath
-//   input [31:0] Di_PC,
 //   input [11:0] Di_csr,
 //   // from controller
-//   input Di_ecall, Di_mret,
+//   input Di_mret, Di_exception,
 
 //   // to datapath
-//   output [31:0] Do_CSRsData
+//   output [11:0] Do_csrFixed
 // );
-//   wire [11:0] Dw_csrFixed = ecall ? 12'h305 
-//                                   : (mret ? 12'h341 
-//                                           : Di_csr);
+//   // assign Do_csrFixed = Di_ecall ? 12'h305 
+//   //                               : (Di_mret ? 12'h341 
+//   //                                           : Di_csr);
+
+//   function [11:0] csrFix(
+//     input [11:0] Di_csr,
+//     input Di_mret, Di_exception
+//   );
+
+//   endfunction
 
 //   /* CSRs part */
 // endmodule

@@ -1,3 +1,7 @@
+// mstatus bit field
+`define MIE 3
+`define MPIE 7
+
 module CSRs (
   // from test
   input clk, reset_x,
@@ -5,12 +9,14 @@ module CSRs (
   input [11:0] csr_addr,
   input [11:0] wr1_addr,
   input [31:0] data1_in,
-  input [31:0] mepc_in, mcause_in,
+  input [31:0] mepc_in, mtval_in, 
+  input [3:0] mcause_in,
   // input         mstatus_update,
     // special
-    input        ecall, mret,
+    input exception, mret,
   // from controller
   input wcsr_n,
+
 
   // output
   output [31:0] data_out
@@ -36,25 +42,27 @@ module CSRs (
   // write
   always @(negedge clk, negedge reset_x) begin
     if (!reset_x) begin
-      mstatus <= 32'b0000_0000_0000_0000_0001_1000_1000_1000;
-      mie <= 32'b0;
-      mtvec <= 32'b0;
+      mstatus <= 32'bxxxx_xxxx_xxxx_xxxx_xxx1_1xxx_1xxx_1xxx;
+      mie <= 32'bx;
+      mtvec <= 32'h0000_0000;
       mscratch <= 32'h802_0000; // ?
-      mepc <= 32'b0;
-      mcause <= 32'b0;
-      mtval <= 32'b0;
-      mip <= 32'b0;
+      mepc <= 32'bx;
+      mcause <= 32'bx;
+      mtval <= 32'bx;
+      mip <= 32'bx;
     end
-    else if (ecall) begin
+    else if (exception) begin
       mepc <= mepc_in; 
       // mepc <= mepc_in + 32'd4;  // when not impl. csrr+
-      mcause <= mcause_in;  // 11
-      mstatus[3] <= 1'b0;
-      mstatus[7] <= mstatus[3];
+      mcause <= { 28'b0, mcause_in };  // 11
+      mstatus[`MIE] <= 1'b0;
+      mstatus[`MPIE] <= mstatus[`MIE];
+      if (mcause_in == 4'd2)  // illegal inst. exception
+        mtval <= mtval_in;
     end
     else if (mret) begin
-      mstatus[3] <= mstatus[7];
-      mstatus[7] <= mstatus[3];
+      mstatus[`MIE] <= mstatus[`MPIE];
+      mstatus[`MPIE] <= mstatus[`MIE];
     end
     else if (!wcsr_n) begin
       case (wr1_addr)
