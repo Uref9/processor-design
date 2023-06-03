@@ -50,7 +50,6 @@ module mainDecoder (
           3'b000:     mainDecoder = 16'b00_0_000_11_0_0_0_0_0_0_0_1;  // I (e~), mret, sret, wfi, sfence.vma, ???
           default:    mainDecoder = 16'b00_0_000_11_0_1_0_0_0_0_0_1;  // I (csrr~)
         endcase
-      8'b0000000:     mainDecoder = 16'b00_0_000_00_0_0_0_0_0_0_0_0;  // reset etc. 
       default:        mainDecoder = 16'bxx_x_xxx_xx_x_x_x_x_x_x_x_x;  // I (fence+), ??? 
     endcase
   endfunction

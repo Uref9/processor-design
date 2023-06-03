@@ -138,7 +138,7 @@ module datapath(
   );
 
   // IF/ID reg
-  dffREC #(96)
+  dffREC #(96, {32'h13, 32'b0, 32'b0}) // inst = nop(addi x0 x0 0)
   IFID_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(~Di_stall), .i_clear(Di_flush),
