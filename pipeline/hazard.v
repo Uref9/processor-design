@@ -11,7 +11,7 @@ module hazard (
   input [4:0] Wi_rd,
   // from controller
   input       Di_jal, Di_mret,
-  input [1:0] Ei_prePCSrc,
+  input [1:0] Ei_PCSrc,
   input       Ei_resultWSrc,
   input Mi_regWrite,
   input Wi_regWrite,
@@ -47,7 +47,7 @@ module hazard (
   //                     & ((Di_rs1 == Ei_rd)
   //                       | (Di_rs2 == Ei_rd));
 
-  assign w_takeBranchOrJalrOrEcall = (Ei_prePCSrc != 2'b00);  // (takeBranch or jalr or ecall)
+  assign w_takeBranchOrJalrOrEcall = (Ei_PCSrc != 2'b00);  // (takeBranch or jalr or ecall)
 
   assign  Fo_stall = w_lwStall;                    
   assign  Do_stall = w_lwStall;                    

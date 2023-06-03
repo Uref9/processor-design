@@ -118,7 +118,7 @@ module top_test;
          load_task1;
          store_task1;
          
-         // if (0 < i && i < 40) info_registers_task;
+         // if (110 < i && i < 130) info_registers_task;
          // if (0 < i && i < 40) info_CSRs_task;
          
          // #(STB);

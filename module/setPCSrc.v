@@ -3,7 +3,7 @@ module setPrePCSrc (
   input [2:0] i_funct3,
   input       i_branch, i_jalr, i_ecall,
 
-  output [1:0] o_prePCSrc
+  output [1:0] o_PCSrc
 );
 
   wire w_takeBranch = judgeBranch(
@@ -11,13 +11,13 @@ module setPrePCSrc (
                       i_funct3);
 
   /* */
-  // prePCSrc
+  // PCSrc
   //   00: PC+4
   //   01: takeBranch
   //   10: ecall
   //   11: jalr
-  assign o_prePCSrc[1] = (i_ecall | i_jalr);
-  assign o_prePCSrc[0] = (w_takeBranch | i_jalr);
+  assign o_PCSrc[1] = (i_ecall | i_jalr);
+  assign o_PCSrc[0] = (w_takeBranch | i_jalr);
 
   function judgeBranch(
     input       i_branch,
