@@ -11,6 +11,7 @@ module controller(
   input         clk, reset_x,
   // from datapath
   input [31:0]  Di_inst,
+  input [1:0]   Di_nowPrivMode,
   input         Ei_zero, Ei_neg, Ei_negU,
   // from hazard
   input Ei_flush,
@@ -110,6 +111,7 @@ module controller(
   exceptionDecoder exc_decoder(
     .i_EXCOp(Dw_EXCOp),
     .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
+    .i_nowPrivMode(Di_nowPrivMode),
     
     .o_causeNum(Do_causeNum), .o_exception(Do_exception),
     .o_mret(Do_mret)

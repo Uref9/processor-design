@@ -18,6 +18,7 @@ module top(
 
   // from datapath
   wire [31:0] Dw_inst;
+  wire [1:0]  Dw_nowPrivMode;
   wire        Ew_zero, Ew_neg, Ew_negU;
     // to hazard
   wire [4:0]  Dw_rs1, Dw_rs2;
@@ -89,7 +90,7 @@ module top(
     // to test dmem
     .Mo_ALUOut(DAD), .Mo_writeData(Mw_writeData),
     // to controller
-    .Do_inst(Dw_inst),
+    .Do_inst(Dw_inst), .Do_nowPrivMode(Dw_nowPrivMode),
     .Eo_zero(Ew_zero), .Eo_neg(Ew_neg), .Eo_negU(Ew_negU),
     // to hazard
     .Do_rs1(Dw_rs1), .Do_rs2(Dw_rs2),
@@ -103,7 +104,7 @@ module top(
     // from test
     .clk(clk), .reset_x(rst),
     // from datapath
-    .Di_inst(Dw_inst),
+    .Di_inst(Dw_inst), .Di_nowPrivMode(Dw_nowPrivMode),
     .Ei_zero(Ew_zero), .Ei_neg(Ew_neg), .Ei_negU(Ew_negU),
     // from hazard
     .Ei_flush(Ew_flush),

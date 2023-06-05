@@ -10,6 +10,7 @@
 `include "module/rf32x32.v"
 `include "module/CSRs.v"
 `include "module/csrLU.v"
+`include "module/privilegeMode.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -51,6 +52,7 @@ module datapath(
   output [31:0] Mo_ALUOut, Mo_writeData,
   // to controller
   output [31:0] Do_inst,
+  output [1:0]  Do_nowPrivMode,
   output        Eo_zero, Eo_neg, Eo_negU,
   // to hazard
   output [4:0]  Do_rs1, Do_rs2,
@@ -168,11 +170,23 @@ module datapath(
     .i_1(Dw_PC), .i_2(Dw_immExt),
     .o_1(Dw_PCPlusImm)
   );
+  // Privilege Mode
+  wire Dw_privEnable = Di_exception | Di_mret;
+  wire [1:0] Dw_nextPrivMode;
+  privilegeMode priv_register(
+    .clk(clk), .reset_x(reset_x),
+    .enable(Dw_privEnable),
+    .i_nextPrivMode(Dw_nextPrivMode),
+
+    .o_nowPrivMode(Do_nowPrivMode)
+  );
 
   // exception handling
   wire [11:0] Dw_csrFixed = 
     Di_exception ? 12'h305 : (Di_mret ? 12'h341
                                       : Dw_csr); // mtvec(305) or csr to CSRsAddr
+  wire [3:0] Dw_mcauseFixed = (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
+                                                    : Di_causeNum;     
 
   CSRs csregister(
     //
@@ -181,14 +195,16 @@ module datapath(
     .csr_addr(Dw_csrFixed), 
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
     .mepc_in(Dw_PC), .mtval_in(Do_inst),
-    .mcause_in(Di_causeNum),
+    .mcause_in(Dw_mcauseFixed),
+    .nowPrivMode(Do_nowPrivMode),
     // .mstatus_update()
       // special
       .exception(Di_exception), .mret(Di_mret),
-    // 
+    // from controller
     .wcsr_n(!Ei_csrWrite),
 
-    .data_out(Dw_CSRsData)
+    .data_out(Dw_CSRsData),
+    .nextPrivMode(Dw_nextPrivMode)
     // .mstatus_out()
   );
   assign Dw_zimmExt = {17'b0, Dw_zimm};

@@ -16,6 +16,7 @@ module CSRs (
   input [31:0] data1_in,
   input [31:0] mepc_in, mtval_in, 
   input [3:0] mcause_in,
+  input [1:0] nowPrivMode,
   // input         mstatus_update,
     // special
     input exception, mret,
@@ -24,18 +25,10 @@ module CSRs (
 
 
   // output
-  output [31:0] data_out
+  output [31:0] data_out,
+  output reg [1:0] nextPrivMode
   // output [31:0] mstatus_out
 );
-  // Now Privilege Mode
-  // U : 00
-  // S : 01
-  //(H : 10)
-  // M : 11
-  reg [1:0] r_nowPrivilegeMode;
-  always @(negedge reset_x) begin
-    r_nowPrivilegeMode <= 00;
-  end
 
   /* controll status registers */
   // [11:10] [9:8] [7:4] 
@@ -55,8 +48,7 @@ module CSRs (
   // assign mstatus_out = r_mstatus;
 
   // write
-  wire [3:0] w_mcause_inFixed = (mcause_in == 4'd8)? mcause_in + r_nowPrivilegeMode // ecall UorSorM
-                                                    : mcause_in;                    // other
+               // other
   always @(negedge clk, negedge reset_x) begin
     if (!reset_x) begin
       r_mstatus <= 32'bxxxx_xxxx_xxxx_xxxx_xxx1_1xxx_1xxx_1xxx;
@@ -71,11 +63,11 @@ module CSRs (
     else if (exception) begin
       r_mepc <= mepc_in; 
       // r_mepc <= r_mepc_in + 32'd4;  // when not impl. csrr+
-      r_mcause <= { 28'b0, w_mcause_inFixed };
+      r_mcause <= { 28'b0, mcause_in };
       r_mstatus[`MPIE] <= r_mstatus[`MIE];
       r_mstatus[`MIE] <= 1'b0;
-      r_mstatus[`MPP] <= r_nowPrivilegeMode;
-      r_nowPrivilegeMode <= `MMODE;
+      r_mstatus[`MPP] <= nowPrivMode;
+      nextPrivMode <= `MMODE;
       if (mcause_in == 4'd2)  // illegal inst. exception
         r_mtval <= mtval_in;
     end
@@ -83,7 +75,7 @@ module CSRs (
       r_mstatus[`MIE] <= r_mstatus[`MPIE];
       r_mstatus[`MPIE] <= 1'b1;
       r_mstatus[`MPP] <= `UMODE;
-      r_nowPrivilegeMode <= r_mstatus[`MPP];
+      nextPrivMode <= r_mstatus[`MPP];
     end
     else if (!wcsr_n) begin
       case (wr1_addr)
