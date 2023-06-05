@@ -118,7 +118,7 @@ module top_test;
          load_task1;
          store_task1;
          
-         // if (110 < i && i < 130) info_registers_task;
+         // if (690 < i && i < 710) info_registers_task;
          // if (0 < i && i < 40) info_CSRs_task;
          
          // #(STB);
@@ -237,7 +237,7 @@ module top_test;
             if (Daddr == EXIT_ADDR)
                begin
                   $display("\nExited by program.");
-                  $display("TOTAL: %d [ns]", i*CYCLE);
+                  $display("TOTAL: %d [ClockCycle]", i);
 
                   // dump_task1;
                   info_registers_task;
