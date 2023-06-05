@@ -24,7 +24,7 @@ module controller(
   output [3:0]  Do_causeNum,
   output        Do_jal,   // to hazard
   output        Do_mret,  // to hazard, exception
-  output        Do_exception, // to exception
+  output        Do_exceptionFromInst, // to exception
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
@@ -67,7 +67,7 @@ module controller(
   // EX stage wire
   wire [2:0]  Ew_funct3;
   wire        Ew_branch, Ew_jalr;
-  wire        Ew_exception;
+  wire        Ew_exceptionFromInst;
     // to MEM
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
@@ -113,7 +113,7 @@ module controller(
     .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
     .i_nowPrivMode(Di_nowPrivMode),
     
-    .o_causeNum(Do_causeNum), .o_exception(Do_exception),
+    .o_causeNum(Do_causeNum), .o_exceptionFromInst(Do_exceptionFromInst),
     .o_mret(Do_mret)
   );
   setMemSize set_mem_size(
@@ -127,7 +127,7 @@ module controller(
     .i_enable(1'b1), .i_clear(Ei_flush),
     .i_d({
       Dw_ALUCtrl, Dw_ALUSrc, 
-      Dw_immPlusSrc, Do_exception,
+      Dw_immPlusSrc, Do_exceptionFromInst,
       Dw_funct3, Dw_branch, Dw_jalr,
       Dw_csrWrite, Dw_csrSrc, Dw_csrLUCtrl,
 
@@ -139,7 +139,7 @@ module controller(
     }),
     .o_q({
       Eo_ALUCtrl, Eo_ALUSrc, 
-      Eo_immPlusSrc, Ew_exception,
+      Eo_immPlusSrc, Ew_exceptionFromInst,
       Ew_funct3, Ew_branch, Ew_jalr, 
       Eo_csrWrite, Eo_csrSrc, Eo_csrLUCtrl,
 
@@ -157,7 +157,7 @@ module controller(
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_branch(Ew_branch),
     .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), 
-    .i_exception(Ew_exception),
+    .i_exceptionFromInst(Ew_exceptionFromInst),
 
     .o_PCSrc(Eo_PCSrc)
   );

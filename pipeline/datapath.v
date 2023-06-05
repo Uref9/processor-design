@@ -6,7 +6,6 @@
 `include "module/ALU.v"
 `include "module/immExtend.v"
 `include "module/readDataExtend.v"
-`include "module/exceptionHandler.v"
 `include "module/rf32x32.v"
 `include "module/CSRs.v"
 `include "module/csrLU.v"
@@ -28,7 +27,7 @@ module datapath(
   input [3:0]   Di_causeNum,
   input         Di_jal,
   input         Di_mret,
-  input         Di_exception,
+  input         Di_exceptionFromInst,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
@@ -171,7 +170,7 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  wire Dw_privEnable = Di_exception | Di_mret;
+  wire Dw_privEnable = Di_exceptionFromInst | Di_mret;
   wire [1:0] Dw_nextPrivMode;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
@@ -183,11 +182,12 @@ module datapath(
 
   // exception handling
   wire [11:0] Dw_csrFixed = 
-    Di_exception ? 12'h305 : (Di_mret ? 12'h341
+    Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
                                       : Dw_csr); // mtvec(305) or csr to CSRsAddr
   wire [3:0] Dw_mcauseFixed = 
     (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
                           : Di_causeNum;     
+  // wire Dw_exceptionInID = Di_exceptionFromInst | 
 
   CSRs csregister(
     //
@@ -200,7 +200,7 @@ module datapath(
     .nowPrivMode(Do_nowPrivMode),
     // .mstatus_update()
       // special
-      .exception(Di_exception), .mret(Di_mret),
+      .exceptionFromInst(Di_exceptionFromInst), .mret(Di_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
 

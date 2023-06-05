@@ -121,7 +121,7 @@ module top_test;
          
          // if (690 < i && i < 710) info_registers_task;
          // if (0 < i && i < 40) info_CSRs_task;
-         $monitor("NPM: %2b", u_top_1.datapath.Do_nowPrivMode);
+         // $monitor("NPM: %2b", u_top_1.datapath.Do_nowPrivMode);
          
          // #(STB);
          #CYCLE;

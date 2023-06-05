@@ -33,7 +33,7 @@ module top(
   wire [3:0]  Dw_causeNum;
   wire        Dw_jal;   // and to hazard
   wire        Dw_mret;  // and to hazard
-  wire        Dw_exception;
+  wire        Dw_exceptionFromInst;
   wire [3:0]  Ew_ALUCtrl;
   wire        Ew_ALUSrc;
   wire        Ew_immPlusSrc;
@@ -69,7 +69,7 @@ module top(
     // from controller
     .Di_immSrc(Dw_immSrc), .Di_causeNum(Dw_causeNum),
     .Di_jal(Dw_jal), .Di_mret(Dw_mret), 
-    .Di_exception(Dw_exception), 
+    .Di_exceptionFromInst(Dw_exceptionFromInst), 
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_PCSrc(Ew_PCSrc), 
     .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
@@ -115,7 +115,7 @@ module top(
     // to datapath
     .Do_immSrc(Dw_immSrc), .Do_causeNum(Dw_causeNum),
     .Do_jal(Dw_jal), .Do_mret(Dw_mret), 
-    .Do_exception(Dw_exception),
+    .Do_exceptionFromInst(Dw_exceptionFromInst),
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), 
     .Eo_PCSrc(Ew_PCSrc),
