@@ -1,3 +1,7 @@
+// mstatus bit field
+`define MIE 3
+`define MPIE 7
+
 module CSRs (
   // from test
   input clk, reset_x,
@@ -5,17 +9,18 @@ module CSRs (
   input [11:0] csr_addr,
   input [11:0] wr1_addr,
   input [31:0] data1_in,
+  input [31:0] mepc_in, mtval_in, 
+  input [3:0] mcause_in,
+  // input         mstatus_update,
     // special
-    input [31:0] Di_PC,
-    input        ecall, mret,
+    input exception, mret,
   // from controller
   input wcsr_n,
+
 
   // output
   output [31:0] data_out
   // output [31:0] mstatus_out
-
-
 );
   // Now Privilege Mode
   // U : 00
@@ -42,30 +47,32 @@ module CSRs (
               r_mip;        // 344
   // read
   assign data_out = readCSRs(csr_addr);
-  assign mstatus_out = r_mstatus;
+  // assign mstatus_out = r_mstatus;
 
   // write
   always @(negedge clk, negedge reset_x) begin
     if (!reset_x) begin
-      r_mstatus <= 32'b0000_0000_0000_0000_0001_1000_1000_1000;
-      r_mie <= 32'b0;
-      r_mtvec <= 32'b0;
-      r_mscratch <= 32'h802_0000;
-      r_mepc <= 32'b0;
-      r_mcause <= 32'b0;
-      r_mtval <= 32'b0;
-      r_mip <= 32'b0;
+      r_mstatus <= 32'bxxxx_xxxx_xxxx_xxxx_xxx1_1xxx_1xxx_1xxx;
+      r_mie <= 32'bx;
+      r_mtvec <= 32'h0000_0000;
+      r_mscratch <= 32'h802_0000; // ?
+      r_mepc <= 32'bx;
+      r_mcause <= 32'bx;
+      r_mtval <= 32'bx;
+      r_mip <= 32'bx;
     end
-    else if (ecall) begin
-      r_mepc <= Di_PC; 
-      // r_mepc <= Di_PC + 32'd4;  // when not impl. csrr+
-      r_mcause <= 32'b0_000_0000_0000_0000_0000_0000_0000_1011; // 0 : 11 
-      r_mstatus[3] <= 1'b0;
-      r_mstatus[7] <= r_mstatus[3];
+    else if (exception) begin
+      r_mepc <= mepc_in; 
+      // r_mepc <= r_mepc_in + 32'd4;  // when not impl. csrr+
+      r_mcause <= { 28'b0, mcause_in };  // 11
+      r_mstatus[`MIE] <= 1'b0;
+      r_mstatus[`MPIE] <= r_mstatus[`MIE];
+      if (mcause_in == 4'd2)  // illegal inst. exception
+        r_mtval <= mtval_in;
     end
     else if (mret) begin
-      r_mstatus[3] <= r_mstatus[7];
-      r_mstatus[7] <= r_mstatus[3];
+      r_mstatus[`MIE] <= r_mstatus[`MPIE];
+      r_mstatus[`MPIE] <= r_mstatus[`MIE];
     end
     else if (!wcsr_n) begin
       case (wr1_addr)
