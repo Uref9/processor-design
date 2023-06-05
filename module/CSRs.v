@@ -55,6 +55,8 @@ module CSRs (
   // assign mstatus_out = r_mstatus;
 
   // write
+  wire [3:0] w_mcause_inFixed = (mcause_in == 4'd8)? mcause_in + r_nowPrivilegeMode // ecall UorSorM
+                                                    : mcause_in;                    // other
   always @(negedge clk, negedge reset_x) begin
     if (!reset_x) begin
       r_mstatus <= 32'bxxxx_xxxx_xxxx_xxxx_xxx1_1xxx_1xxx_1xxx;
@@ -69,7 +71,7 @@ module CSRs (
     else if (exception) begin
       r_mepc <= mepc_in; 
       // r_mepc <= r_mepc_in + 32'd4;  // when not impl. csrr+
-      r_mcause <= { 28'b0, mcause_in };  // 11
+      r_mcause <= { 28'b0, w_mcause_inFixed };
       r_mstatus[`MPIE] <= r_mstatus[`MIE];
       r_mstatus[`MIE] <= 1'b0;
       r_mstatus[`MPP] <= r_nowPrivilegeMode;
