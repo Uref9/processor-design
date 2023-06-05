@@ -29,9 +29,10 @@ module top(
   // from controller
     // to datapath
   wire [2:0]  Dw_immSrc;
+  wire [3:0]  Dw_causeNum;
   wire        Dw_jal;   // and to hazard
   wire        Dw_mret;  // and to hazard
-  wire        Dw_ecall;
+  wire        Dw_exception;
   wire [3:0]  Ew_ALUCtrl;
   wire        Ew_ALUSrc;
   wire        Ew_immPlusSrc;
@@ -65,8 +66,9 @@ module top(
     .clk(clk), .reset_x(rst),
     .Fi_inst(IDT), .Mi_readData(Mw_readData),
     // from controller
-    .Di_immSrc(Dw_immSrc), .Di_jal(Dw_jal), 
-    .Di_mret(Dw_mret), .Di_ecall(Dw_ecall), 
+    .Di_immSrc(Dw_immSrc), .Di_causeNum(Dw_causeNum),
+    .Di_jal(Dw_jal), .Di_mret(Dw_mret), 
+    .Di_exception(Dw_exception), 
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_PCSrc(Ew_PCSrc), 
     .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
@@ -110,8 +112,9 @@ module top(
     .Mo_memReq(MREQ), .Mo_memWrite(WRITE),
     .Mo_memSize(SIZE),
     // to datapath
-    .Do_immSrc(Dw_immSrc), .Do_jal(Dw_jal), 
-    .Do_mret(Dw_mret), .Do_ecall(Dw_ecall),
+    .Do_immSrc(Dw_immSrc), .Do_causeNum(Dw_causeNum),
+    .Do_jal(Dw_jal), .Do_mret(Dw_mret), 
+    .Do_exception(Dw_exception),
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), 
     .Eo_PCSrc(Ew_PCSrc),

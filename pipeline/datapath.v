@@ -14,6 +14,9 @@
 `define HIGH  1'b1
 `define LOW   1'b0
 
+// CSRs addres
+`define MTVEC = 12'h305
+
 module datapath(
   // from test
   input         clk, reset_x,
@@ -21,9 +24,10 @@ module datapath(
   input [31:0]  Mi_readData, // from dmem
   // from controller
   input [2:0]   Di_immSrc,
+  input [3:0]   Di_causeNum,
   input         Di_jal,
   input         Di_mret,
-  input         Di_ecall,
+  input         Di_exception,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
@@ -165,23 +169,25 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
 
-    // exception handle logic
-  wire [11:0] Dw_csrFixed = Di_ecall ? 12'h305 
-                                      : (Di_mret ? 12'h341 
-                                                  : Dw_csr);
+  // exception handling
+  wire [11:0] Dw_csrFixed = 
+    Di_exception ? 12'h305 : (Di_mret ? 12'h341
+                                      : Dw_csr); // mtvec(305) or csr to CSRsAddr
+
   CSRs csregister(
     //
     .clk(clk), .reset_x(reset_x),
     //
     .csr_addr(Dw_csrFixed), 
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
+    .mepc_in(Dw_PC), .mtval_in(Do_inst),
+    .mcause_in(Di_causeNum),
+    // .mstatus_update()
       // special
-      .Di_PC(Dw_PC),
-      .ecall(Di_ecall), .mret(Di_mret),
+      .exception(Di_exception), .mret(Di_mret),
     // 
     .wcsr_n(!Ei_csrWrite),
 
-    //
     .data_out(Dw_CSRsData)
     // .mstatus_out()
   );

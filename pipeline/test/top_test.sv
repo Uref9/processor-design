@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 `define IN_TOTAL 10000000000000
+// `define IN_TOTAL 300
 `define HIGH   1'b1
 `define LOW    1'b0
 
