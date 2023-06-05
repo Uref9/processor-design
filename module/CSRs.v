@@ -1,6 +1,11 @@
 // mstatus bit field
 `define MIE 3
 `define MPIE 7
+`define MPP 12:11
+
+// PrivilegeMode
+`define UMODE 2'b00
+`define MMODE 2'b11
 
 module CSRs (
   // from test
@@ -65,14 +70,18 @@ module CSRs (
       r_mepc <= mepc_in; 
       // r_mepc <= r_mepc_in + 32'd4;  // when not impl. csrr+
       r_mcause <= { 28'b0, mcause_in };  // 11
-      r_mstatus[`MIE] <= 1'b0;
       r_mstatus[`MPIE] <= r_mstatus[`MIE];
+      r_mstatus[`MIE] <= 1'b0;
+      r_mstatus[`MPP] <= r_nowPrivilegeMode;
+      r_nowPrivilegeMode <= `MMODE;
       if (mcause_in == 4'd2)  // illegal inst. exception
         r_mtval <= mtval_in;
     end
     else if (mret) begin
       r_mstatus[`MIE] <= r_mstatus[`MPIE];
-      r_mstatus[`MPIE] <= r_mstatus[`MIE];
+      r_mstatus[`MPIE] <= 1'b1;
+      r_mstatus[`MPP] <= `UMODE;
+      r_nowPrivilegeMode <= r_mstatus[`MPP];
     end
     else if (!wcsr_n) begin
       case (wr1_addr)

@@ -121,6 +121,7 @@ module top_test;
          
          // if (690 < i && i < 710) info_registers_task;
          // if (0 < i && i < 40) info_CSRs_task;
+         $monitor("NPM: %2b", u_top_1.datapath.csregister.r_nowPrivilegeMode);
          
          // #(STB);
          #CYCLE;
@@ -154,18 +155,18 @@ module top_test;
    task info_CSRs_task;
       $write(
          "----- CSRs -----\n",
-         "mstatus: %h, ", u_top_1.datapath.csregister.mstatus,
-         "(MIE: %b, ", u_top_1.datapath.csregister.mstatus[3],
-         "MPIE: %b)\n", u_top_1.datapath.csregister.mstatus[7],
-         "mie: %h, ", u_top_1.datapath.csregister.mie,
-         "mtvec: %h\n", u_top_1.datapath.csregister.mtvec,
-         "mscratch: %h, ", u_top_1.datapath.csregister.mscratch,
-         "mepc: %h, ", u_top_1.datapath.csregister.mepc,
-         "mcause: %h, ", u_top_1.datapath.csregister.mcause,
-         // "mcause: %b:%0d, ",   u_top_1.datapath.csregister.mcause[31],
-         //                      u_top_1.datapath.csregister.mcause[30:0],
-         "mtval: %h, ", u_top_1.datapath.csregister.mtval,
-         "mip: %h\n", u_top_1.datapath.csregister.mip,
+         "mstatus: %h, ", u_top_1.datapath.csregister.r_mstatus,
+         "(MIE: %b, ", u_top_1.datapath.csregister.r_mstatus[3],
+         "MPIE: %b)\n", u_top_1.datapath.csregister.r_mstatus[7],
+         "mie: %h, ", u_top_1.datapath.csregister.r_mie,
+         "mtvec: %h\n", u_top_1.datapath.csregister.r_mtvec,
+         "mscratch: %h, ", u_top_1.datapath.csregister.r_mscratch,
+         "mepc: %h, ", u_top_1.datapath.csregister.r_mepc,
+         "mcause: %h, ", u_top_1.datapath.csregister.r_mcause,
+         // "mcause: %b:%0d, ",   u_top_1.datapath.csregister.r_mcause[31],
+         //                      u_top_1.datapath.csregister.r_mcause[30:0],
+         "mtval: %h, ", u_top_1.datapath.csregister.r_mtval,
+         "mip: %h\n", u_top_1.datapath.csregister.r_mip,
          "-----------------\n",
       );
    endtask
