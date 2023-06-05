@@ -185,8 +185,9 @@ module datapath(
   wire [11:0] Dw_csrFixed = 
     Di_exception ? 12'h305 : (Di_mret ? 12'h341
                                       : Dw_csr); // mtvec(305) or csr to CSRsAddr
-  wire [3:0] Dw_mcauseFixed = (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
-                                                    : Di_causeNum;     
+  wire [3:0] Dw_mcauseFixed = 
+    (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
+                          : Di_causeNum;     
 
   CSRs csregister(
     //

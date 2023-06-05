@@ -29,7 +29,7 @@ module exceptionDecoder (
         if (i_funct3 == 3'b000)
           case (i_funct12)
             12'b0000_0000_0000: 
-                exceptionDecoder = 6'b1000_1_0;  // ecall
+                exceptionDecoder = 6'b1000_1_0;  // ecall (default: by U-mode)
             // 12'b0000_0000_0001:                            // ebreak
             12'b0011_0000_0010: 
               if (i_nowPrivMode == `MMODE)
