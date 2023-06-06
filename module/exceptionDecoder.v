@@ -9,11 +9,11 @@ module exceptionDecoder (
   input [11:0] i_funct12,
   input [1:0] i_nowPrivMode,
 
-  output [3:0] o_causeNum,
+  output [3:0] o_causeFromInst,
   output o_exceptionFromInst, o_mret
 );
 
-  assign { o_causeNum, o_exceptionFromInst, o_mret } 
+  assign { o_causeFromInst, o_exceptionFromInst, o_mret } 
   = exceptionDecoder( i_EXCOp, i_funct3, i_funct12 );
 
   function [5:0] exceptionDecoder(
@@ -21,7 +21,7 @@ module exceptionDecoder (
     input [2:0] i_funct3,
     input [11:0] i_funct12
   );
-    //                            causeNum_exceptionFromInst_mret
+    //                            causeFromInst_exceptionFromInst_mret
     case (i_EXCOp)
       2'b00:
                 exceptionDecoder = 6'bxxxx_0_0;

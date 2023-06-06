@@ -30,7 +30,6 @@ module top(
   // from controller
     // to datapath
   wire [2:0]  Dw_immSrc;
-  wire [3:0]  Dw_causeNum;
   wire        Dw_jal;   // and to hazard
   wire        Dw_mret;  // and to hazard
   wire [3:0]  Ew_ALUCtrl;
@@ -40,7 +39,7 @@ module top(
   wire        Ew_exceptionFromInst;
   wire        Ew_csrWrite, Ew_csrSrc;
   wire [1:0]  Ew_csrLUCtrl;
-  wire [3:0]  Ew_cause;
+  wire [3:0]  Ew_causeFromInst;
   wire        Mw_isLoadSigned;
   wire [1:0]  Mw_resultMSrc;
   wire        Ww_resultWSrc;
@@ -75,7 +74,7 @@ module top(
     .Ei_exceptionFromInst(Ew_exceptionFromInst), 
     .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
     .Ei_csrLUCtrl(Ew_csrLUCtrl),
-    .Ei_cause(Ew_cause),
+    .Ei_causeFromInst(Ew_causeFromInst),
     .Mi_memSize(SIZE), .Mi_isLoadSigned(Mw_isLoadSigned), 
     .Mi_resultMSrc(Mw_resultMSrc),
     .Wi_resultWSrc(Ww_resultWSrc),
@@ -123,7 +122,7 @@ module top(
     .Eo_exceptionFromInst(Ew_exceptionFromInst),
     .Eo_csrWrite(Ew_csrWrite), .Eo_csrSrc(Ew_csrSrc),
     .Eo_csrLUCtrl(Ew_csrLUCtrl),
-    .Eo_cause(Ew_cause),
+    .Eo_causeFromInst(Ew_causeFromInst),
     .Mo_isLoadSigned(Mw_isLoadSigned), 
     .Mo_resultMSrc(Mw_resultMSrc),
     .Wo_resultWSrc(Ww_resultWSrc),

@@ -10,6 +10,7 @@
 `include "module/CSRs.v"
 `include "module/csrLU.v"
 `include "module/privilegeMode.v"
+`include "module/exceptionHandling.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -33,7 +34,7 @@ module datapath(
   input         Ei_exceptionFromInst,
   input         Ei_csrWrite, Ei_csrSrc,
   input [1:0]   Ei_csrLUCtrl,
-  input [3:0]   Ei_cause,
+  input [3:0]   Ei_causeFromInst,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Mi_resultMSrc,
@@ -98,6 +99,7 @@ module datapath(
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
+  wire [3:0]  Ew_cause;
     // to MEM
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
@@ -183,19 +185,7 @@ module datapath(
 
     .o_nowPrivMode(Do_nowPrivMode)
   );
-
-  // exception handling
-  // wire [11:0] Dw_csrFixed = 
-  //   Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
-  //                                     : Dw_csr); // mtvec(305) or csr to CSRsAddr
-  // wire [3:0] Dw_mcauseFixed = 
-  //   (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
-  //                         : Di_causeNum;     
-  // wire Dw_exceptionInID = Di_exceptionFromInst | 
-  // if (Dw_PC[1:0] == 2'b00) begin  // InstAdrAlignVioException (cause:0)
-  //   // 
-  // end
-
+  // CSRs
   CSRs csregister(
     .clk(clk), .reset_x(reset_x),
     .csr_addr(Dw_csr), 
@@ -203,7 +193,7 @@ module datapath(
     
     .mstatus_in(Ew_mstatusOut),
     .mepc_in(Ew_PC), .mtval_in(Ew_inst),
-    .mcause_in(Ei_cause),
+    .mcause_in(Ew_cause),
     .nowPrivMode(Ew_nowPrivMode),
       // special
       .exceptionFromInst(Ei_exceptionFromInst), 
@@ -286,6 +276,11 @@ module datapath(
     .i_ctrl(Ei_csrLUCtrl),
     .i_1(Ew_CSRsData), .i_2(Ew_csrLUIn2),
     .o_1(Ew_csrLUOut)
+  );
+  exceptionHandling exception_handling(
+    .i_causeFromInst(Ei_causeFromInst),
+    .i_nowPrivMode(Ew_nowPrivMode),
+    .o_cause(Ew_cause)
   );
 
   // EX/MEM reg

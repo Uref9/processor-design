@@ -4,7 +4,6 @@
 `include "module/exceptionDecoder.v"
 `include "module/setMemSize.v"
 `include "module/setPCSrc.v"
-`include "module/setCause.v"
 
 
 module controller(
@@ -31,7 +30,7 @@ module controller(
   output        Eo_exceptionFromInst, // to exception
   output        Eo_csrWrite, Eo_csrSrc,
   output [1:0]  Eo_csrLUCtrl,
-  output [3:0]  Eo_cause,
+  output [3:0]  Eo_causeFromInst,
   output        Mo_isLoadSigned,
   output [1:0]  Mo_resultMSrc,
   output        Wo_resultWSrc,
@@ -57,7 +56,7 @@ module controller(
   wire        Dw_exceptionFromInst;
   wire        Dw_csrWrite, Dw_csrSrc;
   wire [1:0]  Dw_csrLUCtrl;
-  wire [3:0]  Dw_causeNum;
+  wire [3:0]  Dw_causeFromInst;
     // to MEM
   wire        Dw_memWrite, Dw_memReq;
   wire [1:0]  Dw_memSize;
@@ -70,7 +69,6 @@ module controller(
   // EX stage wire
   wire [2:0]  Ew_funct3;
   wire        Ew_branch, Ew_jalr;
-  wire [3:0]  Ew_causeNum;
     // to MEM
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
@@ -116,7 +114,7 @@ module controller(
     .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
     .i_nowPrivMode(Di_nowPrivMode),
     
-    .o_causeNum(Dw_causeNum), .o_exceptionFromInst(Dw_exceptionFromInst),
+    .o_causeFromInst(Dw_causeFromInst), .o_exceptionFromInst(Dw_exceptionFromInst),
     .o_mret(Do_mret)
   );
   setMemSize set_mem_size(
@@ -133,7 +131,7 @@ module controller(
       Dw_immPlusSrc, Dw_exceptionFromInst,
       Dw_funct3, Dw_branch, Dw_jalr,
       Dw_csrWrite, Dw_csrSrc, Dw_csrLUCtrl,
-      Dw_causeNum,
+      Dw_causeFromInst,
 
       Dw_memWrite, Dw_memReq, Dw_memSize,
       Dw_isLoadSigned,
@@ -146,7 +144,7 @@ module controller(
       Eo_immPlusSrc, Eo_exceptionFromInst,
       Ew_funct3, Ew_branch, Ew_jalr, 
       Eo_csrWrite, Eo_csrSrc, Eo_csrLUCtrl,
-      Ew_causeNum,
+      Eo_causeFromInst,
 
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
@@ -165,10 +163,6 @@ module controller(
     .i_exceptionFromInst(Eo_exceptionFromInst),
 
     .o_PCSrc(Eo_PCSrc)
-  );
-  setCause set_cause(
-    .i_causeNum(Ew_causeNum),
-    .o_cause(Eo_cause)
   );
   // EX/MEM reg
   dffREC #(9)
