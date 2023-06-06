@@ -7,9 +7,11 @@
 -
 - v0.1  temporary completion
 ## pipeline
-- v0.5-pre Correspond to csrrw, etc. (not completely confirm)
-- v0.4 Correspond to Forwarding MEM to EX in jal, jalr
-- v0.3 Correspond to ecall(only direct-mode) and mret Inst.
+- v0.6 Add Illegal inst. exception
+- v0.5 Add csrrw, etc. and solve branch->jal probrem
+- v0.5-pre Add csrrw, etc. (not completely confirm)
+- v0.4 Add Forwarding MEM to EX in jal, jalr
+- v0.3 Add ecall(only direct-mode) and mret Inst.
 - v0.2 Reduce jal penalty 2 to 1Cycle
       - (Change judging stage, IE to IDstage)
 - v0.1 temporary completion
