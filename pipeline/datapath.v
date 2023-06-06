@@ -76,11 +76,13 @@ module datapath(
 
 
   wire [31:0] Dw_PC; 
+  wire [31:0] Dw_mepcOut; 
   wire [31:0] Dw_CSRsData; // to EX
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
   wire [31:0] Dw_immExt, Dw_PCPlusImm;
   wire [31:0] Dw_zimmExt;
+  wire [31:0] Dw_mtvecOut;
 
     // to WB
   wire [31:0] Dw_PCPlus4;
@@ -90,7 +92,8 @@ module datapath(
   wire [31:0] Ew_RD1Fwd, Ew_ALUIn2;
   wire [31:0] Ew_immExt, Ew_PCPlusImm;
   wire [31:0] Ew_zimmExt;
-  wire [31:0] Ew_CSRsData;
+  wire [31:0] Ew_mtvecOut;
+  wire [31:0] Ew_CSRsData; // to MEM
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
@@ -131,13 +134,13 @@ module datapath(
   assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
   mux3 pre_pc_next_mux(
     .i_1(Fw_PCPlus4), .i_2(Dw_PCPlusImm),
-    .i_3(Dw_CSRsData),
+    .i_3(Dw_mepcOut),
     .i_sel({ Di_mret, Di_jal }),
     .o_1(Fw_prePCNext)
   );
   mux4 pc_next_mux(
     .i_1(Fw_prePCNext), .i_2(Ew_PCPlusImm), 
-    .i_3(Ew_CSRsData), .i_4(Fw_ALUOutJalr),
+    .i_3(Ew_mtvecOut), .i_4(Fw_ALUOutJalr),
     .i_sel(Ei_PCSrc),
     .o_1(Fw_PCNext)
   );
@@ -208,13 +211,14 @@ module datapath(
     .wcsr_n(!Ei_csrWrite),
 
     .data_out(Dw_CSRsData),
-    .nextPrivMode(Dw_nextPrivMode)
+    .nextPrivMode(Dw_nextPrivMode),
     // .mstatus_out()
+    .mtvec_out(Dw_mtvecOut), .mepc_out(Dw_mepcOut)
   );
   assign Dw_zimmExt = {17'b0, Dw_zimm};
   
   // ID/EX reg
-  dffREC #(251)
+  dffREC #(283)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
@@ -222,6 +226,7 @@ module datapath(
       Dw_RD1, Dw_RD2,
       Dw_immExt, Dw_zimmExt,
       Dw_PCPlusImm, Dw_csr,
+      Dw_mtvecOut,
       Do_rs1, Do_rs2,
 
       Dw_CSRsData, Dw_PCPlus4,
@@ -231,6 +236,7 @@ module datapath(
       Ew_RD1, Ew_RD2,
       Ew_immExt, Ew_zimmExt,
       Ew_PCPlusImm, Ew_csr,
+      Ew_mtvecOut,
       Eo_rs1, Eo_rs2,
 
       Ew_CSRsData, Ew_PCPlus4,
