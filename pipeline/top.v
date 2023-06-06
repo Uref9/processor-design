@@ -18,6 +18,7 @@ module top(
 
   // from datapath
   wire [31:0] Dw_inst;
+  wire [1:0]  Dw_nowPrivMode;
   wire        Ew_zero, Ew_neg, Ew_negU;
     // to hazard
   wire [4:0]  Dw_rs1, Dw_rs2;
@@ -29,15 +30,17 @@ module top(
   // from controller
     // to datapath
   wire [2:0]  Dw_immSrc;
+  wire [3:0]  Dw_causeNum;
   wire        Dw_jal;   // and to hazard
   wire        Dw_mret;  // and to hazard
-  wire        Dw_ecall;
   wire [3:0]  Ew_ALUCtrl;
   wire        Ew_ALUSrc;
   wire        Ew_immPlusSrc;
   wire [1:0]  Ew_PCSrc; // and to hazard
+  wire        Ew_exceptionFromInst;
   wire        Ew_csrWrite, Ew_csrSrc;
   wire [1:0]  Ew_csrLUCtrl;
+  wire [3:0]  Ew_cause;
   wire        Mw_isLoadSigned;
   wire [1:0]  Mw_resultMSrc;
   wire        Ww_resultWSrc;
@@ -65,12 +68,14 @@ module top(
     .clk(clk), .reset_x(rst),
     .Fi_inst(IDT), .Mi_readData(Mw_readData),
     // from controller
-    .Di_immSrc(Dw_immSrc), .Di_jal(Dw_jal), 
-    .Di_mret(Dw_mret), .Di_ecall(Dw_ecall), 
+    .Di_immSrc(Dw_immSrc),
+    .Di_jal(Dw_jal), .Di_mret(Dw_mret), 
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_PCSrc(Ew_PCSrc), 
+    .Ei_exceptionFromInst(Ew_exceptionFromInst), 
     .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
     .Ei_csrLUCtrl(Ew_csrLUCtrl),
+    .Ei_cause(Ew_cause),
     .Mi_memSize(SIZE), .Mi_isLoadSigned(Mw_isLoadSigned), 
     .Mi_resultMSrc(Mw_resultMSrc),
     .Wi_resultWSrc(Ww_resultWSrc),
@@ -87,7 +92,7 @@ module top(
     // to test dmem
     .Mo_ALUOut(DAD), .Mo_writeData(Mw_writeData),
     // to controller
-    .Do_inst(Dw_inst),
+    .Do_inst(Dw_inst), .Do_nowPrivMode(Dw_nowPrivMode),
     .Eo_zero(Ew_zero), .Eo_neg(Ew_neg), .Eo_negU(Ew_negU),
     // to hazard
     .Do_rs1(Dw_rs1), .Do_rs2(Dw_rs2),
@@ -101,7 +106,7 @@ module top(
     // from test
     .clk(clk), .reset_x(rst),
     // from datapath
-    .Di_inst(Dw_inst),
+    .Di_inst(Dw_inst), .Di_nowPrivMode(Dw_nowPrivMode),
     .Ei_zero(Ew_zero), .Ei_neg(Ew_neg), .Ei_negU(Ew_negU),
     // from hazard
     .Ei_flush(Ew_flush),
@@ -110,13 +115,15 @@ module top(
     .Mo_memReq(MREQ), .Mo_memWrite(WRITE),
     .Mo_memSize(SIZE),
     // to datapath
-    .Do_immSrc(Dw_immSrc), .Do_jal(Dw_jal), 
-    .Do_mret(Dw_mret), .Do_ecall(Dw_ecall),
+    .Do_immSrc(Dw_immSrc),
+    .Do_jal(Dw_jal), .Do_mret(Dw_mret), 
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), 
     .Eo_PCSrc(Ew_PCSrc),
+    .Eo_exceptionFromInst(Ew_exceptionFromInst),
     .Eo_csrWrite(Ew_csrWrite), .Eo_csrSrc(Ew_csrSrc),
     .Eo_csrLUCtrl(Ew_csrLUCtrl),
+    .Eo_cause(Ew_cause),
     .Mo_isLoadSigned(Mw_isLoadSigned), 
     .Mo_resultMSrc(Mw_resultMSrc),
     .Wo_resultWSrc(Ww_resultWSrc),

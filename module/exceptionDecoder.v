@@ -1,48 +1,47 @@
 `define LOW 1'b0
 `define HIGH 1'b1
+// Privilege Mode
+`define MMODE 2'b11
 
 module exceptionDecoder (
-  input i_exception,
+  input [1:0] i_EXCOp,
   input [2:0] i_funct3,
   input [11:0] i_funct12,
+  input [1:0] i_nowPrivMode,
 
-  output o_ecall, o_mret,
-  output o_csrWrite, o_csrSrc,
-  output [1:0] o_csrLUCtrl
+  output [3:0] o_causeNum,
+  output o_exceptionFromInst, o_mret
 );
 
-  assign {
-    o_ecall, o_mret,
-    o_csrWrite, o_csrSrc, o_csrLUCtrl
-  } 
-  = exceptionDecoder( i_exception, i_funct3, i_funct12 );
+  assign { o_causeNum, o_exceptionFromInst, o_mret } 
+  = exceptionDecoder( i_EXCOp, i_funct3, i_funct12 );
 
   function [5:0] exceptionDecoder(
-    input i_exception,
+    input [1:0] i_EXCOp,
     input [2:0] i_funct3,
     input [11:0] i_funct12
   );
-    //                                    ecall_mret_csrW_csrSrc_csrLUCtr2
-    if (!i_exception) 
-                              exceptionDecoder = 6'b0_0_0_0_00;
-    else begin
-      case (i_funct3)
-        3'b000: 
-        case (i_funct12)
-          12'b0000_0000_0000: exceptionDecoder = 6'b1_0_0_0_00;  // ecall
-          // 12'b0000_0000_0001: // ebreak
-          12'b0011_0000_0010: exceptionDecoder = 6'b0_1_0_0_00;  // mret
-          default:            exceptionDecoder = 6'bx_x_x_x_xx;  // sret, wfi, sfence.vma, ???
-        endcase
-        // csrr+
-        3'b001:               exceptionDecoder = 6'b0_0_1_0_01; // csrrw
-        3'b010:               exceptionDecoder = 6'b0_0_1_0_10; // csrrs
-        3'b011:               exceptionDecoder = 6'b0_0_1_0_11; // csrrc
-        3'b101:               exceptionDecoder = 6'b0_0_1_1_01; // csrrwi
-        3'b110:               exceptionDecoder = 6'b0_0_1_1_10; // csrrsi
-        3'b111:               exceptionDecoder = 6'b0_0_1_1_11; // csrrci
-        default:              exceptionDecoder = 6'bx_x_x_x_xx; // ???
-      endcase
-    end
+    //                            causeNum_exceptionFromInst_mret
+    case (i_EXCOp)
+      2'b00:
+                exceptionDecoder = 6'bxxxx_0_0;
+      2'b01:
+        if (i_funct3 == 3'b000)
+          case (i_funct12)
+            12'b0000_0000_0000: 
+                exceptionDecoder = 6'b1000_1_0;  // ecall (default: by U-mode)
+            // 12'b0000_0000_0001:                            // ebreak
+            12'b0011_0000_0010: 
+              if (i_nowPrivMode == `MMODE)
+                exceptionDecoder = 6'bxxxx_0_1;  // mret
+              else 
+                exceptionDecoder = 6'b0010_0_0;  // mret but not M-mode now
+            // 12'b0001_0000_0010: 
+            //     exceptionDecoder = 6'bxxxx_0_0;  // sret
+            default:            
+                exceptionDecoder = 6'b0010_x_x;  // wfi, sfence.vma, ???
+          endcase
+      2'b10:    exceptionDecoder = 6'b0010_1_0;
+    endcase
 endfunction
 endmodule

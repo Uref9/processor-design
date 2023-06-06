@@ -47,7 +47,7 @@ module hazard (
   //                     & ((Di_rs1 == Ei_rd)
   //                       | (Di_rs2 == Ei_rd));
 
-  assign w_takeBranchOrJalrOrEcall = (Ei_PCSrc != 2'b00);  // (takeBranch or jalr or ecall)
+  assign w_takeBranchOrJalrOrEcall = (Ei_PCSrc != 2'b00);  // (takeBranch or jalr or exception)
 
   assign  Fo_stall = w_lwStall;                    
   assign  Do_stall = w_lwStall;                    

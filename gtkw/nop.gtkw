@@ -1,0 +1,36 @@
+[*]
+[*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
+[*] Sat Jun  3 01:47:19 2023
+[*]
+[dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
+[dumpfile_mtime] "Sat Jun  3 00:56:59 2023"
+[dumpfile_size] 767238
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/nop.gtkw"
+[timestart] 0
+[size] 1440 847
+[pos] -1 -1
+*-13.914623 17440 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top_test.
+[treeopen] top_test.u_top_1.
+[treeopen] top_test.u_top_1.datapath.
+[sst_width] 193
+[signals_width] 304
+[sst_expanded] 1
+[sst_vpaned_height] 393
+@28
+top_test.u_top_1.clk
+top_test.u_top_1.rst
+@22
+top_test.u_top_1.IAD[31:0]
+top_test.u_top_1.IDT[31:0]
+top_test.u_top_1.DAD[31:0]
+top_test.u_top_1.DDT[31:0]
+top_test.u_top_1.Dw_inst[31:0]
+top_test.u_top_1.datapath.IFID_datapath_register.i_d[95:0]
+top_test.u_top_1.datapath.IFID_datapath_register.o_q[95:0]
+@29
+top_test.u_top_1.Ew_flush
+@28
+top_test.u_top_1.Dw_flush
+[pattern_trace] 1
+[pattern_trace] 0

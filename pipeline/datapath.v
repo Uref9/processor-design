@@ -6,13 +6,16 @@
 `include "module/ALU.v"
 `include "module/immExtend.v"
 `include "module/readDataExtend.v"
-`include "module/exceptionHandler.v"
 `include "module/rf32x32.v"
 `include "module/CSRs.v"
 `include "module/csrLU.v"
+`include "module/privilegeMode.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
+
+// CSRs addres
+`define MTVEC = 12'h305
 
 module datapath(
   // from test
@@ -23,13 +26,14 @@ module datapath(
   input [2:0]   Di_immSrc,
   input         Di_jal,
   input         Di_mret,
-  input         Di_ecall,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
   input [1:0]   Ei_PCSrc,
+  input         Ei_exceptionFromInst,
   input         Ei_csrWrite, Ei_csrSrc,
   input [1:0]   Ei_csrLUCtrl,
+  input [3:0]   Ei_cause,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Mi_resultMSrc,
@@ -47,6 +51,7 @@ module datapath(
   output [31:0] Mo_ALUOut, Mo_writeData,
   // to controller
   output [31:0] Do_inst,
+  output [1:0]  Do_nowPrivMode,
   output        Eo_zero, Eo_neg, Eo_negU,
   // to hazard
   output [4:0]  Do_rs1, Do_rs2,
@@ -69,23 +74,27 @@ module datapath(
   assign      Do_rs2  = Do_inst[24:20];  // to EX
   wire [11:0] Dw_csr  = Do_inst[31:20];  // to EX
 
-
-  wire [31:0] Dw_PC; 
-  wire [31:0] Dw_CSRsData; // to EX
+  wire [31:0] Dw_mepcOut;
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
-  wire [31:0] Dw_immExt, Dw_PCPlusImm;
-  wire [31:0] Dw_zimmExt;
-
+  wire [31:0] Dw_immExt, Dw_zimmExt;
+  wire [31:0] Dw_PC, Dw_PCPlusImm;
+  wire [31:0] Dw_mstatusOut, Dw_mtvecOut;
+  wire [1:0]  Dw_nextPrivMode;
+  wire [31:0] Dw_inst;
+    // to MEM
+  wire [31:0] Dw_CSRsData;
     // to WB
   wire [31:0] Dw_PCPlus4;
 
   // EX stage wire
   wire [31:0] Ew_RD1, Ew_RD2;
   wire [31:0] Ew_RD1Fwd, Ew_ALUIn2;
-  wire [31:0] Ew_immExt, Ew_PCPlusImm;
-  wire [31:0] Ew_zimmExt;
-  wire [31:0] Ew_CSRsData;
+  wire [31:0] Ew_immExt, Ew_zimmExt;
+  wire [31:0] Ew_PC, Ew_PCPlusImm;
+  wire [31:0] Ew_mstatusOut, Ew_mtvecOut;
+  wire [1:0]  Ew_nowPrivMode;
+  wire [31:0] Ew_inst;
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
@@ -93,6 +102,7 @@ module datapath(
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
   wire [31:0] Ew_immPlus;
+  wire [31:0] Ew_CSRsData;
     // to WB
   wire [31:0] Ew_PCPlus4;
   wire [4:0] Eo_rd;
@@ -111,7 +121,7 @@ module datapath(
   wire [31:0] Ww_resultW;
 /* end wire */
 
-// IF stage logic
+/*** IF stage logic ***/
   dffREC #(32, 32'h1_0000)
   pc_reg(
     .i_clock(clk), .i_reset_x(reset_x),
@@ -126,19 +136,19 @@ module datapath(
   assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
   mux3 pre_pc_next_mux(
     .i_1(Fw_PCPlus4), .i_2(Dw_PCPlusImm),
-    .i_3(Dw_CSRsData),
+    .i_3(Dw_mepcOut),
     .i_sel({ Di_mret, Di_jal }),
     .o_1(Fw_prePCNext)
   );
   mux4 pc_next_mux(
     .i_1(Fw_prePCNext), .i_2(Ew_PCPlusImm), 
-    .i_3(Ew_CSRsData), .i_4(Fw_ALUOutJalr),
+    .i_3(Ew_mtvecOut), .i_4(Fw_ALUOutJalr),
     .i_sel(Ei_PCSrc),
     .o_1(Fw_PCNext)
   );
 
   // IF/ID reg
-  dffREC #(96)
+  dffREC #(96, {32'h13, 32'b0, 32'b0}) // inst = nop(addi x0 x0 0)
   IFID_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(~Di_stall), .i_clear(Di_flush),
@@ -146,7 +156,7 @@ module datapath(
     .o_q({ Do_inst, Dw_PC, Dw_PCPlus4 })
   );
 
-// ID stage logic
+/*** ID stage logic ***/
   rf32x32 register(
     .clk(clk), .reset(reset_x),
     .wr_n(~Wi_regWrite),
@@ -164,38 +174,62 @@ module datapath(
     .i_1(Dw_PC), .i_2(Dw_immExt),
     .o_1(Dw_PCPlusImm)
   );
-
-    // exception handle logic
-  wire [11:0] Dw_csrFixed = Di_ecall ? 12'h305 
-                                      : (Di_mret ? 12'h341 
-                                                  : Dw_csr);
-  CSRs csregister(
-    //
+  // Privilege Mode
+  wire Dw_privEnable = Ei_exceptionFromInst | Di_mret;
+  privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
-    //
-    .csr_addr(Dw_csrFixed), 
+    .enable(Dw_privEnable),
+    .i_nextPrivMode(Dw_nextPrivMode),
+
+    .o_nowPrivMode(Do_nowPrivMode)
+  );
+
+  // exception handling
+  // wire [11:0] Dw_csrFixed = 
+  //   Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
+  //                                     : Dw_csr); // mtvec(305) or csr to CSRsAddr
+  // wire [3:0] Dw_mcauseFixed = 
+  //   (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
+  //                         : Di_causeNum;     
+  // wire Dw_exceptionInID = Di_exceptionFromInst | 
+  // if (Dw_PC[1:0] == 2'b00) begin  // InstAdrAlignVioException (cause:0)
+  //   // 
+  // end
+
+  CSRs csregister(
+    .clk(clk), .reset_x(reset_x),
+    .csr_addr(Dw_csr), 
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
+    
+    .mstatus_in(Ew_mstatusOut),
+    .mepc_in(Ew_PC), .mtval_in(Ew_inst),
+    .mcause_in(Ei_cause),
+    .nowPrivMode(Ew_nowPrivMode),
       // special
-      .Di_PC(Dw_PC),
-      .ecall(Di_ecall), .mret(Di_mret),
-    // 
+      .exceptionFromInst(Ei_exceptionFromInst), 
+      .mret(Di_mret),
+    // from controller
     .wcsr_n(!Ei_csrWrite),
 
-    //
-    .data_out(Dw_CSRsData)
-    // .mstatus_out()
+    .data_out(Dw_CSRsData),
+    .nextPrivMode(Dw_nextPrivMode),
+    .mstatus_out(Dw_mstatusOut),
+    .mtvec_out(Dw_mtvecOut), .mepc_out(Dw_mepcOut)
   );
   assign Dw_zimmExt = {17'b0, Dw_zimm};
   
   // ID/EX reg
-  dffREC #(251)
+  dffREC #(381)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
     .i_d({
       Dw_RD1, Dw_RD2,
       Dw_immExt, Dw_zimmExt,
-      Dw_PCPlusImm, Dw_csr,
+      Dw_PC, Dw_PCPlusImm, 
+      Dw_mstatusOut, Dw_mtvecOut,
+      Do_nowPrivMode,
+      Dw_inst, Dw_csr,
       Do_rs1, Do_rs2,
 
       Dw_CSRsData, Dw_PCPlus4,
@@ -204,7 +238,10 @@ module datapath(
     .o_q({
       Ew_RD1, Ew_RD2,
       Ew_immExt, Ew_zimmExt,
-      Ew_PCPlusImm, Ew_csr,
+      Ew_PC, Ew_PCPlusImm, 
+      Ew_mstatusOut, Ew_mtvecOut,
+      Ew_nowPrivMode,
+      Ew_inst, Ew_csr, 
       Eo_rs1, Eo_rs2,
 
       Ew_CSRsData, Ew_PCPlus4,
@@ -212,7 +249,7 @@ module datapath(
     })
   );
 
-// EX stage logic
+/*** EX stage logic ***/
   mux4 forward_in1_mux(
     .i_1(Ew_RD1), .i_2(Mw_resultM),
     .i_3(Ww_resultW), 
@@ -270,7 +307,7 @@ module datapath(
     })
   );
 
-// MEM stage logic
+/*** MEM stage logic ***/
   readDataExtend read_data_extend(
     .i_isLoadSigned(Mi_isLoadSigned), .i_memSize(Mi_memSize),
     .i_readData(Mi_readData), 
@@ -298,7 +335,7 @@ module datapath(
     })
   );
 
-// WB stage logic
+/*** WB stage logic ***/
   mux2 result_w_mux(
     .i_1(Ww_resultM), .i_2(Ww_readDataExt),
     .i_sel(Wi_resultWSrc),
