@@ -99,6 +99,7 @@ module datapath(
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
+  wire        Ew_exception;
   wire [3:0]  Ew_cause;
     // to MEM
   wire [31:0] Ew_ALUOut;
@@ -124,7 +125,7 @@ module datapath(
 /* end wire */
 
 /*** IF stage logic ***/
-  dffREC #(32, 32'h1_0000)
+  dffREC #(32, 32'h1_0001)
   pc_reg(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(~Fi_stall), .i_clear(`LOW),
@@ -196,7 +197,7 @@ module datapath(
     .mcause_in(Ew_cause),
     .nowPrivMode(Ew_nowPrivMode),
       // special
-      .exceptionFromInst(Ei_exceptionFromInst), 
+      .exceptionFromInst(Ew_exception), 
       .mret(Di_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
@@ -278,8 +279,11 @@ module datapath(
     .o_1(Ew_csrLUOut)
   );
   exceptionHandling exception_handling(
+    .i_exceptionFromInst(Ei_exceptionFromInst),
     .i_causeFromInst(Ei_causeFromInst),
     .i_nowPrivMode(Ew_nowPrivMode),
+    .i_PC(Ew_PC),
+    .o_exception(Ew_exception),
     .o_cause(Ew_cause)
   );
 

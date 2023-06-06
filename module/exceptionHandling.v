@@ -1,6 +1,9 @@
 module exceptionHandling (
+  input i_exceptionFromInst,
   input [3:0] i_causeFromInst,
   input [1:0] i_nowPrivMode,
+  input [31:0] i_PC,
+  output o_exception,
   output [3:0] o_cause
 );
   // wire [11:0] Dw_csrFixed = 
@@ -10,10 +13,25 @@ module exceptionHandling (
   // if (Dw_PC[1:0] == 2'b00) begin  // InstAdrAlignVioException (cause:0)
   //   // 
   // end
+  assign o_exception = 
+    i_exceptionFromInst | (i_PC[1:0] != 2'b00);
+  // assign o_exception = i_exceptionFromInst;
   assign o_cause = 
-    (i_causeFromInst == 4'd8)? i_causeFromInst + i_nowPrivMode // ecall UorSorM
-                              : i_causeFromInst;    
+    setCause(i_causeFromInst, i_nowPrivMode, i_PC);
   
+  function [3:0] setCause(
+    input [3:0] i_causeFromInst,
+    input [1:0] i_nowPrivMode,
+    input [31:0] i_PC
+  );
+    if (i_PC[1:0] != 2'b00)  // instAddrAlignVioException
+      setCause = 4'b0000;
+    else if (i_causeFromInst == 4'd8) // ecall by UorSorM
+      setCause = i_causeFromInst + i_nowPrivMode;
+    else
+      setCause = i_causeFromInst;
+  endfunction
+
   // Instruction address align violation exception
   // wire instAddrAlignVioException = 
 
@@ -24,10 +42,4 @@ module exceptionHandling (
     
   // endfunction
   
-  // function [3:0] setCause(
-  //   input [3:0] i_causeFromInst,
-  //   input [1:0] i_nowPrivMode
-  // );
-
-  // endfunction
 endmodule

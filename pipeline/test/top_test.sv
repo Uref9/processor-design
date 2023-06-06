@@ -17,8 +17,11 @@ module top_test;
    
    // For Icarus verilog
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
-      // $dumpfile("./pipeline/test/log/top_test.vcd");
-      // $dumpvars(0, u_top_1);
+      $monitor($stime," PC= %h INST= %b %b %b %b PrivMode=%2b", 
+         IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0], 
+         u_top_1.datapath.Do_nowPrivMode);
+      $dumpfile("./pipeline/test/log/top_test.vcd");
+      $dumpvars(0, u_top_1);
 
    end
    
@@ -119,8 +122,8 @@ module top_test;
          load_task1;
          store_task1;
          
-         // if (690 < i && i < 710) info_registers_task;
-         // if (0 < i && i < 40) info_CSRs_task;
+         // if (0 < i && i < 760) info_registers_task;
+         if (0 < i && i < 740) info_CSRs_task;
          // $monitor("NPM: %2b", u_top_1.datapath.Do_nowPrivMode);
          
          // #(STB);
@@ -241,7 +244,7 @@ module top_test;
                   $display("\nExited by program.");
                   $display("TOTAL: %d [ClockCycle]", i);
 
-                  // dump_task1;
+                  dump_task1;
                   info_registers_task;
 
                   $finish;
