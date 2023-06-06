@@ -2,8 +2,9 @@
 `include "module/mainDecoder.v"
 `include "module/ALUDecoder.v"
 `include "module/exceptionDecoder.v"
-`include "module/setPCSrc.v"
 `include "module/setMemSize.v"
+`include "module/setPCSrc.v"
+`include "module/setCause.v"
 
 
 module controller(
@@ -21,16 +22,16 @@ module controller(
   output [1:0]  Mo_memSize,
   // to datapath
   output [2:0]  Do_immSrc,
-  output [3:0]  Do_causeNum,
   output        Do_jal,   // to hazard
   output        Do_mret,  // to hazard, exception
-  output        Do_exceptionFromInst, // to exception
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
   output [1:0]  Eo_PCSrc,    // and to hazard
+  output        Eo_exceptionFromInst, // to exception
   output        Eo_csrWrite, Eo_csrSrc,
   output [1:0]  Eo_csrLUCtrl,
+  output [3:0]  Eo_cause,
   output        Mo_isLoadSigned,
   output [1:0]  Mo_resultMSrc,
   output        Wo_resultWSrc,
@@ -53,8 +54,10 @@ module controller(
   wire [2:0]  Dw_funct3 = Di_inst[14:12];
   wire        Dw_immPlusSrc;
   wire        Dw_branch, Dw_jalr;
+  wire        Dw_exceptionFromInst;
   wire        Dw_csrWrite, Dw_csrSrc;
   wire [1:0]  Dw_csrLUCtrl;
+  wire [3:0]  Dw_causeNum;
     // to MEM
   wire        Dw_memWrite, Dw_memReq;
   wire [1:0]  Dw_memSize;
@@ -67,7 +70,7 @@ module controller(
   // EX stage wire
   wire [2:0]  Ew_funct3;
   wire        Ew_branch, Ew_jalr;
-  wire        Ew_exceptionFromInst;
+  wire [3:0]  Ew_causeNum;
     // to MEM
   wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
@@ -113,7 +116,7 @@ module controller(
     .i_funct3(Dw_funct3), .i_funct12(Dw_funct12),
     .i_nowPrivMode(Di_nowPrivMode),
     
-    .o_causeNum(Do_causeNum), .o_exceptionFromInst(Do_exceptionFromInst),
+    .o_causeNum(Dw_causeNum), .o_exceptionFromInst(Dw_exceptionFromInst),
     .o_mret(Do_mret)
   );
   setMemSize set_mem_size(
@@ -121,15 +124,16 @@ module controller(
     .o_memSize(Dw_memSize)
   );
   // ID/EX reg
-  dffREC #(25)
+  dffREC #(29)
   IDEX_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(Ei_flush),
     .i_d({
       Dw_ALUCtrl, Dw_ALUSrc, 
-      Dw_immPlusSrc, Do_exceptionFromInst,
+      Dw_immPlusSrc, Dw_exceptionFromInst,
       Dw_funct3, Dw_branch, Dw_jalr,
       Dw_csrWrite, Dw_csrSrc, Dw_csrLUCtrl,
+      Dw_causeNum,
 
       Dw_memWrite, Dw_memReq, Dw_memSize,
       Dw_isLoadSigned,
@@ -139,9 +143,10 @@ module controller(
     }),
     .o_q({
       Eo_ALUCtrl, Eo_ALUSrc, 
-      Eo_immPlusSrc, Ew_exceptionFromInst,
+      Eo_immPlusSrc, Eo_exceptionFromInst,
       Ew_funct3, Ew_branch, Ew_jalr, 
       Eo_csrWrite, Eo_csrSrc, Eo_csrLUCtrl,
+      Ew_causeNum,
 
       Ew_memWrite, Ew_memReq, Ew_memSize,
       Ew_isLoadSigned,
@@ -157,9 +162,13 @@ module controller(
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_branch(Ew_branch),
     .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), 
-    .i_exceptionFromInst(Ew_exceptionFromInst),
+    .i_exceptionFromInst(Eo_exceptionFromInst),
 
     .o_PCSrc(Eo_PCSrc)
+  );
+  setCause set_cause(
+    .i_causeNum(Ew_causeNum),
+    .o_cause(Eo_cause)
   );
   // EX/MEM reg
   dffREC #(9)

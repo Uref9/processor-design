@@ -14,7 +14,7 @@ module CSRs (
   input [11:0] csr_addr,
   input [11:0] wr1_addr,
   input [31:0] data1_in,
-  input [31:0] mepc_in, mtval_in, 
+  input [31:0] mstatus_in, mepc_in, mtval_in, 
   input [3:0] mcause_in,
   input [1:0] nowPrivMode,
   // input         mstatus_update,
@@ -27,8 +27,7 @@ module CSRs (
   // output
   output [31:0] data_out,
   output reg [1:0] nextPrivMode,
-  // output [31:0] mstatus_out
-  output [31:0] mtvec_out, mepc_out
+  output [31:0] mstatus_out, mtvec_out, mepc_out
 );
 
   /* controll status registers */
@@ -46,7 +45,7 @@ module CSRs (
               r_mip;        // 344
   // read
   assign data_out = readCSRs(csr_addr);
-  // assign mstatus_out = r_mstatus;
+  assign mstatus_out = r_mstatus;
   assign mtvec_out = r_mtvec;
   assign mepc_out = r_mepc;
 

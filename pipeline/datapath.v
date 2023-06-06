@@ -24,16 +24,16 @@ module datapath(
   input [31:0]  Mi_readData, // from dmem
   // from controller
   input [2:0]   Di_immSrc,
-  input [3:0]   Di_causeNum,
   input         Di_jal,
   input         Di_mret,
-  input         Di_exceptionFromInst,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
   input [1:0]   Ei_PCSrc,
+  input         Ei_exceptionFromInst,
   input         Ei_csrWrite, Ei_csrSrc,
   input [1:0]   Ei_csrLUCtrl,
+  input [3:0]   Ei_cause,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Mi_resultMSrc,
@@ -74,26 +74,27 @@ module datapath(
   assign      Do_rs2  = Do_inst[24:20];  // to EX
   wire [11:0] Dw_csr  = Do_inst[31:20];  // to EX
 
-
-  wire [31:0] Dw_PC; 
-  wire [31:0] Dw_mepcOut; 
-  wire [31:0] Dw_CSRsData; // to EX
+  wire [31:0] Dw_mepcOut;
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
-  wire [31:0] Dw_immExt, Dw_PCPlusImm;
-  wire [31:0] Dw_zimmExt;
-  wire [31:0] Dw_mtvecOut;
-
+  wire [31:0] Dw_immExt, Dw_zimmExt;
+  wire [31:0] Dw_PC, Dw_PCPlusImm;
+  wire [31:0] Dw_mstatusOut, Dw_mtvecOut;
+  wire [1:0]  Dw_nextPrivMode;
+  wire [31:0] Dw_inst;
+    // to MEM
+  wire [31:0] Dw_CSRsData;
     // to WB
   wire [31:0] Dw_PCPlus4;
 
   // EX stage wire
   wire [31:0] Ew_RD1, Ew_RD2;
   wire [31:0] Ew_RD1Fwd, Ew_ALUIn2;
-  wire [31:0] Ew_immExt, Ew_PCPlusImm;
-  wire [31:0] Ew_zimmExt;
-  wire [31:0] Ew_mtvecOut;
-  wire [31:0] Ew_CSRsData; // to MEM
+  wire [31:0] Ew_immExt, Ew_zimmExt;
+  wire [31:0] Ew_PC, Ew_PCPlusImm;
+  wire [31:0] Ew_mstatusOut, Ew_mtvecOut;
+  wire [1:0]  Ew_nowPrivMode;
+  wire [31:0] Ew_inst;
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
@@ -101,6 +102,7 @@ module datapath(
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
   wire [31:0] Ew_immPlus;
+  wire [31:0] Ew_CSRsData;
     // to WB
   wire [31:0] Ew_PCPlus4;
   wire [4:0] Eo_rd;
@@ -173,8 +175,7 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  wire Dw_privEnable = Di_exceptionFromInst | Di_mret;
-  wire [1:0] Dw_nextPrivMode;
+  wire Dw_privEnable = Ei_exceptionFromInst | Di_mret;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
     .enable(Dw_privEnable),
@@ -187,45 +188,48 @@ module datapath(
   // wire [11:0] Dw_csrFixed = 
   //   Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
   //                                     : Dw_csr); // mtvec(305) or csr to CSRsAddr
-  wire [3:0] Dw_mcauseFixed = 
-    (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
-                          : Di_causeNum;     
+  // wire [3:0] Dw_mcauseFixed = 
+  //   (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
+  //                         : Di_causeNum;     
   // wire Dw_exceptionInID = Di_exceptionFromInst | 
   // if (Dw_PC[1:0] == 2'b00) begin  // InstAdrAlignVioException (cause:0)
   //   // 
   // end
 
   CSRs csregister(
-    //
     .clk(clk), .reset_x(reset_x),
-    //
     .csr_addr(Dw_csr), 
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
-    .mepc_in(Dw_PC), .mtval_in(Do_inst),
-    .mcause_in(Dw_mcauseFixed),
-    .nowPrivMode(Do_nowPrivMode),
-    // .mstatus_update()
+    
+    .mstatus_in(Ew_mstatusOut),
+    .mepc_in(Ew_PC), .mtval_in(Ew_inst),
+    .mcause_in(Ei_cause),
+    .nowPrivMode(Ew_nowPrivMode),
       // special
-      .exceptionFromInst(Di_exceptionFromInst), .mret(Di_mret),
+      .exceptionFromInst(Ei_exceptionFromInst), 
+      .mret(Di_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
 
     .data_out(Dw_CSRsData),
     .nextPrivMode(Dw_nextPrivMode),
-    // .mstatus_out()
+    .mstatus_out(Dw_mstatusOut),
     .mtvec_out(Dw_mtvecOut), .mepc_out(Dw_mepcOut)
   );
   assign Dw_zimmExt = {17'b0, Dw_zimm};
   
   // ID/EX reg
-  dffREC #(283)
+  dffREC #(381)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
     .i_d({
       Dw_RD1, Dw_RD2,
       Dw_immExt, Dw_zimmExt,
-      Dw_PCPlusImm, Dw_csr, Dw_mtvecOut,
+      Dw_PC, Dw_PCPlusImm, 
+      Dw_mstatusOut, Dw_mtvecOut,
+      Do_nowPrivMode,
+      Dw_inst, Dw_csr,
       Do_rs1, Do_rs2,
 
       Dw_CSRsData, Dw_PCPlus4,
@@ -234,7 +238,10 @@ module datapath(
     .o_q({
       Ew_RD1, Ew_RD2,
       Ew_immExt, Ew_zimmExt,
-      Ew_PCPlusImm, Ew_csr, Ew_mtvecOut,
+      Ew_PC, Ew_PCPlusImm, 
+      Ew_mstatusOut, Ew_mtvecOut,
+      Ew_nowPrivMode,
+      Ew_inst, Ew_csr, 
       Eo_rs1, Eo_rs2,
 
       Ew_CSRsData, Ew_PCPlus4,
