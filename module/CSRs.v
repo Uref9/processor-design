@@ -51,7 +51,10 @@ module CSRs (
                // other
   always @(negedge clk, negedge reset_x) begin
     if (!reset_x) begin
-      r_mstatus <= 32'bxxxx_xxxx_xxxx_xxxx_xxx1_1xxx_1xxx_1xxx;
+      // r_mstatus <= 32'bxxxx_xxxx_xxxx_xxxx_xxx1_1xxx_1xxx_1xxx;
+      r_mstatus[`MIE] <= 1'b1;
+      // r_mstatus[`MPIE] <= 1'b1;
+      // r_mstatus[`MPP] <= 2'b11;
       r_mie <= 32'bx;
       r_mtvec <= 32'h0000_0000;
       r_mscratch <= 32'h802_0000; // ?

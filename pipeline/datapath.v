@@ -188,6 +188,9 @@ module datapath(
     (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
                           : Di_causeNum;     
   // wire Dw_exceptionInID = Di_exceptionFromInst | 
+  // if (Dw_PC[1:0] == 2'b00) begin  // InstAdrAlignVioException (cause:0)
+  //   // 
+  // end
 
   CSRs csregister(
     //
