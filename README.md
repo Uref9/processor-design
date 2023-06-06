@@ -7,6 +7,7 @@
 -
 - v0.1  temporary completion
 ## pipeline
+- v0.7 Add privilege mode and move ID to EX in writing CSRs
 - v0.6 Add Illegal inst. exception
 - v0.5 Add csrrw, etc. and solve branch->jal probrem
 - v0.5-pre Add csrrw, etc. (not completely confirm)
