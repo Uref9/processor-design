@@ -119,7 +119,7 @@ module datapath(
   wire [31:0] Ww_resultW;
 /* end wire */
 
-// IF stage logic
+/*** IF stage logic ***/
   dffREC #(32, 32'h1_0000)
   pc_reg(
     .i_clock(clk), .i_reset_x(reset_x),
@@ -154,7 +154,7 @@ module datapath(
     .o_q({ Do_inst, Dw_PC, Dw_PCPlus4 })
   );
 
-// ID stage logic
+/*** ID stage logic ***/
   rf32x32 register(
     .clk(clk), .reset(reset_x),
     .wr_n(~Wi_regWrite),
@@ -184,9 +184,9 @@ module datapath(
   );
 
   // exception handling
-  wire [11:0] Dw_csrFixed = 
-    Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
-                                      : Dw_csr); // mtvec(305) or csr to CSRsAddr
+  // wire [11:0] Dw_csrFixed = 
+  //   Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
+  //                                     : Dw_csr); // mtvec(305) or csr to CSRsAddr
   wire [3:0] Dw_mcauseFixed = 
     (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
                           : Di_causeNum;     
@@ -199,7 +199,7 @@ module datapath(
     //
     .clk(clk), .reset_x(reset_x),
     //
-    .csr_addr(Dw_csrFixed), 
+    .csr_addr(Dw_csr), 
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
     .mepc_in(Dw_PC), .mtval_in(Do_inst),
     .mcause_in(Dw_mcauseFixed),
@@ -225,8 +225,7 @@ module datapath(
     .i_d({
       Dw_RD1, Dw_RD2,
       Dw_immExt, Dw_zimmExt,
-      Dw_PCPlusImm, Dw_csr,
-      Dw_mtvecOut,
+      Dw_PCPlusImm, Dw_csr, Dw_mtvecOut,
       Do_rs1, Do_rs2,
 
       Dw_CSRsData, Dw_PCPlus4,
@@ -235,8 +234,7 @@ module datapath(
     .o_q({
       Ew_RD1, Ew_RD2,
       Ew_immExt, Ew_zimmExt,
-      Ew_PCPlusImm, Ew_csr,
-      Ew_mtvecOut,
+      Ew_PCPlusImm, Ew_csr, Ew_mtvecOut,
       Eo_rs1, Eo_rs2,
 
       Ew_CSRsData, Ew_PCPlus4,
@@ -244,7 +242,7 @@ module datapath(
     })
   );
 
-// EX stage logic
+/*** EX stage logic ***/
   mux4 forward_in1_mux(
     .i_1(Ew_RD1), .i_2(Mw_resultM),
     .i_3(Ww_resultW), 
@@ -302,7 +300,7 @@ module datapath(
     })
   );
 
-// MEM stage logic
+/*** MEM stage logic ***/
   readDataExtend read_data_extend(
     .i_isLoadSigned(Mi_isLoadSigned), .i_memSize(Mi_memSize),
     .i_readData(Mi_readData), 
@@ -330,7 +328,7 @@ module datapath(
     })
   );
 
-// WB stage logic
+/*** WB stage logic ***/
   mux2 result_w_mux(
     .i_1(Ww_resultM), .i_2(Ww_readDataExt),
     .i_sel(Wi_resultWSrc),
