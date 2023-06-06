@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
-`define IN_TOTAL 10000000000000
-// `define IN_TOTAL 300
+// `define IN_TOTAL 10000000000000
+`define IN_TOTAL 100
 `define HIGH   1'b1
 `define LOW    1'b0
 
@@ -123,7 +123,7 @@ module top_test;
          store_task1;
          
          // if (0 < i && i < 760) info_registers_task;
-         if (0 < i && i < 740) info_CSRs_task;
+         // if (0 < i && i < 740) info_CSRs_task;
          // $monitor("NPM: %2b", u_top_1.datapath.Do_nowPrivMode);
          
          // #(STB);
@@ -244,7 +244,7 @@ module top_test;
                   $display("\nExited by program.");
                   $display("TOTAL: %d [ClockCycle]", i);
 
-                  dump_task1;
+                  // dump_task1;
                   info_registers_task;
 
                   $finish;
