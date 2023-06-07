@@ -125,7 +125,7 @@ module datapath(
 /* end wire */
 
 /*** IF stage logic ***/
-  dffREC #(32, 32'h1_0001)
+  dffREC #(32, 32'h1_0000)
   pc_reg(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(~Fi_stall), .i_clear(`LOW),
