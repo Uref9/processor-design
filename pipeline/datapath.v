@@ -178,7 +178,7 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  wire Dw_privEnable = Ei_exceptionFromInst | Ei_mret;
+  wire Dw_privEnable = Eo_exception | Ei_mret;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
     .enable(Dw_privEnable),
