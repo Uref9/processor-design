@@ -21,7 +21,7 @@ module exceptionDecoder (
     input [2:0] i_funct3,
     input [11:0] i_funct12
   );
-    //                            causeFromInst_exceptionFromInst_mret
+    //                       causeFromInst_exceptionFromInst_mret
     case (i_EXCOp)
       2'b00:
                 exceptionDecoder = 6'bxxxx_0_0;
@@ -30,7 +30,8 @@ module exceptionDecoder (
           case (i_funct12)
             12'b0000_0000_0000: 
                 exceptionDecoder = 6'b1000_1_0;  // ecall (default: by U-mode)
-            // 12'b0000_0000_0001:                            // ebreak
+            12'b0000_0000_0001:
+                exceptionDecoder = 6'b0011_1_0;  // ebreak
             12'b0011_0000_0010: 
               if (i_nowPrivMode == `MMODE)
                 exceptionDecoder = 6'bxxxx_0_1;  // mret
