@@ -127,7 +127,7 @@ module datapath(
 /* end wire */
 
 /*** IF stage logic ***/
-  dffREC #(32, 32'h1_0000)
+  dffREC #(32, 32'h1_0001)
   pc_reg(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(~Fi_stall), .i_clear(`LOW),
@@ -211,7 +211,7 @@ module datapath(
   assign Dw_zimmExt = {17'b0, Dw_zimm};
   
   // ID/EX reg
-  dffREC #(381)
+  dffREC #(413)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),

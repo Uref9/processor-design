@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
-// `define IN_TOTAL 10000000000000
-`define IN_TOTAL 100
+`define IN_TOTAL 10000000000000
+// `define IN_TOTAL 100
 `define HIGH   1'b1
 `define LOW    1'b0
 
@@ -17,11 +17,11 @@ module top_test;
    
    // For Icarus verilog
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
-      $monitor($stime," PC= %h INST= %b %b %b %b PrivMode=%2b", 
-         IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0], 
-         u_top_1.datapath.Do_nowPrivMode);
-      $dumpfile("./pipeline/test/log/top_test.vcd");
-      $dumpvars(0, u_top_1);
+      // $monitor($stime," PC= %h INST= %b %b %b %b PrivMode=%2b", 
+      //    IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0], 
+      //    u_top_1.datapath.Do_nowPrivMode);
+      // $dumpfile("./pipeline/test/log/top_test.vcd");
+      // $dumpvars(0, u_top_1);
 
    end
    
@@ -134,6 +134,7 @@ module top_test;
       $display("\nReach IN_TOTAL.");
       dump_task1;
       info_registers_task;
+      info_CSRs_task;
       $finish;
 
    end // initial begin
@@ -246,7 +247,7 @@ module top_test;
 
                   // dump_task1;
                   info_registers_task;
-
+                  info_CSRs_task;
                   $finish;
                end
             else if (Daddr != STDOUT_ADDR)
