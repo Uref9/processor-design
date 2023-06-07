@@ -19,7 +19,7 @@ module CSRs (
   input [1:0] nowPrivMode,
   // input         mstatus_update,
     // special
-    input exceptionFromInst, mret,
+    input exception, mret,
   // from controller
   input wcsr_n,
 
@@ -64,7 +64,7 @@ module CSRs (
       r_mtval <= 32'bx;
       r_mip <= 32'bx;
     end
-    else if (exceptionFromInst) begin
+    else if (exception) begin
       r_mepc <= mepc_in; 
       // r_mepc <= r_mepc_in + 32'd4;  // when not impl. csrr+
       r_mcause <= { 28'b0, mcause_in };

@@ -1,8 +1,10 @@
 module setPCSrc (
   input       i_zero, i_neg, i_negU,
+  input       i_exception,
+
   input [2:0] i_funct3,
   input       i_branch, i_jalr,
-  input       i_exceptionFromInst, i_mret,
+  input       i_mret,
 
   output [1:0] o_PCSrc
 );
@@ -17,7 +19,7 @@ module setPCSrc (
   //   01: takeBranch
   //   10: exception or mret
   //   11: jalr
-  assign o_PCSrc[1] = ( (i_exceptionFromInst | i_mret) | i_jalr );
+  assign o_PCSrc[1] = ( (i_exception | i_mret) | i_jalr );
   assign o_PCSrc[0] = (w_takeBranch | i_jalr);
 
   function judgeBranch(

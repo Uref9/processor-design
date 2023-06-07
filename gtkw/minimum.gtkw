@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Tue Jun  6 06:26:34 2023
+[*] Wed Jun  7 07:14:06 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
-[dumpfile_mtime] "Tue Jun  6 06:24:22 2023"
-[dumpfile_size] 3883969
+[dumpfile_mtime] "Wed Jun  7 07:12:42 2023"
+[dumpfile_size] 1912206
 [savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/minimum.gtkw"
-[timestart] 3746900
+[timestart] 3350700
 [size] 1440 847
 [pos] -1 -1
-*-13.914623 3766510 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.914623 3376790 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top_test.
 [treeopen] top_test.u_top_1.
 [sst_width] 193

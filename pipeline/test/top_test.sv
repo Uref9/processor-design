@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 `define IN_TOTAL 10000000000000
-// `define IN_TOTAL 100
+// `define IN_TOTAL 400
 `define HIGH   1'b1
 `define LOW    1'b0
 
@@ -11,20 +11,20 @@ module top_test;
    initial begin
       // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0],
       //                   " : DAD=%h DDT=%h", Daddr, DDT);
+      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
    // For NCverilog
       //$shm_open("waves.shm");
       //$shm_probe("AS");
    
    // For Icarus verilog
-      // $monitor($stime," PC= %h INST= %b %b %b %b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0]);
-      // $monitor($stime," PC= %h INST= %b %b %b %b PrivMode=%2b", 
-      //    IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0], 
-      //    u_top_1.datapath.Do_nowPrivMode);
+      /* PC INST PrivMode */
+      // $monitor($stime," PC= %h INST= %b %b %b %b PrivMode=%2b", IAD, IDT[31:12], IDT[11:7], IDT[6:2], IDT[1:0], u_top_1.datapath.Do_nowPrivMode);
       // $dumpfile("./pipeline/test/log/top_test.vcd");
       // $dumpvars(0, u_top_1);
 
    end
-   
+
+// ***** declarations ***** //
    //*** parameter declarations ***//
    parameter CYCLE       = 10;
    parameter HALF_CYCLE  =  5;
@@ -65,6 +65,7 @@ module top_test;
 
    reg [BYTE_SIZE-1:0]   DATA_Imem[IMEM_START:IMEM_START + IMEM_SIZE];   // use in readmemh  (Instruction mem)       
    reg [BYTE_SIZE-1:0]   DATA_Dmem[DMEM_START:DMEM_START + DMEM_SIZE];   // use in readmemh (Data mem)
+// ***** end of declarations ***** //
 
    //*** module instantations ***//
    top u_top_1(//Inputs
@@ -122,8 +123,8 @@ module top_test;
          load_task1;
          store_task1;
          
-         // if (0 < i && i < 760) info_registers_task;
-         // if (0 < i && i < 740) info_CSRs_task;
+         // if (330 < i && i < 350) info_registers_task;
+         // if (80 < i && i < 100) info_CSRs_task;
          // $monitor("NPM: %2b", u_top_1.datapath.Do_nowPrivMode);
          
          // #(STB);
@@ -132,16 +133,24 @@ module top_test;
       end // for (i = 0; i < `IN_TOTAL; i =i +1)
 
       $display("\nReach IN_TOTAL.");
-      dump_task1;
+      // dump_task1;
       info_registers_task;
       info_CSRs_task;
       $finish;
 
    end // initial begin
 
-
-
    //*** tasks ***//
+   task exit_addr_finish_task;
+      begin
+         $display("\nExited by program.");
+         $display("TOTAL: %d [ClockCycle]", i);
+         // dump_task1;
+         info_registers_task;
+         info_CSRs_task;
+         $finish;
+      end
+   endtask
    task  info_registers_task;
       integer j;
       for (j =0; j < 32; j = j+1) begin
@@ -242,13 +251,7 @@ module top_test;
 
             if (Daddr == EXIT_ADDR)
                begin
-                  $display("\nExited by program.");
-                  $display("TOTAL: %d [ClockCycle]", i);
-
-                  // dump_task1;
-                  info_registers_task;
-                  info_CSRs_task;
-                  $finish;
+                  exit_addr_finish_task;
                end
             else if (Daddr != STDOUT_ADDR)
                begin

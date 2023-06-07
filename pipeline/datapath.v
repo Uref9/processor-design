@@ -53,6 +53,7 @@ module datapath(
   // to controller
   output [31:0] Do_inst,
   output [1:0]  Do_nowPrivMode,
+  output        Eo_exception,
   output        Eo_zero, Eo_neg, Eo_negU,
   // to hazard
   output [4:0]  Do_rs1, Do_rs2,
@@ -82,7 +83,6 @@ module datapath(
   wire [31:0] Dw_mstatusOut, Dw_mtvecOut;
   wire [31:0] Dw_mepcOut;
   wire [1:0]  Dw_nextPrivMode;
-  wire [31:0] Dw_inst;
     // to MEM
   wire [31:0] Dw_CSRsData;
     // to WB
@@ -101,7 +101,6 @@ module datapath(
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
-  wire        Ew_exception;
   wire [3:0]  Ew_cause;
     // to MEM
   wire [31:0] Ew_ALUOut;
@@ -179,7 +178,7 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  wire Dw_privEnable = Ei_exceptionFromInst | Ei_mret;
+  wire Dw_privEnable = Eo_exception | Ei_mret;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
     .enable(Dw_privEnable),
@@ -198,7 +197,7 @@ module datapath(
     .mcause_in(Ew_cause),
     .nowPrivMode(Ew_nowPrivMode),
       // special
-      .exceptionFromInst(Ew_exception), 
+      .exception(Eo_exception), 
       .mret(Ei_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
@@ -221,7 +220,7 @@ module datapath(
       Dw_PC, Dw_PCPlusImm, 
       Dw_mstatusOut, Dw_mtvecOut, Dw_mepcOut,
       Do_nowPrivMode,
-      Dw_inst, Dw_csr,
+      Do_inst, Dw_csr,
       Do_rs1, Do_rs2,
 
       Dw_CSRsData, Dw_PCPlus4,
@@ -288,8 +287,8 @@ module datapath(
     .i_exceptionFromInst(Ei_exceptionFromInst),
     .i_causeFromInst(Ei_causeFromInst),
     .i_nowPrivMode(Ew_nowPrivMode),
-    .i_PC(Ew_PC),
-    .o_exception(Ew_exception),
+    .i_PC(Ew_PC), .i_inst(Ew_inst),
+    .o_exception(Eo_exception),
     .o_cause(Ew_cause)
   );
 
