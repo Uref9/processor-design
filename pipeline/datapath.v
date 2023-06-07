@@ -10,6 +10,7 @@
 `include "module/CSRs.v"
 `include "module/csrLU.v"
 `include "module/privilegeMode.v"
+`include "module/exceptionHandling.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -25,15 +26,15 @@ module datapath(
   // from controller
   input [2:0]   Di_immSrc,
   input         Di_jal,
-  input         Di_mret,
   input [3:0]   Ei_ALUCtrl,
   input         Ei_ALUSrc,
   input         Ei_immPlusSrc,
   input [1:0]   Ei_PCSrc,
+  input         Ei_mret,
   input         Ei_exceptionFromInst,
   input         Ei_csrWrite, Ei_csrSrc,
   input [1:0]   Ei_csrLUCtrl,
-  input [3:0]   Ei_cause,
+  input [3:0]   Ei_causeFromInst,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Mi_resultMSrc,
@@ -74,12 +75,12 @@ module datapath(
   assign      Do_rs2  = Do_inst[24:20];  // to EX
   wire [11:0] Dw_csr  = Do_inst[31:20];  // to EX
 
-  wire [31:0] Dw_mepcOut;
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
   wire [31:0] Dw_immExt, Dw_zimmExt;
   wire [31:0] Dw_PC, Dw_PCPlusImm;
   wire [31:0] Dw_mstatusOut, Dw_mtvecOut;
+  wire [31:0] Dw_mepcOut;
   wire [1:0]  Dw_nextPrivMode;
   wire [31:0] Dw_inst;
     // to MEM
@@ -93,11 +94,15 @@ module datapath(
   wire [31:0] Ew_immExt, Ew_zimmExt;
   wire [31:0] Ew_PC, Ew_PCPlusImm;
   wire [31:0] Ew_mstatusOut, Ew_mtvecOut;
+  wire [31:0] Ew_mepcOut;
+  wire [31:0] Ew_mtvecmretOut;
   wire [1:0]  Ew_nowPrivMode;
   wire [31:0] Ew_inst;
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
+  wire        Ew_exception;
+  wire [3:0]  Ew_cause;
     // to MEM
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
@@ -134,15 +139,14 @@ module datapath(
     .o_1(Fw_PCPlus4)
   );
   assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
-  mux3 pre_pc_next_mux(
+  mux2 pre_pc_next_mux(
     .i_1(Fw_PCPlus4), .i_2(Dw_PCPlusImm),
-    .i_3(Dw_mepcOut),
-    .i_sel({ Di_mret, Di_jal }),
+    .i_sel(Di_jal),
     .o_1(Fw_prePCNext)
   );
   mux4 pc_next_mux(
     .i_1(Fw_prePCNext), .i_2(Ew_PCPlusImm), 
-    .i_3(Ew_mtvecOut), .i_4(Fw_ALUOutJalr),
+    .i_3(Ew_mtvecmretOut), .i_4(Fw_ALUOutJalr),
     .i_sel(Ei_PCSrc),
     .o_1(Fw_PCNext)
   );
@@ -175,7 +179,7 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  wire Dw_privEnable = Ei_exceptionFromInst | Di_mret;
+  wire Dw_privEnable = Ei_exceptionFromInst | Ei_mret;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
     .enable(Dw_privEnable),
@@ -183,19 +187,7 @@ module datapath(
 
     .o_nowPrivMode(Do_nowPrivMode)
   );
-
-  // exception handling
-  // wire [11:0] Dw_csrFixed = 
-  //   Di_exceptionFromInst ? 12'h305 : (Di_mret ? 12'h341
-  //                                     : Dw_csr); // mtvec(305) or csr to CSRsAddr
-  // wire [3:0] Dw_mcauseFixed = 
-  //   (Di_causeNum == 4'd8)? Di_causeNum + Do_nowPrivMode // ecall UorSorM
-  //                         : Di_causeNum;     
-  // wire Dw_exceptionInID = Di_exceptionFromInst | 
-  // if (Dw_PC[1:0] == 2'b00) begin  // InstAdrAlignVioException (cause:0)
-  //   // 
-  // end
-
+  // CSRs
   CSRs csregister(
     .clk(clk), .reset_x(reset_x),
     .csr_addr(Dw_csr), 
@@ -203,11 +195,11 @@ module datapath(
     
     .mstatus_in(Ew_mstatusOut),
     .mepc_in(Ew_PC), .mtval_in(Ew_inst),
-    .mcause_in(Ei_cause),
+    .mcause_in(Ew_cause),
     .nowPrivMode(Ew_nowPrivMode),
       // special
-      .exceptionFromInst(Ei_exceptionFromInst), 
-      .mret(Di_mret),
+      .exceptionFromInst(Ew_exception), 
+      .mret(Ei_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
 
@@ -219,7 +211,7 @@ module datapath(
   assign Dw_zimmExt = {17'b0, Dw_zimm};
   
   // ID/EX reg
-  dffREC #(381)
+  dffREC #(413)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
@@ -227,7 +219,7 @@ module datapath(
       Dw_RD1, Dw_RD2,
       Dw_immExt, Dw_zimmExt,
       Dw_PC, Dw_PCPlusImm, 
-      Dw_mstatusOut, Dw_mtvecOut,
+      Dw_mstatusOut, Dw_mtvecOut, Dw_mepcOut,
       Do_nowPrivMode,
       Dw_inst, Dw_csr,
       Do_rs1, Do_rs2,
@@ -239,7 +231,7 @@ module datapath(
       Ew_RD1, Ew_RD2,
       Ew_immExt, Ew_zimmExt,
       Ew_PC, Ew_PCPlusImm, 
-      Ew_mstatusOut, Ew_mtvecOut,
+      Ew_mstatusOut, Ew_mtvecOut, Ew_mepcOut,
       Ew_nowPrivMode,
       Ew_inst, Ew_csr, 
       Eo_rs1, Eo_rs2,
@@ -286,6 +278,19 @@ module datapath(
     .i_ctrl(Ei_csrLUCtrl),
     .i_1(Ew_CSRsData), .i_2(Ew_csrLUIn2),
     .o_1(Ew_csrLUOut)
+  );
+  mux2 mtvec_or_mret_mux(
+    .i_1(Ew_mtvecOut), .i_2(Ew_mepcOut),
+    .i_sel(Ei_mret),
+    .o_1(Ew_mtvecmretOut)
+  );
+  exceptionHandling exception_handling(
+    .i_exceptionFromInst(Ei_exceptionFromInst),
+    .i_causeFromInst(Ei_causeFromInst),
+    .i_nowPrivMode(Ew_nowPrivMode),
+    .i_PC(Ew_PC),
+    .o_exception(Ew_exception),
+    .o_cause(Ew_cause)
   );
 
   // EX/MEM reg
