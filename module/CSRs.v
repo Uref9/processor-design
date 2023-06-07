@@ -53,14 +53,15 @@ module CSRs (
                // other
   always @(negedge clk, negedge reset_x) begin
     if (!reset_x) begin
+      //** Assume reset -> M-mode -> U-mode(now) **//
       r_mstatus[`MIE] <= 1'b1;
-      // r_mstatus[`MPIE] <= 1'b1;
-      // r_mstatus[`MPP] <= 2'b11;
+      r_mstatus[`MPIE] <= 1'b0; // old MIE in reset -> M-mode
+      r_mstatus[`MPP] <= 2'b11;
       r_mie <= 32'bx;
       r_mtvec <= 32'h0000_0000;
       r_mscratch <= 32'h802_0000; // ?
       r_mepc <= 32'bx;
-      r_mcause <= 32'bx;
+      r_mcause <= 32'b0;  // not distinguish reset cause
       r_mtval <= 32'bx;
       r_mip <= 32'bx;
     end
