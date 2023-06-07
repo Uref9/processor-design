@@ -1,6 +1,7 @@
 `include "pipeline/datapath.v"
 `include "pipeline/controller.v"
 `include "pipeline/hazard.v"
+`include "pipeline/exceptionHandling.v"
 
 module top(
   input         clk, rst,
@@ -17,9 +18,10 @@ module top(
 );
 
   // from datapath
+    // to controller
   wire [31:0] Dw_inst;
   wire [1:0]  Dw_nowPrivMode;
-  wire        Ew_exception;
+  wire        Ew_exception; // and to exceptionHandling
   wire        Ew_zero, Ew_neg, Ew_negU;
     // to hazard
   wire [4:0]  Dw_rs1, Dw_rs2;
@@ -27,6 +29,9 @@ module top(
   wire [4:0]  Ew_rd;
   wire [4:0]  Mw_rd;
   wire [4:0]  Ww_rd;
+    // to exceptionHandling
+  wire [1:0] Ew_nowPrivMode;
+  wire [31:0] Ew_PC, Ew_inst;
 
   // from controller
     // to datapath
@@ -37,10 +42,8 @@ module top(
   wire        Ew_immPlusSrc;
   wire [1:0]  Ew_PCSrc; // and to hazard
   wire        Ew_mret;
-  wire        Ew_exceptionFromInst;
   wire        Ew_csrWrite, Ew_csrSrc;
   wire [1:0]  Ew_csrLUCtrl;
-  wire [3:0]  Ew_causeFromInst;
   wire        Mw_isLoadSigned;
   wire [1:0]  Mw_resultMSrc;
   wire        Ww_resultWSrc;
@@ -48,6 +51,9 @@ module top(
     // to hazard
   wire        Ew_resultWSrc;
   wire        Mw_regWrite;
+    // to exceptionHandling
+  wire        Ew_exceptionFromInst;
+  wire [3:0]  Ew_causeFromInst;
 
   // from hazard
   wire [1:0]   Ew_forwardIn1Src, Ew_forwardIn2Src;
@@ -55,7 +61,10 @@ module top(
   wire         Dw_stall, Dw_flush;
   wire         Ew_flush;
 
-  // wire        w_PCEnable;
+  // from exceptionHandling
+    // to datapath
+  wire Ew_privEnable;
+  wire [3:0] Ew_cause;
 
   /*** inout ***/
   wire [31:0] Mw_writeData;
@@ -73,10 +82,8 @@ module top(
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_PCSrc(Ew_PCSrc), 
     .Ei_mret(Ew_mret), 
-    .Ei_exceptionFromInst(Ew_exceptionFromInst), 
     .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
     .Ei_csrLUCtrl(Ew_csrLUCtrl),
-    .Ei_causeFromInst(Ew_causeFromInst),
     .Mi_memSize(SIZE), .Mi_isLoadSigned(Mw_isLoadSigned), 
     .Mi_resultMSrc(Mw_resultMSrc),
     .Wi_resultWSrc(Ww_resultWSrc),
@@ -87,6 +94,9 @@ module top(
     .Fi_stall(Fw_stall), 
     .Di_stall(Dw_stall), .Di_flush(Dw_flush),
     .Ei_flush(Ew_flush),
+    // from exceptionHandling
+    .Ei_privEnable(Ew_privEnable),
+    .Ei_cause(Ew_cause),
 
     // to test imem
     .Fo_PC(IAD), 
@@ -99,9 +109,10 @@ module top(
     // to hazard
     .Do_rs1(Dw_rs1), .Do_rs2(Dw_rs2),
     .Eo_rs1(Ew_rs1), .Eo_rs2(Ew_rs2),
-    .Eo_rd(Ew_rd), .Mo_rd(Mw_rd), .Wo_rd(Ww_rd)
-
-    // .i_PCEnable(w_PCEnable),
+    .Eo_rd(Ew_rd), .Mo_rd(Mw_rd), .Wo_rd(Ww_rd),
+    // to exceptionHandling
+    .Eo_nowPrivMode(Ew_nowPrivMode),
+    .Eo_PC(Ew_PC), .Eo_inst(Ew_inst)
   );
 
   controller controller(
@@ -123,17 +134,18 @@ module top(
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), 
     .Eo_PCSrc(Ew_PCSrc), .Eo_mret(Ew_mret), 
-    .Eo_exceptionFromInst(Ew_exceptionFromInst),
     .Eo_csrWrite(Ew_csrWrite), .Eo_csrSrc(Ew_csrSrc),
     .Eo_csrLUCtrl(Ew_csrLUCtrl),
-    .Eo_causeFromInst(Ew_causeFromInst),
     .Mo_isLoadSigned(Mw_isLoadSigned), 
     .Mo_resultMSrc(Mw_resultMSrc),
     .Wo_resultWSrc(Ww_resultWSrc),
     .Wo_regWrite(Ww_regWrite),
     // to hazard
     .Eo_resultWSrc(Ew_resultWSrc),
-    .Mo_regWrite(Mw_regWrite)
+    .Mo_regWrite(Mw_regWrite),
+    // to exceptionHandling
+    .Eo_exceptionFromInst(Ew_exceptionFromInst),
+    .Eo_causeFromInst(Ew_causeFromInst)
   );
 
   hazard hazard(
@@ -156,6 +168,17 @@ module top(
     .Fo_stall(Fw_stall),
     .Do_stall(Dw_stall), .Do_flush(Dw_flush),
     .Eo_flush(Ew_flush)
+  );
+
+  exceptionHandling exception_handling(
+    .i_exceptionFromInst(Ew_exceptionFromInst), 
+    .i_causeFromInst(Ew_causeFromInst),
+    .i_mret(Ew_mret),
+    .i_nowPrivMode(Ew_nowPrivMode),
+    .i_PC(Ew_PC), .i_inst(Ew_inst),
+
+    .o_exception(Ew_exception), .o_cause(Ew_cause),
+    .o_privEnable(Ew_privEnable)
   );
 
 endmodule

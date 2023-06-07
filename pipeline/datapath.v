@@ -10,7 +10,7 @@
 `include "module/CSRs.v"
 `include "module/csrLU.v"
 `include "module/privilegeMode.v"
-`include "module/exceptionHandling.v"
+`include "module/oldExceptionHandling.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -31,10 +31,8 @@ module datapath(
   input         Ei_immPlusSrc,
   input [1:0]   Ei_PCSrc,
   input         Ei_mret,
-  input         Ei_exceptionFromInst,
   input         Ei_csrWrite, Ei_csrSrc,
   input [1:0]   Ei_csrLUCtrl,
-  input [3:0]   Ei_causeFromInst,
   input [1:0]   Mi_memSize,
   input         Mi_isLoadSigned,
   input [1:0]   Mi_resultMSrc,
@@ -45,6 +43,9 @@ module datapath(
   input         Fi_stall,
   input         Di_stall, Di_flush,
   input         Ei_flush,
+  // from exceptionHandling
+  input Ei_privEnable,
+  input [3:0]  Ei_cause,
 
   // to test imem
   output [31:0] Fo_PC,
@@ -53,14 +54,17 @@ module datapath(
   // to controller
   output [31:0] Do_inst,
   output [1:0]  Do_nowPrivMode,
-  output        Eo_exception,
+  output        Eo_exception, // and to exceptionHandling
   output        Eo_zero, Eo_neg, Eo_negU,
   // to hazard
   output [4:0]  Do_rs1, Do_rs2,
   output [4:0]  Eo_rs1, Eo_rs2,
   output [4:0]  Eo_rd,
   output [4:0]  Mo_rd,
-  output [4:0]  Wo_rd
+  output [4:0]  Wo_rd,
+  // to exceptionHandling
+  output [1:0]  Eo_nowPrivMode,
+  output [31:0] Eo_PC, Eo_inst
 );
 
 /* wire */
@@ -92,16 +96,13 @@ module datapath(
   wire [31:0] Ew_RD1, Ew_RD2;
   wire [31:0] Ew_RD1Fwd, Ew_ALUIn2;
   wire [31:0] Ew_immExt, Ew_zimmExt;
-  wire [31:0] Ew_PC, Ew_PCPlusImm;
+  wire [31:0] Ew_PCPlusImm;
   wire [31:0] Ew_mstatusOut, Ew_mtvecOut;
   wire [31:0] Ew_mepcOut;
   wire [31:0] Ew_mtvecmretOut;
-  wire [1:0]  Ew_nowPrivMode;
-  wire [31:0] Ew_inst;
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
-  wire [3:0]  Ew_cause;
     // to MEM
   wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
@@ -178,10 +179,10 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  wire Dw_privEnable = Eo_exception | Ei_mret;
+  // wire Dw_privEnable = Eo_exception | Ei_mret;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
-    .enable(Dw_privEnable),
+    .enable(Ei_privEnable),
     .i_nextPrivMode(Dw_nextPrivMode),
 
     .o_nowPrivMode(Do_nowPrivMode)
@@ -193,9 +194,9 @@ module datapath(
     .wr1_addr(Ew_csr), .data1_in(Ew_csrLUOut),
     
     .mstatus_in(Ew_mstatusOut),
-    .mepc_in(Ew_PC), .mtval_in(Ew_inst),
-    .mcause_in(Ew_cause),
-    .nowPrivMode(Ew_nowPrivMode),
+    .mepc_in(Eo_PC), .mtval_in(Eo_inst),
+    .mcause_in(Ei_cause),
+    .nowPrivMode(Eo_nowPrivMode),
       // special
       .exception(Eo_exception), 
       .mret(Ei_mret),
@@ -229,10 +230,10 @@ module datapath(
     .o_q({
       Ew_RD1, Ew_RD2,
       Ew_immExt, Ew_zimmExt,
-      Ew_PC, Ew_PCPlusImm, 
+      Eo_PC, Ew_PCPlusImm, 
       Ew_mstatusOut, Ew_mtvecOut, Ew_mepcOut,
-      Ew_nowPrivMode,
-      Ew_inst, Ew_csr, 
+      Eo_nowPrivMode,
+      Eo_inst, Ew_csr, 
       Eo_rs1, Eo_rs2,
 
       Ew_CSRsData, Ew_PCPlus4,
@@ -283,13 +284,14 @@ module datapath(
     .i_sel(Ei_mret),
     .o_1(Ew_mtvecmretOut)
   );
-  exceptionHandling exception_handling(
-    .i_exceptionFromInst(Ei_exceptionFromInst),
-    .i_causeFromInst(Ei_causeFromInst),
-    .i_nowPrivMode(Ew_nowPrivMode),
-    .i_PC(Ew_PC), .i_inst(Ew_inst),
-    .o_exception(Eo_exception),
-    .o_cause(Ew_cause)
+  oldExceptionHandling old_exception_handling(
+    // .i_exceptionFromInst(Ei_exceptionFromInst),
+    // .i_causeFromInst(Ei_causeFromInst),
+    // .i_nowPrivMode(Eo_nowPrivMode),
+    // .i_PC(Eo_PC), 
+    // .i_inst(Eo_inst),
+    // .o_exception(Eo_exception),
+    // .o_cause(Ei_cause)
   );
 
   // EX/MEM reg

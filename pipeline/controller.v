@@ -28,17 +28,18 @@ module controller(
   output        Eo_immPlusSrc,
   output [1:0]  Eo_PCSrc,    // and to hazard
   output        Eo_mret,  // to hazard, exception
-  output        Eo_exceptionFromInst, // to exception
   output        Eo_csrWrite, Eo_csrSrc,
   output [1:0]  Eo_csrLUCtrl,
-  output [3:0]  Eo_causeFromInst,
   output        Mo_isLoadSigned,
   output [1:0]  Mo_resultMSrc,
   output        Wo_resultWSrc,
   output        Wo_regWrite,   // and to hazard
   // to hazard
   output        Eo_resultWSrc,
-  output        Mo_regWrite
+  output        Mo_regWrite,
+  // to exceptionHanling
+  output        Eo_exceptionFromInst,
+  output [3:0]  Eo_causeFromInst
 );
 
 // wire
