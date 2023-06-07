@@ -82,7 +82,6 @@ module datapath(
   wire [31:0] Dw_mstatusOut, Dw_mtvecOut;
   wire [31:0] Dw_mepcOut;
   wire [1:0]  Dw_nextPrivMode;
-  wire [31:0] Dw_inst;
     // to MEM
   wire [31:0] Dw_CSRsData;
     // to WB
@@ -198,7 +197,7 @@ module datapath(
     .mcause_in(Ew_cause),
     .nowPrivMode(Ew_nowPrivMode),
       // special
-      .exceptionFromInst(Ew_exception), 
+      .exception(Ew_exception), 
       .mret(Ei_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
@@ -221,7 +220,7 @@ module datapath(
       Dw_PC, Dw_PCPlusImm, 
       Dw_mstatusOut, Dw_mtvecOut, Dw_mepcOut,
       Do_nowPrivMode,
-      Dw_inst, Dw_csr,
+      Do_inst, Dw_csr,
       Do_rs1, Do_rs2,
 
       Dw_CSRsData, Dw_PCPlus4,

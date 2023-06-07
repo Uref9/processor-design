@@ -24,7 +24,8 @@ module top_test;
       // $dumpvars(0, u_top_1);
 
    end
-   
+
+// ***** declarations ***** //
    //*** parameter declarations ***//
    parameter CYCLE       = 10;
    parameter HALF_CYCLE  =  5;
@@ -65,6 +66,7 @@ module top_test;
 
    reg [BYTE_SIZE-1:0]   DATA_Imem[IMEM_START:IMEM_START + IMEM_SIZE];   // use in readmemh  (Instruction mem)       
    reg [BYTE_SIZE-1:0]   DATA_Dmem[DMEM_START:DMEM_START + DMEM_SIZE];   // use in readmemh (Data mem)
+// ***** end of declarations ***** //
 
    //*** module instantations ***//
    top u_top_1(//Inputs
@@ -139,9 +141,17 @@ module top_test;
 
    end // initial begin
 
-
-
    //*** tasks ***//
+   task exit_addr_finish_task;
+      begin
+         $display("\nExited by program.");
+         $display("TOTAL: %d [ClockCycle]", i);
+         // dump_task1;
+         info_registers_task;
+         info_CSRs_task;
+         $finish;
+      end
+   endtask
    task  info_registers_task;
       integer j;
       for (j =0; j < 32; j = j+1) begin
@@ -242,13 +252,7 @@ module top_test;
 
             if (Daddr == EXIT_ADDR)
                begin
-                  $display("\nExited by program.");
-                  $display("TOTAL: %d [ClockCycle]", i);
-
-                  // dump_task1;
-                  info_registers_task;
-                  info_CSRs_task;
-                  $finish;
+                  exit_addr_finish_task;
                end
             else if (Daddr != STDOUT_ADDR)
                begin
