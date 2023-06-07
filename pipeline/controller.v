@@ -12,6 +12,7 @@ module controller(
   // from datapath
   input [31:0]  Di_inst,
   input [1:0]   Di_nowPrivMode,
+  input         Ei_exception,
   input         Ei_zero, Ei_neg, Ei_negU,
   // from hazard
   input Ei_flush,
@@ -161,9 +162,11 @@ module controller(
 // EX stage
   setPCSrc set_pre_pc_src(
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
+    .i_exception(Ei_exception), 
+    
     .i_branch(Ew_branch),
     .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), 
-    .i_exceptionFromInst(Eo_exceptionFromInst), .i_mret(Eo_mret),
+    .i_mret(Eo_mret),
 
     .o_PCSrc(Eo_PCSrc)
   );

@@ -53,6 +53,7 @@ module datapath(
   // to controller
   output [31:0] Do_inst,
   output [1:0]  Do_nowPrivMode,
+  output        Eo_exception,
   output        Eo_zero, Eo_neg, Eo_negU,
   // to hazard
   output [4:0]  Do_rs1, Do_rs2,
@@ -100,7 +101,6 @@ module datapath(
   wire [11:0] Ew_csr;
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
-  wire        Ew_exception;
   wire [3:0]  Ew_cause;
     // to MEM
   wire [31:0] Ew_ALUOut;
@@ -197,7 +197,7 @@ module datapath(
     .mcause_in(Ew_cause),
     .nowPrivMode(Ew_nowPrivMode),
       // special
-      .exception(Ew_exception), 
+      .exception(Eo_exception), 
       .mret(Ei_mret),
     // from controller
     .wcsr_n(!Ei_csrWrite),
@@ -287,8 +287,8 @@ module datapath(
     .i_exceptionFromInst(Ei_exceptionFromInst),
     .i_causeFromInst(Ei_causeFromInst),
     .i_nowPrivMode(Ew_nowPrivMode),
-    .i_PC(Ew_PC),
-    .o_exception(Ew_exception),
+    .i_PC(Ew_PC), .i_inst(Ew_inst),
+    .o_exception(Eo_exception),
     .o_cause(Ew_cause)
   );
 
