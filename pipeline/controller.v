@@ -22,11 +22,11 @@ module controller(
   // to datapath
   output [2:0]  Do_immSrc,
   output        Do_jal,   // to hazard
-  output        Do_mret,  // to hazard, exception
   output [3:0]  Eo_ALUCtrl,
   output        Eo_ALUSrc,
   output        Eo_immPlusSrc,
   output [1:0]  Eo_PCSrc,    // and to hazard
+  output        Eo_mret,  // to hazard, exception
   output        Eo_exceptionFromInst, // to exception
   output        Eo_csrWrite, Eo_csrSrc,
   output [1:0]  Eo_csrLUCtrl,
@@ -53,6 +53,7 @@ module controller(
   wire [2:0]  Dw_funct3 = Di_inst[14:12];
   wire        Dw_immPlusSrc;
   wire        Dw_branch, Dw_jalr;
+  wire        Dw_mret;
   wire        Dw_exceptionFromInst;
   wire        Dw_csrWrite, Dw_csrSrc;
   wire [1:0]  Dw_csrLUCtrl;
@@ -115,20 +116,21 @@ module controller(
     .i_nowPrivMode(Di_nowPrivMode),
     
     .o_causeFromInst(Dw_causeFromInst), .o_exceptionFromInst(Dw_exceptionFromInst),
-    .o_mret(Do_mret)
+    .o_mret(Dw_mret)
   );
   setMemSize set_mem_size(
     .i_funct3(Dw_funct3),
     .o_memSize(Dw_memSize)
   );
   // ID/EX reg
-  dffREC #(29)
+  dffREC #(30)
   IDEX_controll_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(Ei_flush),
     .i_d({
       Dw_ALUCtrl, Dw_ALUSrc, 
-      Dw_immPlusSrc, Dw_exceptionFromInst,
+      Dw_immPlusSrc, 
+      Dw_mret, Dw_exceptionFromInst,
       Dw_funct3, Dw_branch, Dw_jalr,
       Dw_csrWrite, Dw_csrSrc, Dw_csrLUCtrl,
       Dw_causeFromInst,
@@ -141,7 +143,8 @@ module controller(
     }),
     .o_q({
       Eo_ALUCtrl, Eo_ALUSrc, 
-      Eo_immPlusSrc, Eo_exceptionFromInst,
+      Eo_immPlusSrc, 
+      Eo_mret, Eo_exceptionFromInst,
       Ew_funct3, Ew_branch, Ew_jalr, 
       Eo_csrWrite, Eo_csrSrc, Eo_csrLUCtrl,
       Eo_causeFromInst,
@@ -156,11 +159,11 @@ module controller(
 // end ID stage
 
 // EX stage
-  setPrePCSrc set_pre_pc_src(
+  setPCSrc set_pre_pc_src(
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_branch(Ew_branch),
     .i_funct3(Ew_funct3), .i_jalr(Ew_jalr), 
-    .i_exceptionFromInst(Eo_exceptionFromInst),
+    .i_exceptionFromInst(Eo_exceptionFromInst), .i_mret(Eo_mret),
 
     .o_PCSrc(Eo_PCSrc)
   );

@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Wed Jun  7 00:01:02 2023
+[*] Tue Jun  6 08:42:37 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
-[dumpfile_mtime] "Tue Jun  6 08:49:28 2023"
-[dumpfile_size] 1414931
+[dumpfile_mtime] "Tue Jun  6 08:10:56 2023"
+[dumpfile_size] 104210
 [savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/pc.gtkw"
-[timestart] 97870
+[timestart] 129410
 [size] 1440 847
 [pos] -1 -1
-*-13.914623 155970 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.914623 186440 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top_test.
 [treeopen] top_test.u_top_1.
 [treeopen] top_test.u_top_1.controller.
@@ -27,37 +27,34 @@ top_test.u_top_1.IDT[31:0]
 top_test.u_top_1.DAD[31:0]
 top_test.u_top_1.DDT[31:0]
 @28
-top_test.u_top_1.datapath.Ei_forwardIn1Src[1:0]
-@22
-top_test.u_top_1.datapath.Ew_RD1[31:0]
-top_test.u_top_1.datapath.Mw_resultM[31:0]
-top_test.u_top_1.datapath.Ww_resultW[31:0]
-@28
-top_test.u_top_1.datapath.Wi_resultWSrc
-@22
-top_test.u_top_1.datapath.Ew_RD1Fwd[31:0]
-top_test.u_top_1.datapath.Ew_ALUOut[31:0]
-top_test.u_top_1.datapath.Ww_readDataExt[31:0]
-top_test.u_top_1.datapath.Mi_readDataExt[31:0]
-@28
 top_test.u_top_1.datapath.Ei_PCSrc[1:0]
 @22
 top_test.u_top_1.datapath.Fw_PCNext[31:0]
 top_test.u_top_1.datapath.Fw_prePCNext[31:0]
 @28
 top_test.u_top_1.controller.set_pre_pc_src.o_PCSrc[1:0]
+top_test.u_top_1.controller.set_pre_pc_src.w_takeBranch
+top_test.u_top_1.controller.set_pre_pc_src.i_mret
+top_test.u_top_1.controller.set_pre_pc_src.i_branch
+top_test.u_top_1.controller.set_pre_pc_src.i_jalr
+top_test.u_top_1.controller.set_pre_pc_src.i_neg
+top_test.u_top_1.controller.set_pre_pc_src.i_negU
+top_test.u_top_1.controller.set_pre_pc_src.i_zero
 @22
 top_test.u_top_1.datapath.alu.i_1[31:0]
-top_test.u_top_1.datapath.alu.i_2[31:0]
-top_test.u_top_1.datapath.Dw_RD1[31:0]
-top_test.u_top_1.datapath.Dw_RD2[31:0]
-@24
-top_test.u_top_1.datapath.Do_rs1[4:0]
-top_test.u_top_1.datapath.Do_rs2[4:0]
-@22
+top_test.u_top_1.datapath.Ew_RD1Fwd[31:0]
 top_test.u_top_1.datapath.Ew_RD1[31:0]
-top_test.u_top_1.datapath.Ew_RD2[31:0]
+top_test.u_top_1.datapath.Mw_resultM[31:0]
+top_test.u_top_1.datapath.Ww_resultW[31:0]
+@28
+top_test.u_top_1.datapath.Wi_resultWSrc
+@22
+top_test.u_top_1.datapath.Ww_readDataExt[31:0]
 @23
-top_test.u_top_1.datapath.Wo_rd[4:0]
+top_test.u_top_1.datapath.Mi_readDataExt[31:0]
+@28
+top_test.u_top_1.datapath.Ei_forwardIn1Src[1:0]
+@22
+top_test.u_top_1.datapath.alu.i_2[31:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -31,11 +31,11 @@ module top(
     // to datapath
   wire [2:0]  Dw_immSrc;
   wire        Dw_jal;   // and to hazard
-  wire        Dw_mret;  // and to hazard
   wire [3:0]  Ew_ALUCtrl;
   wire        Ew_ALUSrc;
   wire        Ew_immPlusSrc;
   wire [1:0]  Ew_PCSrc; // and to hazard
+  wire        Ew_mret;
   wire        Ew_exceptionFromInst;
   wire        Ew_csrWrite, Ew_csrSrc;
   wire [1:0]  Ew_csrLUCtrl;
@@ -68,9 +68,10 @@ module top(
     .Fi_inst(IDT), .Mi_readData(Mw_readData),
     // from controller
     .Di_immSrc(Dw_immSrc),
-    .Di_jal(Dw_jal), .Di_mret(Dw_mret), 
+    .Di_jal(Dw_jal),
     .Ei_ALUCtrl(Ew_ALUCtrl), .Ei_ALUSrc(Ew_ALUSrc), 
     .Ei_immPlusSrc(Ew_immPlusSrc), .Ei_PCSrc(Ew_PCSrc), 
+    .Ei_mret(Ew_mret), 
     .Ei_exceptionFromInst(Ew_exceptionFromInst), 
     .Ei_csrWrite(Ew_csrWrite), .Ei_csrSrc(Ew_csrSrc),
     .Ei_csrLUCtrl(Ew_csrLUCtrl),
@@ -115,10 +116,10 @@ module top(
     .Mo_memSize(SIZE),
     // to datapath
     .Do_immSrc(Dw_immSrc),
-    .Do_jal(Dw_jal), .Do_mret(Dw_mret), 
+    .Do_jal(Dw_jal), 
     .Eo_ALUCtrl(Ew_ALUCtrl), .Eo_ALUSrc(Ew_ALUSrc), 
     .Eo_immPlusSrc(Ew_immPlusSrc), 
-    .Eo_PCSrc(Ew_PCSrc),
+    .Eo_PCSrc(Ew_PCSrc), .Eo_mret(Ew_mret), 
     .Eo_exceptionFromInst(Ew_exceptionFromInst),
     .Eo_csrWrite(Ew_csrWrite), .Eo_csrSrc(Ew_csrSrc),
     .Eo_csrLUCtrl(Ew_csrLUCtrl),
@@ -140,7 +141,7 @@ module top(
     .Ei_rs1(Ew_rs1), .Ei_rs2(Ew_rs2),
     .Ei_rd(Ew_rd), .Mi_rd(Mw_rd), .Wi_rd(Ww_rd),
     // from controller
-    .Di_jal(Dw_jal), .Di_mret(Dw_mret),
+    .Di_jal(Dw_jal),
     .Ei_PCSrc(Ew_PCSrc),
     .Ei_resultWSrc(Ew_resultWSrc),
     .Mi_regWrite(Mw_regWrite), .Wi_regWrite(Ww_regWrite),
