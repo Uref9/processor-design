@@ -1,6 +1,6 @@
 `define UMODE 2'b00
 
-module exceptionHandling (
+module oldExceptionHandling (
   input i_exceptionFromInst,
   input [3:0] i_causeFromInst,
   input [1:0] i_nowPrivMode,

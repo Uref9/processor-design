@@ -18,17 +18,18 @@ module mainDecoder (
   output [1:0] o_ALUOp,
   output [1:0] o_EXCOp
 );
+  wire w_csrr;
 
   assign o_immPlusSrc = ~i_opcode[5];
   assign o_isLoadSigned = ~i_funct3[2];
   assign o_csrSrc = i_funct3[2];
   assign o_csrLUCtrl = i_funct3[1:0];
-  assign o_csrWrite = o_csrr;
+  assign o_csrWrite = w_csrr;
 
   assign {o_ALUOp, o_ALUSrc, o_immSrc, 
           o_resultMSrc, o_resultWSrc,
           o_regWrite, o_memReq, o_memWrite,
-          o_branch, o_jal, o_jalr, o_csrr, o_EXCOp}
+          o_branch, o_jal, o_jalr, w_csrr, o_EXCOp}
 
           = mainDecoder(i_opcode, i_funct3);
   

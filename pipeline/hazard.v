@@ -15,6 +15,8 @@ module hazard (
   input       Ei_resultWSrc,
   input Mi_regWrite,
   input Wi_regWrite,
+  // from exceptionHandling
+  input Ei_exception,
 
   // to datapath
   output [1:0] Eo_forwardIn1Src, Eo_forwardIn2Src,
@@ -49,8 +51,8 @@ module hazard (
 
   assign w_changePCinEX = (Ei_PCSrc != 2'b00);  // (takeBranch or jalr or exception)
 
-  assign  Fo_stall = w_lwStall;                    
-  assign  Do_stall = w_lwStall;                    
+  assign  Fo_stall = w_lwStall && !Ei_exception;                    
+  assign  Do_stall = w_lwStall && !Ei_exception;                    
   assign  Do_flush = w_changePCinEX | Di_jal;
   assign  Eo_flush = w_changePCinEX | w_lwStall;
 
