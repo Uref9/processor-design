@@ -10,7 +10,6 @@
 `include "module/CSRs.v"
 `include "module/csrLU.v"
 `include "module/privilegeMode.v"
-`include "module/oldExceptionHandling.v"
 
 `define HIGH  1'b1
 `define LOW   1'b0
@@ -44,7 +43,7 @@ module datapath(
   input         Di_stall, Di_flush,
   input         Ei_flush,
   // from exceptionHandling
-  input Ei_privEnable,
+  input Ei_privRegEnable,
   input [3:0]  Ei_cause,
 
   // to test imem
@@ -64,7 +63,8 @@ module datapath(
   output [4:0]  Wo_rd,
   // to exceptionHandling
   output [1:0]  Eo_nowPrivMode,
-  output [31:0] Eo_PC, Eo_inst
+  output [31:0] Eo_PC, Eo_inst,
+  output [31:0] Eo_ALUOut
 );
 
 /* wire */
@@ -104,7 +104,6 @@ module datapath(
   wire [31:0] Ew_csrLUIn2;
   wire [31:0] Ew_csrLUOut;
     // to MEM
-  wire [31:0] Ew_ALUOut;
   wire [31:0] Ew_writeData;
   wire [31:0] Ew_immPlus;
   wire [31:0] Ew_CSRsData;
@@ -138,7 +137,7 @@ module datapath(
     .i_1(Fo_PC), .i_2(32'd4),
     .o_1(Fw_PCPlus4)
   );
-  assign Fw_ALUOutJalr = Ew_ALUOut & ~{32'd1};
+  assign Fw_ALUOutJalr = Eo_ALUOut & ~{32'd1};
   mux2 pre_pc_next_mux(
     .i_1(Fw_PCPlus4), .i_2(Dw_PCPlusImm),
     .i_sel(Di_jal),
@@ -179,10 +178,9 @@ module datapath(
     .o_1(Dw_PCPlusImm)
   );
   // Privilege Mode
-  // wire Dw_privEnable = Eo_exception | Ei_mret;
   privilegeMode priv_register(
     .clk(clk), .reset_x(reset_x),
-    .enable(Ei_privEnable),
+    .enable(Ei_privRegEnable),
     .i_nextPrivMode(Dw_nextPrivMode),
 
     .o_nowPrivMode(Do_nowPrivMode)
@@ -261,7 +259,7 @@ module datapath(
   ALU alu(
     .i_ctrl(Ei_ALUCtrl),
     .i_1(Ew_RD1Fwd), .i_2(Ew_ALUIn2),
-    .o_1(Ew_ALUOut),
+    .o_1(Eo_ALUOut),
     .o_zero(Eo_zero), .o_neg(Eo_neg), .o_negU(Eo_negU)
   );
   mux2 imm_plus_mux(
@@ -284,15 +282,6 @@ module datapath(
     .i_sel(Ei_mret),
     .o_1(Ew_mtvecmretOut)
   );
-  oldExceptionHandling old_exception_handling(
-    // .i_exceptionFromInst(Ei_exceptionFromInst),
-    // .i_causeFromInst(Ei_causeFromInst),
-    // .i_nowPrivMode(Eo_nowPrivMode),
-    // .i_PC(Eo_PC), 
-    // .i_inst(Eo_inst),
-    // .o_exception(Eo_exception),
-    // .o_cause(Ei_cause)
-  );
 
   // EX/MEM reg
   dffREC #(165)
@@ -300,7 +289,7 @@ module datapath(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(`LOW),
     .i_d({
-      Ew_ALUOut, Ew_writeData,
+      Eo_ALUOut, Ew_writeData,
       Ew_immPlus, Ew_CSRsData, Ew_PCPlus4,
 
       Eo_rd

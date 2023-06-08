@@ -39,7 +39,8 @@ module controller(
   output        Mo_regWrite,
   // to exceptionHanling
   output        Eo_exceptionFromInst,
-  output [3:0]  Eo_causeFromInst
+  output [3:0]  Eo_causeFromInst,
+  output        Eo_memWrite, Eo_memReq
 );
 
 // wire
@@ -73,7 +74,6 @@ module controller(
   wire [2:0]  Ew_funct3;
   wire        Ew_branch, Ew_jalr;
     // to MEM
-  wire        Ew_memWrite, Ew_memReq;
   wire [1:0]  Ew_memSize;
   wire        Ew_isLoadSigned;
   wire [1:0]  Ew_resultMSrc;
@@ -151,7 +151,7 @@ module controller(
       Eo_csrWrite, Eo_csrSrc, Eo_csrLUCtrl,
       Eo_causeFromInst,
 
-      Ew_memWrite, Ew_memReq, Ew_memSize,
+      Eo_memWrite, Eo_memReq, Ew_memSize,
       Ew_isLoadSigned,
       Ew_resultMSrc,
 
@@ -177,7 +177,7 @@ module controller(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(1'b1), .i_clear(1'b0),
     .i_d({
-      Ew_memWrite, Ew_memReq, Ew_memSize,
+      Eo_memWrite, Eo_memReq, Ew_memSize,
       Ew_isLoadSigned,
       Ew_resultMSrc,
       

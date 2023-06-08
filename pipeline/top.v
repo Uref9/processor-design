@@ -32,6 +32,7 @@ module top(
     // to exceptionHandling
   wire [1:0] Ew_nowPrivMode;
   wire [31:0] Ew_PC, Ew_inst;
+  wire [31:0] Ew_ALUOut;
 
   // from controller
     // to datapath
@@ -54,6 +55,7 @@ module top(
     // to exceptionHandling
   wire        Ew_exceptionFromInst;
   wire [3:0]  Ew_causeFromInst;
+  wire        Ew_memWrite, Ew_memReq;
 
   // from hazard
   wire [1:0]   Ew_forwardIn1Src, Ew_forwardIn2Src;
@@ -63,7 +65,7 @@ module top(
 
   // from exceptionHandling
     // to datapath
-  wire Ew_privEnable;
+  wire Ew_privRegEnable;
   wire [3:0] Ew_cause;
 
   /*** inout ***/
@@ -95,7 +97,7 @@ module top(
     .Di_stall(Dw_stall), .Di_flush(Dw_flush),
     .Ei_flush(Ew_flush),
     // from exceptionHandling
-    .Ei_privEnable(Ew_privEnable),
+    .Ei_privRegEnable(Ew_privRegEnable),
     .Ei_cause(Ew_cause),
 
     // to test imem
@@ -112,7 +114,8 @@ module top(
     .Eo_rd(Ew_rd), .Mo_rd(Mw_rd), .Wo_rd(Ww_rd),
     // to exceptionHandling
     .Eo_nowPrivMode(Ew_nowPrivMode),
-    .Eo_PC(Ew_PC), .Eo_inst(Ew_inst)
+    .Eo_PC(Ew_PC), .Eo_inst(Ew_inst),
+    .Eo_ALUOut(Ew_ALUOut)
   );
 
   controller controller(
@@ -145,7 +148,8 @@ module top(
     .Mo_regWrite(Mw_regWrite),
     // to exceptionHandling
     .Eo_exceptionFromInst(Ew_exceptionFromInst),
-    .Eo_causeFromInst(Ew_causeFromInst)
+    .Eo_causeFromInst(Ew_causeFromInst),
+    .Eo_memWrite(Ew_memWrite), .Eo_memReq(Ew_memReq)
   );
 
   hazard hazard(
@@ -160,6 +164,8 @@ module top(
     .Ei_PCSrc(Ew_PCSrc),
     .Ei_resultWSrc(Ew_resultWSrc),
     .Mi_regWrite(Mw_regWrite), .Wi_regWrite(Ww_regWrite),
+    // from exceptionHandling
+    .Ei_exception(Ew_exception),
 
     // to datapath
     .Eo_forwardIn1Src(Ew_forwardIn1Src),
@@ -171,14 +177,20 @@ module top(
   );
 
   exceptionHandling exception_handling(
+    // from datapath
+    .i_nowPrivMode(Ew_nowPrivMode),
+    .i_PC(Ew_PC), .i_inst(Ew_inst),
+    .i_ALUOut(Ew_ALUOut),
+    // from controller
     .i_exceptionFromInst(Ew_exceptionFromInst), 
     .i_causeFromInst(Ew_causeFromInst),
     .i_mret(Ew_mret),
-    .i_nowPrivMode(Ew_nowPrivMode),
-    .i_PC(Ew_PC), .i_inst(Ew_inst),
+    .i_memWrite(Ew_memWrite), .i_memReq(Ew_memReq),
 
-    .o_exception(Ew_exception), .o_cause(Ew_cause),
-    .o_privEnable(Ew_privEnable)
+    // to datapath
+    .o_cause(Ew_cause), .o_privRegEnable(Ew_privRegEnable),
+    // to controller
+    .o_exception(Ew_exception)
   );
 
 endmodule
