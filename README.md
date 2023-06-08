@@ -7,6 +7,7 @@
 -
 - v0.1  temporary completion
 ## pipeline
+- v0.10 Add load access fault exception and move exceptioinHandling module in datapath to in top
 - v0.9 Add ebreak Inst. and inst. access fault exception (not use PMP or pmpcfg CSRs)
 - v0.8 Add Inst. addr. align violation exception and Move mret ID to EX
 - v0.7 Add privilege mode and move ID to EX in writing CSRs
