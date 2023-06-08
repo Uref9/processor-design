@@ -178,19 +178,19 @@ module top(
 
   exceptionHandling exception_handling(
     // from datapath
-    .i_nowPrivMode(Ew_nowPrivMode),
-    .i_PC(Ew_PC), .i_inst(Ew_inst),
-    .i_ALUOut(Ew_ALUOut),
+    .Ei_nowPrivMode(Ew_nowPrivMode),
+    .Ei_PC(Ew_PC), .Ei_inst(Ew_inst),
+    .Ei_ALUOut(Ew_ALUOut),
     // from controller
-    .i_exceptionFromInst(Ew_exceptionFromInst), 
-    .i_causeFromInst(Ew_causeFromInst),
-    .i_mret(Ew_mret),
-    .i_memWrite(Ew_memWrite), .i_memReq(Ew_memReq),
+    .Ei_exceptionFromInst(Ew_exceptionFromInst), 
+    .Ei_causeFromInst(Ew_causeFromInst),
+    .Ei_mret(Ew_mret),
+    .Ei_memWrite(Ew_memWrite), .Ei_memReq(Ew_memReq),
 
     // to datapath
-    .o_cause(Ew_cause), .o_privRegEnable(Ew_privRegEnable),
+    .Eo_cause(Ew_cause), .Eo_privRegEnable(Ew_privRegEnable),
     // to controller
-    .o_exception(Ew_exception)
+    .Eo_exception(Ew_exception)
   );
 
 endmodule
