@@ -2,7 +2,6 @@
 `define LOW    1'b0
 
 module hazard (
-  // input clk, reset_x,
   // from datapath
   input [4:0] Di_rs1, Di_rs2,
   input [4:0] Ei_rs1, Ei_rs2,
@@ -43,19 +42,15 @@ module hazard (
 
   // stall, flush
   assign w_lwStall = Ei_resultWSrc            // isLoad?
-                      & ((Di_rs1 == Ei_rd)
-                        | (Di_rs2 == Ei_rd));
-  // assign w_lwStall = (Ei_resultSrc == 2'b01) // isLoad?
-  //                     & ((Di_rs1 == Ei_rd)
-  //                       | (Di_rs2 == Ei_rd));
-
+                  && ( (Di_rs1 == Ei_rd)
+                    || (Di_rs2 == Ei_rd));
+  
   assign w_changePCinEX = (Ei_PCSrc != 2'b00);  // (takeBranch or jalr or exception)
 
   assign  Fo_stall = w_lwStall && !Ei_exception;                    
   assign  Do_stall = w_lwStall && !Ei_exception;                    
-  assign  Do_flush = w_changePCinEX | Di_jal;
-  assign  Eo_flush = w_changePCinEX | w_lwStall;
-
+  assign  Do_flush = w_changePCinEX || Di_jal;
+  assign  Eo_flush = w_changePCinEX || w_lwStall;
 
   function [3:0] forwarding(
     input [4:0] Ei_rs,
@@ -64,10 +59,10 @@ module hazard (
     input Mi_regWrite, Wi_regWrite
   );
     if (Ei_rs != 5'b0)
-      if ((Ei_rs == Mi_rd) & Mi_regWrite)
+      if (Mi_regWrite && (Ei_rs == Mi_rd))
         forwarding = 2'b01;  // Mw_resultM
       else 
-      if ((Ei_rs == Wi_rd) & Wi_regWrite) 
+      if (Wi_regWrite && (Ei_rs == Wi_rd)) 
         forwarding = 2'b10;  // Ww_resultW
       else
         forwarding = 2'b00;  // Ew_RD1

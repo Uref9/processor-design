@@ -43,8 +43,8 @@ module datapath(
   input         Di_stall, Di_flush,
   input         Ei_flush,
   // from exceptionHandling
-  input Ei_privRegEnable,
-  input [3:0]  Ei_cause,
+  input         Ei_privRegEnable,
+  input [3:0]   Ei_cause,
 
   // to test imem
   output [31:0] Fo_PC,
@@ -109,7 +109,7 @@ module datapath(
   wire [31:0] Ew_CSRsData;
     // to WB
   wire [31:0] Ew_PCPlus4;
-  wire [4:0] Eo_rd;
+  wire [4:0]  Eo_rd;
 
   // MEM stage wire
   wire [31:0] Mw_CSRsData;
@@ -206,9 +206,9 @@ module datapath(
     .mstatus_out(Dw_mstatusOut),
     .mtvec_out(Dw_mtvecOut), .mepc_out(Dw_mepcOut)
   );
-  assign Dw_zimmExt = {17'b0, Dw_zimm};
   
   // ID/EX reg
+  assign Dw_zimmExt = {17'b0, Dw_zimm};
   dffREC #(413)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
@@ -267,6 +267,7 @@ module datapath(
     .i_sel(Ei_immPlusSrc),
     .o_1(Ew_immPlus)
   );
+
   mux2 csr_lu_in2_mux(
     .i_1(Ew_RD1Fwd), .i_2(Ew_zimmExt),
     .i_sel(Ei_csrSrc),
@@ -336,12 +337,5 @@ module datapath(
     .i_sel(Wi_resultWSrc),
     .o_1(Ww_resultW)
   );
-
-/* single */
-  // assign w_opcode = i_inst[6:0];
-  // assign w_funct3 = i_inst[14:12];
-  // assign w_succ = i_inst[23:20];
-  // assign w_pred = i_inst[27:24];
-  // assign w_funct7 = i_inst[31:25];
 
 endmodule

@@ -58,6 +58,7 @@ module top(
   wire        Ew_memWrite, Ew_memReq;
 
   // from hazard
+    // to datapath
   wire [1:0]   Ew_forwardIn1Src, Ew_forwardIn2Src;
   wire         Fw_stall;
   wire         Dw_stall, Dw_flush;
