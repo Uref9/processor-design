@@ -1,6 +1,6 @@
 module dffREC #(
   parameter WIDTH = 32,
-  parameter INITIAL_VALUE = 32'b0
+  parameter INITIAL_VALUE = 1'b0
 )(
   input i_clock, i_reset_x, i_enable, i_clear,
   input [WIDTH-1:0] i_d,

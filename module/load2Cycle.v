@@ -9,6 +9,7 @@ module load2Cycle (
   // reg r_prevLoad = 1'b0;
 
   always @(negedge i_clk) begin
+  // always @(posedge i_clk, i_opcode) begin
     if (i_opcode[6:2] == 5'b00000) begin // Load type
       if (r_loadCount) begin
       // Load count
