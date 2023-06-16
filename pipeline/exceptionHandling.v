@@ -29,33 +29,46 @@ module exceptionHandling (
   wire w_loadAccessFaultException
     = ((Ei_nowPrivMode == `UMODE) && (Ei_memReq && !Ei_memWrite) 
                                   && ( (Ei_ALUOut < 32'h800_0000)
-                                        | (32'h1000_0000 < Ei_ALUOut)));
+                                        | (32'h1000_0000 < Ei_ALUOut))
+      );
+  wire w_storeAccessFaultException
+    = ((Ei_nowPrivMode == `UMODE) && (Ei_memReq && Ei_memWrite)
+                                  && ( (Ei_ALUOut < 32'h800_0000)
+                                        | (32'h1000_0000 < Ei_ALUOut))
+                                  && (Ei_ALUOut != 32'hf000_0000)
+                                  && (Ei_ALUOut != 32'hff00_0000)
+      );
 
   assign Eo_exception = 
     Ei_exceptionFromInst
     | w_instAddrAlignVioException // or Inst. addr. align vio. exc.
     | w_instAccessFaultException
-    | w_loadAccessFaultException;
+    | w_loadAccessFaultException
+    | w_storeAccessFaultException;
   assign Eo_cause = 
     setCause(Ei_causeFromInst, Ei_nowPrivMode, 
               w_instAddrAlignVioException,
               w_instAccessFaultException,
-              w_loadAccessFaultException
+              w_loadAccessFaultException,
+              w_storeAccessFaultException
             );
   
   function [3:0] setCause(
     input [3:0] Ei_causeFromInst,
     input [1:0] Ei_nowPrivMode,
-    input Ei_instAddrAlignVioException,
-    input Ei_instAccessFaultException,
-    input Ei_loadAccessFaultException
+    input i_instAddrAlignVioException,
+    input i_instAccessFaultException,
+    input i_loadAccessFaultException,
+    input i_storeAccessFaultException
   );
-    if (Ei_instAddrAlignVioException)  // instAddrAlignVioException
+    if (i_instAddrAlignVioException)  // instAddrAlignVioException
       setCause = 4'b0000;
-    else if (Ei_instAccessFaultException)
+    else if (i_instAccessFaultException)
       setCause = 4'b0001;
-    else if (Ei_loadAccessFaultException)
+    else if (i_loadAccessFaultException)
       setCause = 4'b0101;
+    else if (i_storeAccessFaultException)
+      setCause = 4'b0111;
     else if (Ei_causeFromInst == 4'd8) // ecall by UorSorM
       setCause = Ei_causeFromInst + Ei_nowPrivMode;
     else

@@ -13,7 +13,6 @@ module mainDecoder (
   output o_csrWrite, o_csrSrc,
   output [1:0] o_csrLUCtrl,
 
-
   output o_branch, o_jal, o_jalr,
   output [1:0] o_ALUOp,
   output [1:0] o_EXCOp

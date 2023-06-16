@@ -78,7 +78,6 @@ module controller(
   wire        Ew_isLoadSigned;
   wire [1:0]  Ew_resultMSrc;
     // to WB
-  // wire        Ew_resultWSrc;
   wire        Ew_regWrite;
 
   // MEM stage wire
@@ -90,7 +89,6 @@ module controller(
 
 // ID stage
   mainDecoder main_decoder(
-    // .clk(clk), .reset_x(reset_x),
     .i_opcode(Dw_opcode), .i_funct3(Dw_funct3),
 
     .o_memReq(Dw_memReq), .o_memWrite(Dw_memWrite),
@@ -161,7 +159,7 @@ module controller(
 // end ID stage
 
 // EX stage
-  setPCSrc set_pre_pc_src(
+  setPCSrc set_pc_src(
     .i_zero(Ei_zero), .i_neg(Ei_neg), .i_negU(Ei_negU),
     .i_exception(Ei_exception), 
     

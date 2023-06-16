@@ -15,11 +15,11 @@ module readDataExtend(
   );
 
     case (i_isLoadSigned)
-      1'b0: extend = i_readData;  // load unsigned
-      1'b1:                       // load signed
+      1'b0:      extend = i_readData;  // load unsigned
+      1'b1:                            // load signed
         case (i_memSize)
           2'b00: extend = i_readData;                                 // word
-          2'b01: extend = { {16{i_readData[15]}}, i_readData[15:0] }; // halfw
+          2'b01: extend = { {16{i_readData[15]}}, i_readData[15:0] }; // half-w
           2'b10: extend = { {24{i_readData[7]}}, i_readData[7:0] };   // byte
           2'b11: extend = { {24{i_readData[7]}}, i_readData[7:0] };   // byte
           default: extend = i_readData;

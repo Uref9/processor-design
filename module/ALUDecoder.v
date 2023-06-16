@@ -20,21 +20,19 @@ module ALUDecoder (
       2'b01:        ALUDecoder = 4'b0001; // B type
       2'b10: 
         case (i_funct3)
-          3'b000: if (i_opecodeb5 & i_funct7b5) begin
+          3'b000: if (i_opecodeb5 & i_funct7b5)
                     ALUDecoder = 4'b0001; //  sub
-          end else begin
+          else
                     ALUDecoder = 4'b0000; //  add+i  
-          end
           3'b001:   ALUDecoder = 4'b0111; //  sll+i
           3'b010:   ALUDecoder = 4'b1101; //  slt+i
           3'b011:   ALUDecoder = 4'b1110; //  sltu+i
           3'b100:   ALUDecoder = 4'b0100; //  xor+i
           3'b101: 
-            if (i_funct7b5) begin
+            if (i_funct7b5)
                     ALUDecoder = 4'b0101; //  sra+i
-            end else begin
+            else
                     ALUDecoder = 4'b0110; //  srl+i
-            end
           3'b110:   ALUDecoder = 4'b0010; //  or+i
           3'b111:   ALUDecoder = 4'b0011; //  and+i
           default:  ALUDecoder = 4'b0000; //  ???
