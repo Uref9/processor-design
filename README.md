@@ -7,7 +7,7 @@
 -
 - v0.1  temporary completion
 ## pipeline
-- (v0.11 Add store access fault exception)
+- v0.11 Add store access fault exception
 - v0.10 Add load access fault exception and move exceptioinHandling module in datapath to in top
 - v0.9 Add ebreak Inst. and inst. access fault exception (not use PMP or pmpcfg CSRs)
 - v0.8 Add Inst. addr. align violation exception and Move mret ID to EX
