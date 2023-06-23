@@ -14,6 +14,7 @@ module hazard (
   input [1:0] Ei_prePCSrc,
   input [1:0] Ei_resultSrc,
   input [1:0] Mi_resultSrc,
+  input Ei_regWrite,
   input Mi_regWrite,
   input Wi_regWrite,
 
@@ -29,18 +30,23 @@ module hazard (
   wire w_takeBranchOrJalr;
 
 
-  assign Eo_forwardIn1Src = forwarding(
-                              Ei_rs1,
-                              Ei_rd, Mi_rd, Wi_rd,
-                              Ei_resultSrc, Mi_resultSrc,
-                              Mi_regWrite, Wi_regWrite
-                            ); 
-  assign Eo_forwardIn2Src = forwarding(
-                              Ei_rs2,
-                              Ei_rd, Mi_rd, Wi_rd,
-                              Ei_resultSrc, Mi_resultSrc,
-                              Mi_regWrite, Wi_regWrite
-                            ); 
+  // assign Eo_forwardIn1Src = forwarding(
+  //                             Ei_rs1,
+  //                             Ei_rd, Mi_rd, Wi_rd,
+  //                             Ei_resultSrc, Mi_resultSrc,
+  //                             Mi_regWrite, Wi_regWrite
+  //                           ); 
+  // assign Eo_forwardIn2Src = forwarding(
+  //                             Ei_rs2,
+  //                             Ei_rd, Mi_rd, Wi_rd,
+  //                             Ei_resultSrc, Mi_resultSrc,
+  //                             Mi_regWrite, Wi_regWrite
+  //                           ); 
+
+  assign w_fwdStall = ((Di_rs1 != 5'b0) && (Di_rs1 == Ei_rd) && (Ei_regWrite))
+                    || ((Di_rs1 != 5'b0) && (Di_rs1 == Mi_rd) && (Mi_regWrite))
+                    || ((Di_rs2 != 5'b0) && (Di_rs2 == Ei_rd) && (Ei_regWrite))
+                    || ((Di_rs2 != 5'b0) && (Di_rs2 == Mi_rd) && (Mi_regWrite));
 
   assign w_lwStall = (Ei_resultSrc == 2'b01) // isLoad?
                     & ((Di_rs1 == Ei_rd)
@@ -48,13 +54,13 @@ module hazard (
 
   assign w_takeBranchOrJalr = (Ei_prePCSrc != 2'b00);  // (takeBranch or jalr)
 
-  assign  Fo_stall = w_lwStall;                    
-  assign  Do_stall = w_lwStall;                    
+  assign  Fo_stall = !w_takeBranchOrJalr && (w_lwStall | w_fwdStall);
+  assign  Do_stall = !w_takeBranchOrJalr && (w_lwStall | w_fwdStall);
   assign  Do_flush = w_takeBranchOrJalr | Di_jal;
-  assign  Eo_flush = w_takeBranchOrJalr | w_lwStall;
+  assign  Eo_flush = w_takeBranchOrJalr | w_lwStall | w_fwdStall;
 
 
-  function [3:0] forwarding(
+  function [3:0] forwardingStall(
     input [4:0] Ei_rs,
     input [4:0] Ei_rd, Mi_rd, Wi_rd,
     // from controller
@@ -65,15 +71,37 @@ module hazard (
       if (Ei_rs == Mi_rd)
         if (Mi_regWrite)
           if (Mi_resultSrc == 2'b00)
-                        forwarding = 2'b11;  // Mo_ALUOut
+                        forwardingStall = 2'b11;  // Mo_ALUOut
           else if (Mi_resultSrc == 2'b10)       
-                        forwarding = 2'b10;  // Mw_immPlus
-          else          forwarding = 2'b00;  // Ew_RD1
-        else            forwarding = 2'b00;  // Ew_RD1
+                        forwardingStall = 2'b10;  // Mw_immPlus
+          else          forwardingStall = 2'b00;  // Ew_RD1
+        else            forwardingStall = 2'b00;  // Ew_RD1
           
       else if ((Ei_rs == Wi_rd) & Wi_regWrite) 
-                        forwarding = 2'b01;  // Ww_result
-      else              forwarding = 2'b00;  // Ew_RD1
-    else                forwarding = 2'b00;  // Ew_RD1
+                        forwardingStall = 2'b01;  // Ww_result
+      else              forwardingStall = 2'b00;  // Ew_RD1
+    else                forwardingStall = 2'b00;  // Ew_RD1
   endfunction
+  // function [3:0] forwarding(
+  //   input [4:0] Ei_rs,
+  //   input [4:0] Ei_rd, Mi_rd, Wi_rd,
+  //   // from controller
+  //   input [1:0] Ei_resultSrc, Mi_resultSrc,
+  //   input Mi_regWrite, Wi_regWrite
+  // );
+  //   if (Ei_rs != 5'b0)
+  //     if (Ei_rs == Mi_rd)
+  //       if (Mi_regWrite)
+  //         if (Mi_resultSrc == 2'b00)
+  //                       forwarding = 2'b11;  // Mo_ALUOut
+  //         else if (Mi_resultSrc == 2'b10)       
+  //                       forwarding = 2'b10;  // Mw_immPlus
+  //         else          forwarding = 2'b00;  // Ew_RD1
+  //       else            forwarding = 2'b00;  // Ew_RD1
+          
+  //     else if ((Ei_rs == Wi_rd) & Wi_regWrite) 
+  //                       forwarding = 2'b01;  // Ww_result
+  //     else              forwarding = 2'b00;  // Ew_RD1
+  //   else                forwarding = 2'b00;  // Ew_RD1
+  // endfunction
 endmodule

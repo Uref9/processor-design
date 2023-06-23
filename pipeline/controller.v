@@ -30,6 +30,7 @@ module controller(
   // to hazard
   output [1:0]  Eo_resultSrc,
   output [1:0]  Mo_resultSrc,
+  output        Eo_regWrite,
   output        Mo_regWrite
 );
 
@@ -60,7 +61,6 @@ module controller(
   wire [1:0]  Ew_memSize;
   wire        Ew_isLoadSigned;
     // to WB
-  wire        Ew_regWrite;
 
   // MEM stage wire
     // to WB
@@ -117,7 +117,7 @@ module controller(
       Ew_isLoadSigned,
 
       Eo_resultSrc,
-      Ew_regWrite
+      Eo_regWrite
     })
   );
 // end ID stage
@@ -141,7 +141,7 @@ module controller(
       Ew_isLoadSigned,
       
       Eo_resultSrc,
-      Ew_regWrite
+      Eo_regWrite
     }),
     .o_q({
       Mo_memWrite, Mo_memReq, Mo_memSize,

@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.107 (w)1999-2020 BSI
-[*] Mon May 22 04:58:12 2023
+[*] Fri Jun 23 05:48:32 2023
 [*]
 [dumpfile] "/Users/yuu/devl/cpc_dev/prc_design_dev/pipeline/test/log/top_test.vcd"
-[dumpfile_mtime] "Mon May 22 04:51:56 2023"
-[dumpfile_size] 14635358
-[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkwave/pc.gtkw"
-[timestart] 0
-[size] 2048 1099
+[dumpfile_mtime] "Fri Jun 23 05:47:24 2023"
+[dumpfile_size] 298300
+[savefile] "/Users/yuu/devl/cpc_dev/prc_design_dev/gtkw/pc.gtkw"
+[timestart] 695080
+[size] 2048 847
 [pos] -1 -1
-*-13.914623 17440 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.914623 723100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top_test.
 [treeopen] top_test.u_top_1.
 [treeopen] top_test.u_top_1.controller.
@@ -22,22 +22,10 @@
 @28
 top_test.u_top_1.clk
 top_test.u_top_1.rst
-top_test.u_top_1.Ew_PCSrc[1:0]
 @22
 top_test.u_top_1.datapath.Fw_PCPlus4[31:0]
 top_test.u_top_1.datapath.Fo_PC[31:0]
 top_test.u_top_1.IAD[31:0]
-@23
 top_test.u_top_1.IDT[31:0]
-@28
-top_test.u_top_1.datapath.pc_reg.i_clear
-top_test.u_top_1.datapath.pc_reg.i_clock
-@22
-top_test.u_top_1.datapath.pc_reg.i_d[31:0]
-@28
-top_test.u_top_1.datapath.pc_reg.i_enable
-top_test.u_top_1.datapath.pc_reg.i_reset_x
-@22
-top_test.u_top_1.datapath.pc_reg.o_q[31:0]
 [pattern_trace] 1
 [pattern_trace] 0
