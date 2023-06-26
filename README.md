@@ -18,7 +18,7 @@
 - v0.4 Add Forwarding MEM to EX in jal, jalr
 - v0.3 Add ecall(only direct-mode) and mret Inst.
 - v0.2 Reduce jal penalty 2 to 1Cycle
-      - (Change judging stage, IE to IDstage)
+      - (Change judging stage, EX to IDstage)
 - v0.1 temporary completion
       - (forwarding, stall, flush)
 
