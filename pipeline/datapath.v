@@ -57,7 +57,7 @@ module datapath(
   wire [4:0] Do_rs2 =  Do_inst[24:20];  // to EX
     // to EX
   wire [31:0] Dw_RD1, Dw_RD2;
-  wire [31:0] Dw_immExt, Dw_PC;
+  wire [31:0] Dw_immExt, Dw_PC, Dw_PCPlusImm;
     // to WB
   wire [31:0] Dw_PCPlus4;
 
@@ -130,21 +130,29 @@ module datapath(
     .i_immSrc(Di_immSrc), .i_inst(Do_inst), 
     .o_immExt(Dw_immExt)
   );
+  adder add_imm(
+    .i_1(Dw_PC), .i_2(Dw_immExt),
+    .o_1(Dw_PCPlusImm)
+  );
 
   // ID/EX reg
-  dffREC #(175)
+  dffREC #(207)
   IDEX_datapath_register(
     .i_clock(clk), .i_reset_x(reset_x),
     .i_enable(`HIGH), .i_clear(Ei_flush),
     .i_d({
-      Dw_RD1, Dw_RD2, Dw_immExt,
-      Dw_PC, Dw_PCPlus4,
+      Dw_RD1, Dw_RD2, 
+      Dw_immExt,
+      Dw_PC, Dw_PCPlusImm,
+      Dw_PCPlus4,
       Dw_rd, 
       Do_rs1, Do_rs2
     }),
     .o_q({
-      Ew_RD1, Ew_RD2, Ew_immExt,
-      Ew_PC, Ew_PCPlus4,
+      Ew_RD1, Ew_RD2, 
+      Ew_immExt,
+      Ew_PC, Ew_PCPlusImm,
+      Ew_PCPlus4,
       Eo_rd, 
       Eo_rs1, Eo_rs2
     })
@@ -173,10 +181,10 @@ module datapath(
     .o_1(Ew_ALUOut),
     .o_zero(Eo_zero), .o_neg(Eo_neg), .o_negU(Eo_negU)
   );
-  adder add_imm(
-    .i_1(Ew_PC), .i_2(Ew_immExt),
-    .o_1(Ew_PCPlusImm)
-  );
+  // adder add_imm(
+  //   .i_1(Ew_PC), .i_2(Ew_immExt),
+  //   .o_1(Ew_PCPlusImm)
+  // );
   mux2 imm_plus_mux(
     .i_1(Ew_immExt), .i_2(Ew_PCPlusImm),
     .i_sel(Ei_immPlusSrc),
