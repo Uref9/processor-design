@@ -39,6 +39,7 @@ module top(
     // to hazard
   wire [1:0]  Ew_resultSrc;
   wire [1:0]  Mw_resultSrc;
+  wire        Ew_regWrite;
   wire        Mw_regWrite;
 
   // from hazard
@@ -109,6 +110,7 @@ module top(
     .Wo_regWrite(Ww_regWrite),
     // to hazard
     .Eo_resultSrc(Ew_resultSrc),
+    .Eo_regWrite(Ew_regWrite),
     .Mo_resultSrc(Mw_resultSrc),
     .Mo_regWrite(Mw_regWrite)
 
@@ -125,7 +127,7 @@ module top(
     // from controller
     .Ei_PCSrc(Ew_PCSrc),
     .Ei_resultSrc(Ew_resultSrc), .Mi_resultSrc(Mw_resultSrc),
-    .Mi_regWrite(Mw_regWrite), .Wi_regWrite(Ww_regWrite),
+    .Ei_regWrite(Ew_regWrite), .Mi_regWrite(Mw_regWrite), .Wi_regWrite(Ww_regWrite),
 
     // to datapath
     .Eo_forwardIn1Src(Ew_forwardIn1Src),

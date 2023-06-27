@@ -159,18 +159,9 @@ module datapath(
   );
 
 // EX stage logic
-  mux4 forward_in1_mux(
-    .i_1(Ew_RD1), .i_2(Ww_result), 
-    .i_3(Mw_immPlus), .i_4(Mo_ALUOut),
-    .i_sel(Ei_forwardIn1Src), 
-    .o_1(Ew_ALUIn1)
-  );
-  mux4 forward_in2_mux(
-    .i_1(Ew_RD2), .i_2(Ww_result), 
-    .i_3(Mw_immPlus), .i_4(Mo_ALUOut),
-    .i_sel(Ei_forwardIn2Src), 
-    .o_1(Ew_writeData)
-  );
+  assign Ew_ALUIn1 = Ew_RD1;
+  assign Ew_writeData = Ew_RD2;
+
   mux2 alu_in2_mux(
     .i_1(Ew_writeData), .i_2(Ew_immExt), .i_sel(Ei_ALUSrc), 
     .o_1(Ew_ALUIn2)
@@ -181,10 +172,6 @@ module datapath(
     .o_1(Ew_ALUOut),
     .o_zero(Eo_zero), .o_neg(Eo_neg), .o_negU(Eo_negU)
   );
-  // adder add_imm(
-  //   .i_1(Ew_PC), .i_2(Ew_immExt),
-  //   .o_1(Ew_PCPlusImm)
-  // );
   mux2 imm_plus_mux(
     .i_1(Ew_immExt), .i_2(Ew_PCPlusImm),
     .i_sel(Ei_immPlusSrc),
